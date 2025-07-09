@@ -21,7 +21,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
             set -e
-            cd /var/www/Sponsor-Pro   # ← 替换成你的项目部署目录
+            cd /var/www/Sponsor-Pro/server   # ← 替换成你的项目部署目录
             git reset --hard
             git pull 
             yarn install
