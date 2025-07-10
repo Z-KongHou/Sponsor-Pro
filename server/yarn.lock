@@ -73,6 +73,13 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
+"@koa/cors@^5.0.0":
+  version "5.0.0"
+  resolved "https://registry.npmmirror.com/@koa/cors/-/cors-5.0.0.tgz#0029b5f057fa0d0ae0e37dd2c89ece315a0daffd"
+  integrity sha512-x/iUDjcS90W69PryLDIMgFyV21YLTnG9zOpPXS7Bkt2b8AsY3zZsIpOLBkYr9fBcF3HbkKaER5hOBZLfpLgYNw==
+  dependencies:
+    vary "^1.1.2"
+
 "@koa/router@^13.1.0":
   version "13.1.1"
   resolved "https://registry.npmmirror.com/@koa/router/-/router-13.1.1.tgz#1291b8adca7f61a31a7f8974d28654654211469d"
@@ -292,6 +299,13 @@
   dependencies:
     "@types/koa" "*"
 
+"@types/koa-logger@^3.1.5":
+  version "3.1.5"
+  resolved "https://registry.npmmirror.com/@types/koa-logger/-/koa-logger-3.1.5.tgz#fce9e1fb2e9ac9941200eccf3625f085c37b869b"
+  integrity sha512-N4f9GRdokJ/gLiCSvd3GGar/D74HJWzuvSJiruayCsz2e7gGkG6DQaque+kM3xo6LjyCRVUUt9HHJCSMjsXrIA==
+  dependencies:
+    "@types/koa" "*"
+
 "@types/koa-router@^7.4.8":
   version "7.4.8"
   resolved "https://registry.npmmirror.com/@types/koa-router/-/koa-router-7.4.8.tgz#471d0c9c20d4caa05721b50b0ae4d08c22a7cb03"
@@ -312,6 +326,13 @@
     "@types/keygrip" "*"
     "@types/koa-compose" "*"
     "@types/node" "*"
+
+"@types/koa__cors@^5.0.0":
+  version "5.0.0"
+  resolved "https://registry.npmmirror.com/@types/koa__cors/-/koa__cors-5.0.0.tgz#74567a045b599266e2cd3940cef96cedecc2ef1f"
+  integrity sha512-LCk/n25Obq5qlernGOK/2LUwa/2YJb2lxHUkkvYFDOpLXlVI6tKcdfCHRBQnOY4LwH6el5WOLs6PD/a8Uzau6g==
+  dependencies:
+    "@types/koa" "*"
 
 "@types/koa__router@^12.0.4":
   version "12.0.4"
@@ -497,7 +518,7 @@ buffer-from@^1.0.0:
   resolved "https://registry.npmmirror.com/buffer-from/-/buffer-from-1.1.2.tgz#2b146a6fd72e80b4f55d255f35ed59a3a9a41bd5"
   integrity sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==
 
-bytes@3.1.2:
+bytes@3.1.2, bytes@^3.1.0:
   version "3.1.2"
   resolved "https://registry.npmmirror.com/bytes/-/bytes-3.1.2.tgz#8b0beeb98605adf1b128fa4386403c009e0221a5"
   integrity sha512-/Nf7TyzTx6S3yRJObOAV7956r8cr2+Oj8AC5dt8wSP3BQAoeX58NoHyCU8P8zGkNXStjTSi6fzO6F0pBdcYbEg==
@@ -530,6 +551,14 @@ chalk@3.0.0, chalk@~3.0.0:
   version "3.0.0"
   resolved "https://registry.npmmirror.com/chalk/-/chalk-3.0.0.tgz#3f73c2bf526591f574cc492c51e2456349f844e4"
   integrity sha512-4D3B6Wf41KOYRFdszmDqMCGq5VV/uMAB273JILmO+3jAlh8X4qDtdtgCR3fxtbLEMzSx22QdhnDcJvu2u1fVwg==
+  dependencies:
+    ansi-styles "^4.1.0"
+    supports-color "^7.1.0"
+
+chalk@^4.1.2:
+  version "4.1.2"
+  resolved "https://registry.npmmirror.com/chalk/-/chalk-4.1.2.tgz#aac4e2b7734a740867aeb16bf02aad556a1e7a01"
+  integrity sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==
   dependencies:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
@@ -987,6 +1016,11 @@ https-proxy-agent@^7.0.2, https-proxy-agent@^7.0.6:
     agent-base "^7.1.2"
     debug "4"
 
+humanize-number@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.npmmirror.com/humanize-number/-/humanize-number-0.0.2.tgz#11c0af6a471643633588588048f1799541489c18"
+  integrity sha512-un3ZAcNQGI7RzaWGZzQDH47HETM4Wrj6z6E4TId8Yeq9w5ZKUVB1nrT2jwFheTUjEmqcgTjXDc959jum+ai1kQ==
+
 iconv-lite@0.4.24, iconv-lite@^0.4.4:
   version "0.4.24"
   resolved "https://registry.npmmirror.com/iconv-lite/-/iconv-lite-0.4.24.tgz#2022b4b25fbddc21d2f524974a474aafe733908b"
@@ -1147,6 +1181,17 @@ koa-convert@^2.0.0:
   dependencies:
     co "^4.6.0"
     koa-compose "^4.1.0"
+
+koa-logger@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.npmmirror.com/koa-logger/-/koa-logger-4.0.0.tgz#1e6db231c3b2409c0a3e78953680b580a1d2491b"
+  integrity sha512-LP3ocZPpSINyw2LBSIOpHksrYTlr5DKRB9ogk2PFEsF6vZJE2G//0TsjmL7Ph0O/KI4QU/yZJpRC5BelR+2oJA==
+  dependencies:
+    bytes "^3.1.0"
+    chalk "^4.1.2"
+    humanize-number "^0.0.2"
+    on-finished "^2.4.1"
+    passthrough-counter "^1.0.0"
 
 koa@^2.16.0:
   version "2.16.1"
@@ -1311,7 +1356,7 @@ object-inspect@^1.13.3:
   resolved "https://registry.npmmirror.com/object-inspect/-/object-inspect-1.13.4.tgz#8375265e21bc20d0fa582c22e1b13485d6e00213"
   integrity sha512-W67iLl4J2EXEGTbfeHCffrjDfitvLANg0UlX3wFUUSTx92KXRFegMHUVgSqE+wvhAbi4WqjGg9czysTV2Epbew==
 
-on-finished@^2.3.0:
+on-finished@^2.3.0, on-finished@^2.4.1:
   version "2.4.1"
   resolved "https://registry.npmmirror.com/on-finished/-/on-finished-2.4.1.tgz#58c8c44116e54845ad57f14ab10b03533184ac3f"
   integrity sha512-oVlzkg3ENAhCk2zdv7IJwd/QUD4z2RxRwpkcGY8psCVcCYZNq4wYnVWALHM+brtuJjePWiYF/ClmuDr8Ch5+kg==
@@ -1354,6 +1399,11 @@ parseurl@^1.3.2:
   version "1.3.3"
   resolved "https://registry.npmmirror.com/parseurl/-/parseurl-1.3.3.tgz#9da19e7bee8d12dff0513ed5b76957793bc2e8d4"
   integrity sha512-CiyeOxFT/JZyN5m0z9PfXw4SCBJ6Sygz1Dpl0wqjlhDEGGBP1GnsUVEL0p63hoG1fcj3fHynXi9NYO4nWOL+qQ==
+
+passthrough-counter@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npmmirror.com/passthrough-counter/-/passthrough-counter-1.0.0.tgz#1967d9e66da572b5c023c787db112a387ab166fa"
+  integrity sha512-Wy8PXTLqPAN0oEgBrlnsXPMww3SYJ44tQ8aVrGAI4h4JZYCS0oYqsPqtPR8OhJpv6qFbpbB7XAn0liKV7EXubA==
 
 path-parse@^1.0.7:
   version "1.0.7"
