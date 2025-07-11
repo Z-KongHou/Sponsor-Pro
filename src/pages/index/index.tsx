@@ -1,4 +1,4 @@
-import { View, Text, Button } from "@tarojs/components";
+import { View, Text } from "@tarojs/components";
 import Taro, { useLoad } from "@tarojs/taro";
 
 export default function Index() {
@@ -7,28 +7,10 @@ export default function Index() {
   });
 
   return (
-    <>
-      <View>
-        <Text>Hello world!</Text>
-      </View>
-      <Button
-        onClick={() => {
-          Taro.redirectTo({
-            url: "/pages/login/index",
-          });
-        }}
-      >
-        login
-      </Button>
-      <Button
-        onClick={() => {
-          Taro.redirectTo({
-            url: "/pages/register/index",
-          });
-        }}
-      >
-        register
-      </Button>
-    </>
+    <View>
+      <Text onClick={() => Taro.navigateTo({ url: "/pages/register/index" })}>
+        Hello world!
+      </Text>
+    </View>
   );
 }
