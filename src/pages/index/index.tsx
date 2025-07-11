@@ -1,5 +1,5 @@
 import { View, Text } from "@tarojs/components";
-import { useLoad } from "@tarojs/taro";
+import { useLoad,navigateTo } from "@tarojs/taro";
 
 export default function Index() {
   useLoad(() => {
@@ -8,7 +8,7 @@ export default function Index() {
 
   return (
     <View>
-      <Text>Hello world!</Text>
+      <Text onClick={() => navigateTo({ url: '/pages/register/index' })}>Hello world!</Text>
     </View>
   );
 }
