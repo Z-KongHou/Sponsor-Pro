@@ -7,6 +7,7 @@ export default defineAppConfig({
     'pages/register/club'
   ],
 
+
   window: {
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#fff',

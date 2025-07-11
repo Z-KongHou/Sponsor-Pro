@@ -1,5 +1,5 @@
 import Router from "@koa/router";
-import testFunction from "../../controller/DemoController";
+import testFunction from "../../controller/testController";
 
 const router = new Router();
 
