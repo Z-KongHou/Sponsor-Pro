@@ -25,7 +25,7 @@ export const updateLongToken = (token: string) => {
 
 // 创建请求配置
 const createRequestConfig = (baseURL: string) => ({
-  baseURL,
+  url:baseURL,
   timeout: 10000,
   header: {
     'Content-Type': 'application/json',
@@ -34,75 +34,96 @@ const createRequestConfig = (baseURL: string) => ({
 })
 
 // 创建 API 实例
-const apiConfig = createRequestConfig("")
+const apiConfig = createRequestConfig("http://localhost:6677")
 
-// // 请求拦截器
-// const requestInterceptor = (config) => {
-//   // 更新 token（每次请求前重新获取，以防 token 被更新）
-//   const currentToken = Taro.getStorageSync('longtoken')
-//   if (currentToken) {
-//     config.header = {
-//       ...config.header,
-//       'Authorization': `Bearer ${currentToken}`
-//     }
-//   }
+// 请求拦截器
+const requestInterceptor = (config) => {
+  // 更新 token（每次请求前重新获取，以防 token 被更新）
+  const currentToken = Taro.getStorageSync('longtoken')
+  if (currentToken) {
+    config.header = {
+      ...config.header,
+      'Authorization': `Bearer ${currentToken}`
+    }
+  }
   
-//   return config
-// }
+  return config
+}
 
-// // 响应拦截器 - 成功响应
-// const handleUnauthorizedResponse = (response) => {
-//   const data = response.data
+// 响应拦截器 - 成功响应
+const handleUnauthorizedResponse = (response) => {
+  const data = response.data
   
-//   if (data?.code === 'Error.UnAuthorized' && data?.err_code === 'Error.UnAuthorized') {
-//     showLoginNotification()
-//     return Promise.reject(new Error('未授权'))
-//   }
+  if (data?.code === 401 && data?.err_code === 'Error.UnAuthorized') {
+    showLoginNotification()
+    return Promise.reject(new Error('未授权'))
+  }
   
-//   return response
-// }
+  return response
+}
 
-// // 响应拦截器 - 错误处理
-// const handleUnauthorized = (error) => {
-//   const data = error.data || error.response?.data
+// 响应拦截器 - 错误处理
+const handleUnauthorized = (error) => {
+  const data = error.data || error.response?.data
   
-//   if (data?.code === 'Error.UnAuthorized' && data?.err_code === 'Error.UnAuthorized') {
-//     showLoginNotification()
-//   }
+  if (data?.code === 401 && data?.err_code === 'Error.UnAuthorized') {
+    showLoginNotification()
+  }
   
-//   return Promise.reject(error)
-// }
+  return Promise.reject(error)
+}
 
-// 封装 Taro.request 的通用函数
-// const createRequest = (baseConfig) => {
-//   return (options) => {
-//     // 合并配置
-//     const config = {
-//       ...baseConfig,
-//       ...options,
-//       header: {
-//         ...baseConfig.header,
-//         ...options.header
-//       }
-//     }
+const createRequest = (baseConfig) => {
+  return (options) => {
+    const fullUrl = options.url.startsWith('http') 
+    ? options.url 
+    : `${baseConfig.url}${options.url}`
+    const config = {
+      ...baseConfig,
+      ...options,
+      url: fullUrl,
+      header: {
+        ...baseConfig.header,
+        ...options.header
+      }
+    }
     
-//     // 应用请求拦截器
-//     const interceptedConfig = requestInterceptor(config)
+    // 应用请求拦截器
+    const interceptedConfig = requestInterceptor(config)
     
-//     return Taro.request(interceptedConfig)
-//       .then(response => {
-//         // 应用响应拦截器
-//         return handleUnauthorizedResponse(response)
-//       })
-//       .catch(error => {
-//         // 应用错误拦截器
-//         return handleUnauthorized(error)
-//       })
-//   }
-// }
+    return Taro.request(interceptedConfig)
+      .then(response => {
+        // 应用响应拦截器
+        return handleUnauthorizedResponse(response)
+      })
+      .catch(error => {
+        // 应用错误拦截器
+        return handleUnauthorized(error)
+      })
+  }
+}
 
-// // 创建 API 实例
-// export const api = createRequest(apiConfig)
+// 创建 API 实例
+const api = createRequest(apiConfig)
 
-// // 导出方法
-// export default api
+// 导出方法
+export const getWeChatInfo = async (code:string ,appcode:string) => {
+  const res = await api({
+    url :"/auth/login",
+    method :"POST",
+    data:{
+      code:code,
+      appcode:appcode
+    }
+  })
+  return res
+}
+
+export const register = async (data:object) => {
+  const res = await api({
+    url :"/auth/register",
+    method :"POST",
+    data: data
+  })
+  return res
+}

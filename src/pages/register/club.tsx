@@ -1,23 +1,31 @@
 import { View, Text, Input, Button,Textarea } from '@tarojs/components'
-import { useLoad } from '@tarojs/taro'
-import { useState } from 'react'
-import Taro from '@tarojs/taro'
+import Taro,{ useLoad } from '@tarojs/taro'
+import { useState,useEffect } from 'react'
+import { register } from '../../router/api'
 
 export default function ClubRegister() {
   const [formData, setFormData] = useState({
+    open_id: '',
     clubName: '',
-    leaderName: '',
+    name: '',
     phone: '',
     email: '',
     school: '',
     category: '',
-    memberCount: '',
-    description: ''
+    description: '',
+    role: "club"
   })
 
   useLoad(() => {
     console.log('社团注册页面加载')
   })
+
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      open_id: Taro.getStorageSync('open_id') || ''
+    }));
+  }, []);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -28,7 +36,7 @@ export default function ClubRegister() {
 
   const handleSubmit = () => {
     console.log('提交社团注册信息:', formData)
-    // 这里可以添加表单验证和提交逻辑
+    register(formData)
     Taro.showToast({
       title: '注册信息已提交',
       icon: 'success'
@@ -68,8 +76,8 @@ export default function ClubRegister() {
             <Input
               className='w-full px-2 py-3 border border-gray-200 rounded-xl focus:border-red-500 focus:outline-none text-base'
               placeholder='请输入负责人姓名'
-              value={formData.leaderName}
-              onInput={(e) => handleInputChange('leaderName', e.detail.value)}
+              value={formData.name}
+              onInput={(e) => handleInputChange('name', e.detail.value)}
             />
           </View>
 

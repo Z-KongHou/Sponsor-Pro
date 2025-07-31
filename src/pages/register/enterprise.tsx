@@ -1,17 +1,25 @@
 import { View, Text, Input, Button, Textarea } from '@tarojs/components'
-import { useLoad } from '@tarojs/taro'
-import { useState } from 'react'
-import Taro from '@tarojs/taro'
+import Taro,{ useLoad } from '@tarojs/taro'
+import { useState,useEffect } from 'react'
 
 export default function EnterpriseRegister() {
   const [formData, setFormData] = useState({
     companyName: '',
-    contactPerson: '',
+    open_id: '',
+    name: '',
     phone: '',
     email: '',
     industry: '',
-    description: ''
+    description: '',
+    role: "enterprise"
   })
+
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      open_id: Taro.getStorageSync('open_id') || ''
+    }));
+  }, []);
 
   useLoad(() => {
     console.log('企业注册页面加载')
@@ -66,8 +74,8 @@ export default function EnterpriseRegister() {
             <Input
               className='w-full px-2 py-3 border border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none text-base'
               placeholder='请输入联系人姓名'
-              value={formData.contactPerson}
-              onInput={(e) => handleInputChange('contactPerson', e.detail.value)}
+              value={formData.name}
+              onInput={(e) => handleInputChange('name', e.detail.value)}
             />
           </View>
 

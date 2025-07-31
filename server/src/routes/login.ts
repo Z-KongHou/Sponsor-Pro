@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import { Context } from 'koa';
 import { PrismaClient } from '@prisma/client';
 import { generateToken } from '../utils/jwt';
+import { teacher,clubmember,enterprise } from './util';
 
 interface ExtendedContext extends Context {
     prisma: PrismaClient;
@@ -67,69 +68,86 @@ const login = async (ctx: ExtendedContext) => {
 
 const register = async (ctx: ExtendedContext) => {
     try {
-        const { name, email, password } = ctx.request.body as { 
-            name: string; 
-            email: string; 
-            password: string; 
-        };
-        if (!name || !email || !password) {
+        const userData = ctx.request.body as (teacher | clubmember | enterprise);
+        
+        if (!userData.open_id) {
             ctx.status = 400;
             ctx.body = {
                 code: 400,
                 data: null,
-                message: 'Name, email and password are required',
-            };
-            return;
-        }
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            ctx.status = 400;
-            ctx.body = {
-                code: 400,
-                data: null,
-                message: 'Invalid email format',
+                message: '需要先登录微信',
             };
             return;
         }
 
         const existingUser = await ctx.prisma.user.findUnique({
-            where: { email },
+            where: { open_id: userData.open_id }
         });
 
         if (existingUser) {
-            ctx.status = 400;
+            ctx.status = 409;
             ctx.body = {
-                code: 400,
+                code: 409,
                 data: null,
-                message: 'Email already exists',
+                message: '用户已存在'
             };
             return;
         }
 
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-        const newUser = await ctx.prisma.user.create({
+        const user = await ctx.prisma.user.create({
             data: {
-                name,
-                email,
-                password: hashedPassword,
-            },
+                open_id: userData.open_id,
+                name: userData.name,
+                email: userData.email,
+                phone: userData.phone,
+                role: userData.role
+            }
         });
 
-        ctx.status = 201;
+        if (userData.role === 'teacher') {
+            const teacherData = userData as teacher;
+            await ctx.prisma.teacher.create({
+                data: {
+                    userId: user.id,
+                    subject: teacherData.subject,
+                    department: teacherData.department,
+                    school: teacherData.school
+                }
+            });
+        } else if (userData.role === 'club') {
+            const clubData = userData as clubmember;
+            await ctx.prisma.clubMember.create({
+                data: {
+                    userId: user.id,
+                    clubName: clubData.clubName,
+                    school: clubData.school,
+                    description: clubData.description,
+                    category: clubData.category
+                }
+            });
+        } else if(userData.role === 'enterprise') {
+            const enterpriseData = userData as enterprise;
+            await ctx.prisma.companyMember.create({
+                data: {
+                    userId: user.id,
+                    companyName: enterpriseData.companyName,
+                    industry: enterpriseData.industry,
+                    description: enterpriseData.description
+                }
+            });
+        }
         ctx.body = {
-            code: 201,
-            data: { id: newUser.id, email: newUser.email, name: newUser.name },
-            message: 'Registration successful',
-        };
-    } catch (error) {
+            code: 200,
+            message: 'success'
+        }
+    }
+    catch (error) {
         console.error('Registration error:', error);
         ctx.status = 500;
         ctx.body = {
             code: 500,
             data: null,
-            message: 'Internal server error',
+            message: '异常错误',
         };
     }
 }
