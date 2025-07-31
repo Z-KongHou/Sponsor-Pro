@@ -1,11 +1,11 @@
 import { View, Text, Input, Button, Textarea } from '@tarojs/components'
 import Taro,{ useLoad } from '@tarojs/taro'
 import { useState,useEffect } from 'react'
+import { register } from '../../router/api'
 
 export default function EnterpriseRegister() {
   const [formData, setFormData] = useState({
     companyName: '',
-    open_id: '',
     name: '',
     phone: '',
     email: '',
@@ -13,13 +13,6 @@ export default function EnterpriseRegister() {
     description: '',
     role: "enterprise"
   })
-
-  useEffect(() => {
-    setFormData(prev => ({
-      ...prev,
-      open_id: Taro.getStorageSync('open_id') || ''
-    }));
-  }, []);
 
   useLoad(() => {
     console.log('企业注册页面加载')
@@ -32,12 +25,22 @@ export default function EnterpriseRegister() {
     }))
   }
 
-  const handleSubmit = () => {
-    console.log('提交企业注册信息:', formData)
-    // 这里可以添加表单验证和提交逻辑
+  const handleSubmit = async () => {
+    const isFormValid = Object.values(formData).every(val => {
+      return val != null && val.toString().trim() !== "";
+    });
+    if (!isFormValid) {
+      Taro.showToast({
+        title: '请填写所有必填信息',
+        icon: 'error'
+      });
+      return;
+    }
+    const res = await register(formData)
+    console.log(res)
     Taro.showToast({
-      title: '注册信息已提交',
-      icon: 'success'
+      title: res.data.message,
+      icon: res.code==201 || res.code==200 ? 'success':'error'
     })
   }
 

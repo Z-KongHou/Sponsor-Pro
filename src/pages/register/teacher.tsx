@@ -6,7 +6,6 @@ import { register } from '../../router/api'
 export default function TeacherRegister() {
   const [formData, setFormData] = useState({
     name: '',
-    open_id: '',
     phone: '',
     email: '',
     school: '',
@@ -14,13 +13,6 @@ export default function TeacherRegister() {
     subject: '',
     role: "teacher"
   })
-
-  useEffect(() => {
-    setFormData(prev => ({
-      ...prev,
-      open_id: Taro.getStorageSync('open_id') || ''
-    }));
-  }, []);
 
   useLoad(() => {
     console.log('老师注册页面加载')
@@ -47,8 +39,8 @@ export default function TeacherRegister() {
     const res = await register(formData)
     console.log(res)
     Taro.showToast({
-      title: res.data.data.message,
-      icon: res.data.code==201 || res.data.code==200 ? 'success':'error'
+      title: res.data.message,
+      icon: res.code==201 || res.code==200 ? 'success':'error'
     })
   }
 

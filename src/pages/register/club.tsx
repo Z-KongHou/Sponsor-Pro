@@ -5,7 +5,6 @@ import { register } from '../../router/api'
 
 export default function ClubRegister() {
   const [formData, setFormData] = useState({
-    open_id: '',
     clubName: '',
     name: '',
     phone: '',
@@ -19,14 +18,7 @@ export default function ClubRegister() {
   useLoad(() => {
     console.log('社团注册页面加载')
   })
-
-  useEffect(() => {
-    setFormData(prev => ({
-      ...prev,
-      open_id: Taro.getStorageSync('open_id') || ''
-    }));
-  }, []);
-
+  
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
@@ -34,12 +26,22 @@ export default function ClubRegister() {
     }))
   }
 
-  const handleSubmit = () => {
-    console.log('提交社团注册信息:', formData)
-    register(formData)
+  const handleSubmit = async () => {
+    const isFormValid = Object.values(formData).every(val => {
+      return val != null && val.toString().trim() !== "";
+    });
+    if (!isFormValid) {
+      Taro.showToast({
+        title: '请填写所有必填信息',
+        icon: 'error'
+      });
+      return;
+    }
+    const res = await register(formData)
+    console.log(res)
     Taro.showToast({
-      title: '注册信息已提交',
-      icon: 'success'
+      title: res.data.message,
+      icon: res.code==201 || res.code==200 ? 'success':'error'
     })
   }
 

@@ -1,11 +1,11 @@
 import jwt, { SignOptions } from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'misaki_secret_key';
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1h';
+const JWT_SECRET = 'misaki_secret_key';
+const JWT_EXPIRES_IN = '1h';
 
 export interface JwtPayload {
-    id: number;
-    email: string;
+    openid: string;
+    session_key: string;
 }
 
 export const generateToken = (payload: JwtPayload): string => {

@@ -1,5 +1,4 @@
 interface User {
-    open_id:string,
     name:string,
     email:string,
     phone:string,
@@ -21,4 +20,9 @@ interface enterprise extends User{
     industry:string,
     description:string,
 }
-export {teacher,clubmember,enterprise}
+
+interface open_id{
+    code:string,
+    appcode:string,
+}
+export {teacher,clubmember,enterprise,open_id}

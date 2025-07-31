@@ -1,87 +1,80 @@
 import bcrypt from 'bcrypt';
 import { Context } from 'koa';
 import { PrismaClient } from '@prisma/client';
-import { generateToken } from '../utils/jwt';
-import { teacher,clubmember,enterprise } from './util';
+import { generateToken,verifyToken } from '../utils/jwt';
+import { teacher,clubmember,enterprise,open_id } from './util';
+import axios from 'axios';
 
 interface ExtendedContext extends Context {
     prisma: PrismaClient;
 }
 
+const appsecret="ebfc0bc082398a087deafe171f87690f";
+
 const login = async (ctx: ExtendedContext) => {
     try {
-        const { email, password } = ctx.request.body as { email: string; password: string };
-        
-        if (!email || !password) {
+        const data = ctx.request.body as open_id;
+        if (!data.code || !data.appcode) {
             ctx.status = 400;
             ctx.body = {
                 code: 400,
-                data: null,
-                message: 'Email and password are required',
+                message: 'miss code',
             };
             return;
         }
-
-        const user = await ctx.prisma.user.findUnique({
-            where: { email },
-        });
-
-        if (!user) {
-            ctx.status = 401;
+        const url = `https://api.weixin.qq.com/sns/jscode2session?appid=${data.appcode}&secret=${appsecret}&js_code=${data.code}&grant_type=authorization_code`
+        const response = await axios.get(url);
+        const { openid, session_key } = response.data;
+        console.log('openid:', openid); // 用户唯一标识
+        console.log('session_key:', session_key); // 用于解密敏感数据
+        if (!openid || !session_key) {
+            ctx.status = 400;
             ctx.body = {
-                code: 401,
-                data: null,
-                message: 'Unauthorized: Invalid email or password',
+                code: 400,
+                message:'登录失败',
             };
             return;
         }
+        const token = generateToken({ openid, session_key });
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-            ctx.status = 401;
-            ctx.body = {
-                code: 401,
-                data: null,
-                message: 'Unauthorized: Invalid email or password',
-            };
-            return;
-        }
-
-        const token = generateToken({ id: user.id, email: user.email });
-
-        ctx.status = 200;
         ctx.body = {
             code: 200,
-            data: { token, user: { id: user.id, email: user.email, name: user.name } },
-            message: 'Login successful',
-        };
-    } catch (error) {
-        console.error('Login error:', error);
-        ctx.status = 500;
-        ctx.body = {
-            code: 500,
-            data: null,
-            message: 'Internal server error',
-        };
+            token: token,
+            message: '登录成功',
+        }
+        const user = await ctx.prisma.user.findUnique({
+            where: { open_id: openid }
+        });
+        if (!user) {
+            ctx.body={
+                code: 206,
+                token: token,
+                message: '用户不存在',
+            }
+        }
+    }catch (error) {
+        console.error('微信接口调用失败:', error.response.data);
+        throw new Error('登录失败');
     }
 }
 
 const register = async (ctx: ExtendedContext) => {
     try {
         const userData = ctx.request.body as (teacher | clubmember | enterprise);
-        
-        if (!userData.open_id) {
-            ctx.status = 400;
+        const token = ctx.headers.authorization.split(' ')[1];
+        if (!token) {
+            ctx.status = 401;
             ctx.body = {
-                code: 400,
+                code: 401,
                 data: null,
                 message: '需要先登录微信',
             };
             return;
         }
+        const openid = verifyToken(token).openid;
 
         const existingUser = await ctx.prisma.user.findUnique({
-            where: { open_id: userData.open_id }
+            where: { open_id: openid }
         });
 
         if (existingUser) {
@@ -96,7 +89,7 @@ const register = async (ctx: ExtendedContext) => {
 
         const user = await ctx.prisma.user.create({
             data: {
-                open_id: userData.open_id,
+                open_id: openid,
                 name: userData.name,
                 email: userData.email,
                 phone: userData.phone,

@@ -17,12 +17,6 @@ let longtoken = Taro.getStorageSync('longtoken')
 // 获取当前缓存的值（初始值）
 export const getLongToken = (): string | null => longtoken
 
-// 更新 token 的函数
-export const updateLongToken = (token: string) => {
-  longtoken = token
-  Taro.setStorageSync('longtoken', token)
-}
-
 // 创建请求配置
 const createRequestConfig = (baseURL: string) => ({
   url:baseURL,
@@ -116,7 +110,7 @@ export const getWeChatInfo = async (code:string ,appcode:string) => {
       appcode:appcode
     }
   })
-  return res
+  return res.data
 }
 
 export const register = async (data:object) => {
@@ -125,5 +119,5 @@ export const register = async (data:object) => {
     method :"POST",
     data: data
   })
-  return res
+  return res.data
 }
