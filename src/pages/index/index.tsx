@@ -1,4 +1,4 @@
-import { View, Text } from "@tarojs/components";
+import { View, Text, Button } from "@tarojs/components";
 import Taro, { useLoad } from "@tarojs/taro";
 import { getWeChatInfo } from "../../router/api"
 
@@ -44,9 +44,9 @@ export default function Index() {
       <Text onClick={() => Taro.navigateTo({ url: "/pages/register/index" })}>
         Hello world!
       </Text>
-      <Text onClick={() => wxLogin()}>
+      <Button open-type='getPhoneNumber' onClick={()=>wxLogin()}>
         登录
-      </Text>
+      </Button>
     </View>
   );
 }
