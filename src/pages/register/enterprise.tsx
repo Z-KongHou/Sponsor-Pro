@@ -1,16 +1,17 @@
 import { View, Text, Input, Button, Textarea } from '@tarojs/components'
-import { useLoad } from '@tarojs/taro'
-import { useState } from 'react'
-import Taro from '@tarojs/taro'
+import Taro,{ useLoad } from '@tarojs/taro'
+import { useState,useEffect } from 'react'
+import { register } from '../../router/api'
 
 export default function EnterpriseRegister() {
   const [formData, setFormData] = useState({
     companyName: '',
-    contactPerson: '',
+    name: '',
     phone: '',
     email: '',
     industry: '',
-    description: ''
+    description: '',
+    role: "enterprise"
   })
 
   useLoad(() => {
@@ -24,12 +25,22 @@ export default function EnterpriseRegister() {
     }))
   }
 
-  const handleSubmit = () => {
-    console.log('提交企业注册信息:', formData)
-    // 这里可以添加表单验证和提交逻辑
+  const handleSubmit = async () => {
+    const isFormValid = Object.values(formData).every(val => {
+      return val != null && val.toString().trim() !== "";
+    });
+    if (!isFormValid) {
+      Taro.showToast({
+        title: '请填写所有必填信息',
+        icon: 'error'
+      });
+      return;
+    }
+    const res = await register(formData)
+    console.log(res)
     Taro.showToast({
-      title: '注册信息已提交',
-      icon: 'success'
+      title: res.data.message,
+      icon: res.code==201 || res.code==200 ? 'success':'error'
     })
   }
 
@@ -66,8 +77,8 @@ export default function EnterpriseRegister() {
             <Input
               className='w-full px-2 py-3 border border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none text-base'
               placeholder='请输入联系人姓名'
-              value={formData.contactPerson}
-              onInput={(e) => handleInputChange('contactPerson', e.detail.value)}
+              value={formData.name}
+              onInput={(e) => handleInputChange('name', e.detail.value)}
             />
           </View>
 

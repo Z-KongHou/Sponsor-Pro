@@ -1,135 +1,146 @@
 import bcrypt from 'bcrypt';
 import { Context } from 'koa';
 import { PrismaClient } from '@prisma/client';
-import { generateToken } from '../utils/jwt';
+import { generateToken,verifyToken } from '../utils/jwt';
+import { teacher,clubmember,enterprise,open_id } from './util';
+import axios from 'axios';
 
 interface ExtendedContext extends Context {
     prisma: PrismaClient;
 }
 
+const appsecret="ebfc0bc082398a087deafe171f87690f";
+
 const login = async (ctx: ExtendedContext) => {
     try {
-        const { email, password } = ctx.request.body as { email: string; password: string };
-        
-        if (!email || !password) {
+        const data = ctx.request.body as open_id;
+        if (!data.code || !data.appcode) {
             ctx.status = 400;
             ctx.body = {
                 code: 400,
-                data: null,
-                message: 'Email and password are required',
+                message: 'miss code',
             };
             return;
         }
-
-        const user = await ctx.prisma.user.findUnique({
-            where: { email },
-        });
-
-        if (!user) {
-            ctx.status = 401;
+        const url = `https://api.weixin.qq.com/sns/jscode2session?appid=${data.appcode}&secret=${appsecret}&js_code=${data.code}&grant_type=authorization_code`
+        const response = await axios.get(url);
+        const { openid, session_key } = response.data;
+        console.log('openid:', openid); // 用户唯一标识
+        console.log('session_key:', session_key); // 用于解密敏感数据
+        if (!openid || !session_key) {
+            ctx.status = 400;
             ctx.body = {
-                code: 401,
-                data: null,
-                message: 'Unauthorized: Invalid email or password',
+                code: 400,
+                message:'登录失败',
             };
             return;
         }
+        const token = generateToken({ openid, session_key });
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-            ctx.status = 401;
-            ctx.body = {
-                code: 401,
-                data: null,
-                message: 'Unauthorized: Invalid email or password',
-            };
-            return;
-        }
-
-        const token = generateToken({ id: user.id, email: user.email });
-
-        ctx.status = 200;
         ctx.body = {
             code: 200,
-            data: { token, user: { id: user.id, email: user.email, name: user.name } },
-            message: 'Login successful',
-        };
-    } catch (error) {
-        console.error('Login error:', error);
-        ctx.status = 500;
-        ctx.body = {
-            code: 500,
-            data: null,
-            message: 'Internal server error',
-        };
+            token: token,
+            message: '登录成功',
+        }
+        const user = await ctx.prisma.user.findUnique({
+            where: { open_id: openid }
+        });
+        if (!user) {
+            ctx.body={
+                code: 206,
+                token: token,
+                message: '用户不存在',
+            }
+        }
+    }catch (error) {
+        console.error('微信接口调用失败:', error.response.data);
+        throw new Error('登录失败');
     }
 }
 
 const register = async (ctx: ExtendedContext) => {
     try {
-        const { name, email, password } = ctx.request.body as { 
-            name: string; 
-            email: string; 
-            password: string; 
-        };
-        if (!name || !email || !password) {
-            ctx.status = 400;
+        const userData = ctx.request.body as (teacher | clubmember | enterprise);
+        const token = ctx.headers.authorization.split(' ')[1];
+        if (!token) {
+            ctx.status = 401;
             ctx.body = {
-                code: 400,
+                code: 401,
                 data: null,
-                message: 'Name, email and password are required',
+                message: '需要先登录微信',
             };
             return;
         }
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            ctx.status = 400;
-            ctx.body = {
-                code: 400,
-                data: null,
-                message: 'Invalid email format',
-            };
-            return;
-        }
+        const openid = verifyToken(token).openid;
 
         const existingUser = await ctx.prisma.user.findUnique({
-            where: { email },
+            where: { open_id: openid }
         });
 
         if (existingUser) {
-            ctx.status = 400;
+            ctx.status = 409;
             ctx.body = {
-                code: 400,
+                code: 409,
                 data: null,
-                message: 'Email already exists',
+                message: '用户已存在'
             };
             return;
         }
 
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-        const newUser = await ctx.prisma.user.create({
+        const user = await ctx.prisma.user.create({
             data: {
-                name,
-                email,
-                password: hashedPassword,
-            },
+                open_id: openid,
+                name: userData.name,
+                email: userData.email,
+                phone: userData.phone,
+                role: userData.role
+            }
         });
 
-        ctx.status = 201;
+        if (userData.role === 'teacher') {
+            const teacherData = userData as teacher;
+            await ctx.prisma.teacher.create({
+                data: {
+                    userId: user.id,
+                    subject: teacherData.subject,
+                    department: teacherData.department,
+                    school: teacherData.school
+                }
+            });
+        } else if (userData.role === 'club') {
+            const clubData = userData as clubmember;
+            await ctx.prisma.clubMember.create({
+                data: {
+                    userId: user.id,
+                    clubName: clubData.clubName,
+                    school: clubData.school,
+                    description: clubData.description,
+                    category: clubData.category
+                }
+            });
+        } else if(userData.role === 'enterprise') {
+            const enterpriseData = userData as enterprise;
+            await ctx.prisma.companyMember.create({
+                data: {
+                    userId: user.id,
+                    companyName: enterpriseData.companyName,
+                    industry: enterpriseData.industry,
+                    description: enterpriseData.description
+                }
+            });
+        }
         ctx.body = {
-            code: 201,
-            data: { id: newUser.id, email: newUser.email, name: newUser.name },
-            message: 'Registration successful',
-        };
-    } catch (error) {
+            code: 200,
+            message: 'success'
+        }
+    }
+    catch (error) {
         console.error('Registration error:', error);
         ctx.status = 500;
         ctx.body = {
             code: 500,
             data: null,
-            message: 'Internal server error',
+            message: '异常错误',
         };
     }
 }
