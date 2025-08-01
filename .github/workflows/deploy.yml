@@ -26,7 +26,6 @@ jobs:
             git pull 
             yarn install
             npx prisma generate
-            npx prisma db push
             npx prisma db pull
             pm2 restart koa-backend || pm2 start src/index.ts --name koa-backend --interpreter ./node_modules/.bin/ts-node
           EOF
