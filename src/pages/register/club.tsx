@@ -1,12 +1,11 @@
 import { View, Text, Input, Button, Textarea } from '@tarojs/components';
-import { useLoad } from '@tarojs/taro';
+import Taro, { useLoad } from '@tarojs/taro';
 import { useState } from 'react';
-import Taro from '@tarojs/taro';
 
 export default function ClubRegister() {
   const [formData, setFormData] = useState({
     clubName: '',
-    leaderName: '',
+    name: '',
     phone: '',
     email: '',
     school: '',
@@ -74,8 +73,8 @@ export default function ClubRegister() {
             <Input
               className='w-full px-2 py-3 border border-gray-200 rounded-xl focus:border-red-500 focus:outline-none text-base'
               placeholder='请输入负责人姓名'
-              value={formData.leaderName}
-              onInput={(e) => handleInputChange('leaderName', e.detail.value)}
+              value={formData.name}
+              onInput={(e) => handleInputChange('name', e.detail.value)}
             />
           </View>
 

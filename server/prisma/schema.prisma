@@ -10,36 +10,46 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url = env("DATABASE_URL")
 }
 
-model School {
-  id       Int       @id @default(autoincrement())
-  name     String
-  address  String?
-  teachers Teacher[]
-  clubs    Club[]
+
+model User {
+  id      Int      @id @default(autoincrement())
+  open_id String?  @unique
+  name    String
+  email   String   @unique
+  phone   String   @unique
+  role    String
+  teacher Teacher?
+  clubMember ClubMember?
+  companyMember CompanyMember?
 }
 
 model Teacher {
-  id        Int      @id @default(autoincrement())
-  name      String
-  subject   String?
-  school    School   @relation(fields: [schoolId], references: [id])
-  schoolId  Int
+  id         Int     @id @default(autoincrement())
+  user       User    @relation(fields: [userId], references: [id])
+  userId     Int     @unique // 一对一关系
+  subject    String
+  department String
+  school     String
 }
 
-model Club {
-  id        Int      @id @default(autoincrement())
-  name      String
-  school    School   @relation(fields: [schoolId], references: [id])
-  schoolId  Int
-  company   Company? @relation(fields: [companyId], references: [id])
-  companyId Int?
+model ClubMember {
+  id          Int     @id @default(autoincrement())
+  user        User    @relation(fields: [userId], references: [id])
+  userId      Int     @unique
+  category    String
+  clubName    String
+  school      String
+  description String
 }
 
-model Company {
-  id    Int    @id @default(autoincrement())
-  name  String
-  clubs Club[]
+model CompanyMember {
+  id           Int     @id @default(autoincrement())
+  user         User    @relation(fields: [userId], references: [id])
+  userId       Int     @unique
+  industry     String
+  companyName  String
+  description  String
 }

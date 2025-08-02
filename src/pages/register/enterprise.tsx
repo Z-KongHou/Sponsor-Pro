@@ -1,12 +1,11 @@
 import { View, Text, Input, Button, Textarea } from '@tarojs/components';
-import { useLoad } from '@tarojs/taro';
+import Taro, { useLoad } from '@tarojs/taro';
 import { useState } from 'react';
-import Taro from '@tarojs/taro';
 
 export default function EnterpriseRegister() {
   const [formData, setFormData] = useState({
     companyName: '',
-    contactPerson: '',
+    name: '',
     phone: '',
     email: '',
     industry: '',
