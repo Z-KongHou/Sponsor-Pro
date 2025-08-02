@@ -1,0 +1,238 @@
+@import '~taro-ui/dist/style/components/pagination.scss';
+@import '~taro-ui/dist/style/components/button.scss';
+@import '~taro-ui/dist/style/components/icon.scss';
+
+$primary: #1890ff;
+$primary-lite: #e6f4ff;
+$warning: #ff8c00;
+$text-main: #222;
+$text-sub: #666;
+$border: #eaeaea;
+$bg-page: #f5f7fa;
+
+.activity-page {
+  min-height: 100vh;
+  background: $bg-page;
+
+  .top-bar {
+    background: #fff;
+    padding: 36rpx 32rpx 28rpx;
+    display: flex;
+    box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+
+    .avatar {
+      width: 112rpx;
+      height: 112rpx;
+      border-radius: 50%;
+    }
+    .profile-info {
+      margin-left: 32rpx;
+      flex: 1;
+    }
+    .name {
+      font-size: 32rpx;
+      font-weight: 600;
+      color: $text-main;
+    }
+
+    .top-nav {
+      margin-top: 24rpx;
+      white-space: nowrap;
+      overflow: auto;
+    }
+    .nav-group {
+      display: inline-flex;
+      align-items: center;
+      margin-right: 48rpx;
+      .group-title {
+        font-size: 24rpx;
+        color: $text-sub;
+        margin-right: 12rpx;
+      }
+      .nav-item {
+        font-size: 28rpx;
+        padding: 4rpx 18rpx;
+        border-radius: 24rpx;
+        color: $text-sub;
+        &.active {
+          background: $primary;
+          color: #fff;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+
+  .content {
+    margin: 24rpx;
+    padding: 36rpx;
+    background: #fff;
+    border-radius: 20rpx;
+    box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    min-height: 560rpx;
+
+    .content-head {
+      .page-title {
+        font-size: 34rpx;
+        font-weight: 700;
+      }
+      .action-group {
+        margin-top: 20rpx;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        .deposit-link {
+          color: $primary;
+          font-size: 26rpx;
+        }
+        .publish-btn {
+          background: $primary;
+          padding: 0 44rpx;
+          height: 60rpx;
+          line-height: 60rpx;
+          font-size: 26rpx;
+          border-radius: 30rpx;
+        }
+      }
+      .sub-links {
+        margin-top: 10rpx;
+        font-size: 24rpx;
+        .orange-link {
+          color: $warning;
+        }
+        .split {
+          margin: 0 10rpx;
+          color: #ccc;
+        }
+      }
+    }
+
+    .tabs {
+      margin-top: 36rpx;
+      display: flex;
+      align-items: center;
+      font-size: 28rpx;
+      .tab {
+        padding: 8rpx 16rpx;
+        &.active {
+          color: $primary;
+          font-weight: 600;
+          border-bottom: 6rpx solid $primary;
+        }
+      }
+      .vertical-split {
+        margin: 0 20rpx;
+        color: #ccc;
+      }
+    }
+
+    .table-wrapper {
+      margin-top: 28rpx;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .table {
+      width: 100%;
+      min-height: 460rpx;
+      font-size: 26rpx;
+      .table-head,
+      .table-row {
+        width: 100%;
+        display: flex;
+        align-items: stretch;
+      }
+      .table-head {
+        background: $primary-lite;
+        font-weight: 600;
+        > .th {
+          padding: 20rpx 0;
+        }
+      }
+      .table-row {
+        border-bottom: 1rpx solid $border;
+        > .td {
+          padding: 26rpx 0;
+        }
+        &:nth-child(even) {
+          background: #fafafa;
+        }
+      }
+      .flex4 {
+        flex: 4;
+      }
+      .flex2 {
+        flex: 2;
+      }
+      .center {
+        text-align: center;
+        justify-content: center;
+      }
+      .ellipsis {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .th,
+      .td {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+      .link {
+        color: $primary;
+      }
+      .split {
+        margin: 0 8rpx;
+        color: #ccc;
+      }
+      .table-empty {
+        padding: 160rpx 0;
+        text-align: center;
+        color: #999;
+        font-size: 28rpx;
+      }
+    }
+
+    .pagination-inside {
+      margin-top: 32rpx;
+      display: flex;
+      justify-content: center;
+    }
+
+    .at-pagination {
+      font-size: 26rpx;
+      justify-content: center !important;
+      padding: 0;
+      .at-pagination__btn-prev,
+      .at-pagination__btn-next {
+        width: 64rpx;
+        height: 64rpx;
+        border-radius: 50%;
+        background: $primary;
+        color: #fff;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.12);
+        &[disabled] {
+          background: #ccc;
+        }
+      }
+      .at-pagination__number {
+        margin: 0 36rpx;
+        min-width: 90rpx;
+        text-align: center;
+        font-weight: 600;
+        color: $text-sub;
+      }
+      .at-pagination__number-current {
+        color: $primary;
+      }
+    }
+  }
+}
