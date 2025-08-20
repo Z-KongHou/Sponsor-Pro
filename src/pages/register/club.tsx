@@ -1,7 +1,6 @@
-import { View, Text, Input, Button,Textarea } from '@tarojs/components'
-import Taro,{ useLoad } from '@tarojs/taro'
-import { useState,useEffect } from 'react'
-import { register } from '../../router/api'
+import { View, Text, Input, Button, Textarea } from '@tarojs/components';
+import Taro, { useLoad } from '@tarojs/taro';
+import { useState } from 'react';
 
 export default function ClubRegister() {
   const [formData, setFormData] = useState({
@@ -11,60 +10,54 @@ export default function ClubRegister() {
     email: '',
     school: '',
     category: '',
+    memberCount: '',
     description: '',
-    role: "club"
-  })
+  });
 
   useLoad(() => {
-    console.log('社团注册页面加载')
-  })
-  
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }))
-  }
+    console.log('社团注册页面加载');
+  });
 
-  const handleSubmit = async () => {
-    const isFormValid = Object.values(formData).every(val => {
-      return val != null && val.toString().trim() !== "";
-    });
-    if (!isFormValid) {
-      Taro.showToast({
-        title: '请填写所有必填信息',
-        icon: 'error'
-      });
-      return;
-    }
-    const res = await register(formData)
-    console.log(res)
+  const handleInputChange = (field: string, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleSubmit = () => {
+    console.log('提交社团注册信息:', formData);
+    // 这里可以添加表单验证和提交逻辑
     Taro.showToast({
-      title: res.data.message,
-      icon: res.code==201 || res.code==200 ? 'success':'error'
-    })
-  }
+      title: '注册信息已提交',
+      icon: 'success',
+    });
+  };
 
   const handleBack = () => {
-    Taro.navigateBack()
-  }
+    Taro.navigateBack();
+  };
 
   return (
     <View className='min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50'>
       {/* 顶部装饰 */}
       <View className='absolute top-0 left-0 right-0 h-32 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-b-3xl'></View>
-      
+
       <View className='relative p-6 pt-8'>
         {/* 头部 */}
         <View className='text-center mb-8 mt-3'>
-          <Text className='text-2xl font-bold text-white mb-2'>社团身份注册</Text>
+          <Text className='text-2xl font-bold text-white mb-2'>
+            社团身份注册
+          </Text>
           <Text className='text-blue-100'>请填写社团信息完成注册</Text>
         </View>
 
         {/* 表单 */}
         <View className='bg-white rounded-2xl p-6 shadow-lg space-y-2'>
           <View>
-            <Text className='text-base font-medium text-gray-700 mb-2'>社团名称 *</Text>
+            <Text className='text-base font-medium text-gray-700 mb-2'>
+              社团名称 *
+            </Text>
             <Input
               className='w-full px-2 py-3 border border-gray-200 rounded-xl focus:border-red-500 focus:outline-none text-base'
               placeholder='请输入社团名称'
@@ -74,7 +67,9 @@ export default function ClubRegister() {
           </View>
 
           <View>
-            <Text className='text-base font-medium text-gray-700 mb-2'>负责人姓名 *</Text>
+            <Text className='text-base font-medium text-gray-700 mb-2'>
+              负责人姓名 *
+            </Text>
             <Input
               className='w-full px-2 py-3 border border-gray-200 rounded-xl focus:border-red-500 focus:outline-none text-base'
               placeholder='请输入负责人姓名'
@@ -84,7 +79,9 @@ export default function ClubRegister() {
           </View>
 
           <View>
-            <Text className='text-base font-medium text-gray-700 mb-2'>联系电话 *</Text>
+            <Text className='text-base font-medium text-gray-700 mb-2'>
+              联系电话 *
+            </Text>
             <Input
               className='w-full px-2 py-3 border border-gray-200 rounded-xl focus:border-red-500 focus:outline-none text-base'
               placeholder='请输入联系电话'
@@ -95,7 +92,9 @@ export default function ClubRegister() {
           </View>
 
           <View>
-            <Text className='text-base font-medium text-gray-700 mb-2'>邮箱地址</Text>
+            <Text className='text-base font-medium text-gray-700 mb-2'>
+              邮箱地址
+            </Text>
             <Input
               className='w-full px-2 py-3 border border-gray-200 rounded-xl focus:border-red-500 focus:outline-none text-base'
               placeholder='请输入邮箱地址'
@@ -106,7 +105,9 @@ export default function ClubRegister() {
           </View>
 
           <View>
-            <Text className='text-base font-medium text-gray-700 mb-2'>所属学校 *</Text>
+            <Text className='text-base font-medium text-gray-700 mb-2'>
+              所属学校 *
+            </Text>
             <Input
               className='w-full px-2 py-3 border border-gray-200 rounded-xl focus:border-red-500 focus:outline-none text-base'
               placeholder='请输入所属学校'
@@ -116,7 +117,9 @@ export default function ClubRegister() {
           </View>
 
           <View>
-            <Text className='text-base font-medium text-gray-700 mb-2'>毕业年份</Text>
+            <Text className='text-base font-medium text-gray-700 mb-2'>
+              毕业年份
+            </Text>
             <Input
               className='w-full px-2 py-3 border border-gray-200 rounded-xl focus:border-red-500 focus:outline-none text-base'
               placeholder='如：请输入毕业年份'
@@ -126,7 +129,9 @@ export default function ClubRegister() {
           </View>
 
           <View>
-            <Text className='text-base font-large text-gray-700 mb-2'>社团简介</Text>
+            <Text className='text-base font-large text-gray-700 mb-2'>
+              社团简介
+            </Text>
             <Textarea
               className='w-full px-2 py-3 border h-20 border-gray-200 rounded-xl focus:border-red-500 focus:outline-none break-all text-base'
               placeholder='请简要描述社团活动内容'
@@ -161,5 +166,5 @@ export default function ClubRegister() {
         </View>
       </View>
     </View>
-  )
-} 
+  );
+}
