@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
   provider = "prisma-client-js"
@@ -10,7 +5,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url = env("DATABASE_URL")
+  url = "postgresql://konghou:23050929@115.159.59.78:5432/testdb?schema=public"
 }
 
 
@@ -24,6 +19,8 @@ model User {
   teacher Teacher?
   clubMember ClubMember?
   companyMember CompanyMember?
+  initiatedSponsorships Sponsorship[]  @relation("UserInitiatedSponsorships")
+  receivedSponsorships  Sponsorship[]  @relation("UserReceivedSponsorships")
 }
 
 model Teacher {
@@ -52,4 +49,37 @@ model CompanyMember {
   industry     String
   companyName  String
   description  String
+}
+
+model Sponsorship {
+  id          Int                 @id @default(autoincrement())
+  title       String              // 赞助标题
+  description String?             // 赞助说明
+  categories  String              // 活动分类
+  location    String              // 所属省市
+  amount      Float?              // 金额或估值（可选）
+  type        SponsorshipType     // 发起类型（企业或学校发起）
+  status      SponsorshipStatus   @default(PENDING) // 状态
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  @@index([title])
+
+  // 关联 User
+  initiatorId Int                 // 发起方
+  initiator   User                @relation("UserInitiatedSponsorships", fields: [initiatorId], references: [id])
+
+  receiverId  Int                 // 接收方
+  receiver    User                @relation("UserReceivedSponsorships", fields: [receiverId], references: [id])
+}
+
+enum SponsorshipType {
+  SCHOOL_INITIATED
+  COMPANY_INITIATED
+}
+
+enum SponsorshipStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  COMPLETED
 }

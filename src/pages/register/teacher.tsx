@@ -1,6 +1,6 @@
 import { View, Text, Input, Button } from '@tarojs/components'
 import Taro,{ useLoad } from '@tarojs/taro'
-import { useState,useEffect } from 'react'
+import { useState } from 'react'
 import { register } from '../../router/api'
 
 export default function TeacherRegister() {
