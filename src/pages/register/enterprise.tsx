@@ -71,9 +71,9 @@ export default function EnterpriseRegister() {
             <Input
               className='w-full px-2 py-3 border border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none text-base'
               placeholder='请输入联系人姓名'
-              value={formData.contactPerson}
+              value={formData.name}
               onInput={(e) =>
-                handleInputChange('contactPerson', e.detail.value)
+                handleInputChange('name', e.detail.value)
               }
             />
           </View>

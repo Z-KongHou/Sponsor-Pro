@@ -1,5 +1,5 @@
 import Router from '@koa/router';
-import { login, register } from './login';
+import { login, register } from '../service/auth/login';
 
 const router = new Router();
 

@@ -14,11 +14,11 @@ export default function TabBar({ current }: TabBarProps) {
 
     switch (page) {
       case 'home':
-        Taro.switchTab({ url: "/pages/index/index" });
+        Taro.redirectTo({ url: "/pages/index/index" });
         break;
       case 'activities':
         // 暂时显示提示，后续可以跳转到对应页面
-        Taro.showToast({ title: "功能开发中", icon: "none" });
+        Taro.redirectTo({ url: "/pages/sponsor/schoolSponsor" });
         break;
       case 'sponsors':
         // 暂时显示提示，后续可以跳转到对应页面
