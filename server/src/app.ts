@@ -1,33 +1,25 @@
-import Koa from "koa";
-import Router from "@koa/router";
-import cors from "@koa/cors";
-import logger from "koa-logger";
-import bodyParser from "koa-bodyparser";
-import routes from "./routes";
-import prisma from "./prisma";
-import { responseMiddleware } from "./middleWare/responseMiddleWare";
+// Require the framework and instantiate it
 
-const app = new Koa();
-const router = new Router();
+// ESM
+import Fastify from 'fastify';
+import prisma from './prisma';
 
-router.get("/", async (ctx) => {
-  ctx.body = "Hello World!";
+const fastify = Fastify({
+  logger: true,
 });
 
-// 应用中间件
-app.use(async (ctx, next) => {
-  ctx.prisma = prisma;
-  await next();
+fastify.decorate('prisma', prisma);
+
+// Declare a route
+fastify.get('/', function (request, reply) {
+  reply.send({ hello: 'world' });
 });
 
-app.use(logger());
-app.use(cors());
-app.use(responseMiddleware);
-app.use(bodyParser());
-app.use(routes.routes());
-app.use(router.routes());
-app.use(router.allowedMethods());
-
-app.listen(process.env.PORT || 6677, () => {
-  console.log(`Server running on : ${process.env.PORT || 6677}`);
+// Run the server!
+fastify.listen({ port: 3000 }, function (err, address) {
+  if (err) {
+    fastify.log.error(err);
+    process.exit(1);
+  }
+  // Server is now listening on ${address}
 });

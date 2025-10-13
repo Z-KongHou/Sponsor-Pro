@@ -1,10 +1,10 @@
-import Router from "@koa/router";
-import testFunction from "../controller/testController";
-import { SponsorList } from "../controller/sponsorController";
+// import Router from "@koa/router";
+// import testFunction from "../controller/testController";
+// import { SponsorList } from "../controller/sponsorController";
 
-const router = new Router();
+// const router = new Router();
 
-router.get("/test", testFunction);
-router.get("/sponsor", SponsorList);
+// router.get("/test", testFunction);
+// router.get("/sponsor", SponsorList);
 
-export default router;
+// export default router;
