@@ -1,12 +1,12 @@
-// import Router from "@koa/router";
-// import api from "./api";
-// import auth from "./auth";
-// import protectedRoutes from "./protected";
+import { FastifyInstance } from 'fastify';
 
-// const router = new Router();
+// 定义主路由函数，接收fastify实例
+const Routes = async (fastify: FastifyInstance) => {
+  // 注册API路由组，添加/api前缀
+  await fastify.register(import('./api'), { prefix: '/api' });
 
-// router.use("/api", api.routes(), api.allowedMethods());
-// router.use("/auth", auth.routes(), auth.allowedMethods());
-// router.use("/protected", protectedRoutes.routes(), protectedRoutes.allowedMethods());
+  // 注册认证路由组，添加/auth前缀
+  // await fastify.register(import('./auth'));
+};
 
-// export default router;
+export default Routes;

@@ -4,3 +4,4 @@ dist
 package.json.lock
 /generated/prisma
 /prisma
+/generated/prisma

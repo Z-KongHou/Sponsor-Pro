@@ -2,20 +2,30 @@
 
 // ESM
 import Fastify from 'fastify';
+import fastifyCors from '@fastify/cors';
 import prisma from './prisma';
+import Routes from './routes';
 
 const fastify = Fastify({
   logger: true,
 });
 
+fastify.register(fastifyCors, {
+  origin: true,
+});
+
 fastify.decorate('prisma', prisma);
 
 // Declare a route
-fastify.get('/', function (request, reply) {
-  reply.send({ hello: 'world' });
+fastify.get('/', async function (request, reply) {
+  const res = await prisma.user.findMany();
+  console.log(res);
+  reply.send({ hello: res });
 });
 
+fastify.register(Routes);
 // Run the server!
+
 fastify.listen({ port: 3000 }, function (err, address) {
   if (err) {
     fastify.log.error(err);
