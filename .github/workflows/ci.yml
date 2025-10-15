@@ -1,7 +1,9 @@
-name: Deploy Koa Server to Ubuntu
+name: CI
 
 on:
   push:
+    branches: [main]
+  pull_request:
     branches: [main]
 
 jobs:
@@ -23,7 +25,7 @@ jobs:
             set -e
             cd /var/www/Sponsor-Pro/server   # ← 替换成你的项目部署目录
             git reset --hard
-            git pull 
+            git pull
             yarn install
             npx prisma generate
             npx prisma db pull
