@@ -1,39 +1,84 @@
-const { PrismaClient } from 'prisma/client'
+import { FastifyPluginAsync } from 'fastify';
+import { Prisma, PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient()
-
-interface OperationType {
-  //To do
+declare module 'fastify' {
+  interface FastifyInstance {
+    prisma: PrismaClient;
+  }
 }
-export function publishedSponsor() {
-  return prisma.sponsorlist.findMany({
-  where: {
-    status: 'PUBLISHED'
-  }
-})}
 
-export funciton deleteSponsorRecordById (id: string){
-  return prisma.sponsorlist.delete(id,{
-  where: {
-    id: {id}
-  }
-})
+type SponsorStatus = 'APPROVED' | 'COMPLETED';
 
-export function updateSponsorRecondByBehavior(opeartion: string) {
-  const status = ''
-  if (opeartion === "") {
-    status = ''
-  } else {
-    status = ''
-  }
-  return prisma.sponsorlist.update(
-  {
-    where: {
-        someopeartion: opeartion
-      },
-    data: {
-        status: status
+const normalizeSponsorId = (rawId: string): string | number => {
+  const numericId = Number(rawId);
+  return Number.isNaN(numericId) ? rawId : numericId;
+};
+
+const statusFromOperation = (operation: boolean): SponsorStatus =>
+  operation ? 'COMPLETED' : 'APPROVED';
+
+const sponsorRoutes: FastifyPluginAsync = async (fastify) => {
+  fastify.get('/list', async () => {
+    return fastify.prisma.sponsorship.findMany({
+      where: { status: 'APPROVED' },
+    });
+  });
+
+  fastify.delete<{ Params: { id: string } }>('/:id', async (request, reply) => {
+    const sponsorId = normalizeSponsorId(request.params.id);
+
+    try {
+      const deletedRecord = await fastify.prisma.sponsorship.delete({
+        where: { id: sponsorId } as any,
+      });
+      return deletedRecord;
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2025'
+      ) {
+        reply.code(404);
+        return { message: 'Sponsor record not found' };
       }
-  }
-)
-}
+
+      throw error;
+    }
+  });
+
+  fastify.patch<{
+    Params: { id: string };
+    Body: { operation: boolean };
+  }>('/:id/status', async (request, reply) => {
+    const { id } = request.params;
+    const { operation } = request.body;
+
+    if (typeof operation !== 'boolean') {
+      reply.code(400);
+      return { message: 'operation must be a boolean value' };
+    }
+
+    const sponsorId = normalizeSponsorId(id);
+    const status = statusFromOperation(operation);
+
+    try {
+      const updatedRecord = await fastify.prisma.sponsorship.update({
+        where: { id: sponsorId } as any,
+        data: { status },
+      });
+
+      return updatedRecord;
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2025'
+      ) {
+        reply.code(404);
+        return { message: 'Sponsor record not found' };
+      }
+
+      throw error;
+    }
+  });
+};
+
+export default sponsorRoutes;
