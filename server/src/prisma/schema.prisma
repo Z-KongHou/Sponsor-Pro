@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ClubMember {
+  id          Int    @id @default(autoincrement())
+  userId      String @unique
+  category    String
+  clubName    String
+  school      String
+  description String
+  User        User   @relation(fields: [userId], references: [open_id])
+}
+
+model CompanyMember {
+  id          Int    @id @default(autoincrement())
+  userId      String @unique
+  industry    String
+  companyName String
+  description String
+  User        User   @relation(fields: [userId], references: [open_id])
+}
+
+model Sponsorship {
+  id                                 Int               @id @default(autoincrement())
+  title                              String
+  description                        String?
+  amount                             Float?
+  type                               SponsorshipType
+  status                             SponsorshipStatus @default(PENDING)
+  createdAt                          DateTime          @default(now())
+  updatedAt                          DateTime
+  initiatorId                        Int
+  receiverId                         Int
+  User_Sponsorship_initiatorIdToUser User              @relation("Sponsorship_initiatorIdToUser", fields: [initiatorId], references: [id])
+  User_Sponsorship_receiverIdToUser  User              @relation("Sponsorship_receiverIdToUser", fields: [receiverId], references: [id])
+}
+
+model Teacher {
+  id         Int    @id @default(autoincrement())
+  subject    String
+  department String
+  school     String
+  userId     String @unique
+  User       User   @relation(fields: [userId], references: [open_id])
+}
+
+model User {
+  id                                        Int            @id @default(autoincrement())
+  open_id                                   String         @unique
+  name                                      String?
+  email                                     String?        @unique
+  phone                                     String?        @unique
+  role                                      String
+  ClubMember                                ClubMember?
+  CompanyMember                             CompanyMember?
+  Sponsorship_Sponsorship_initiatorIdToUser Sponsorship[]  @relation("Sponsorship_initiatorIdToUser")
+  Sponsorship_Sponsorship_receiverIdToUser  Sponsorship[]  @relation("Sponsorship_receiverIdToUser")
+  Teacher                                   Teacher?
+}
+
+enum SponsorshipStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  COMPLETED
+}
+
+enum SponsorshipType {
+  SCHOOL_INITIATED
+  COMPANY_INITIATED
+}
