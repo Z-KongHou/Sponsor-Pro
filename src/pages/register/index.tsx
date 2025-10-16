@@ -1,6 +1,7 @@
 import { View, Text } from '@tarojs/components'
 import Taro, { useLoad } from '@tarojs/taro'
 import { useState } from 'react'
+import { register } from '@/router/api'
 
 export default function Register() {
   const [selectedType, setSelectedType] = useState('')
@@ -11,7 +12,7 @@ export default function Register() {
 
   const identityTypes = [
     {
-      id: 'enterprise',
+      id: 'companyMember',
       title: '企业身份',
       subtitle: '赞助商、合作伙伴',
       description: '为企业提供赞助管理和活动参与服务',
@@ -29,7 +30,7 @@ export default function Register() {
       bgColor: '#ECFDF5'
     },
     {
-      id: 'club',
+      id: 'clubMember',
       title: '社团身份',
       subtitle: '学生组织、社团',
       description: '为学生社团提供活动组织和资源对接',
@@ -39,13 +40,27 @@ export default function Register() {
     }
   ]
 
-  const handleSelect = (type: string) => {
-    setSelectedType(type)
-    console.log('选择身份类型:', type)
-    Taro.navigateTo({
-      url: `/pages/register/${type}`
-    })
+const handle = async (role: string) => {
+  try {
+    setSelectedType(role);
+    const res = await register(role);
+    if (res.success) {
+      Taro.showToast({
+        title: '注册成功',
+        icon: 'success',
+        duration: 2000
+      });
+      Taro.setStorageSync('role', role);
+    }
+  } catch (error) {
+    Taro.showToast({
+      title: error.data.error || error.message || "注册失败" ,
+      icon: 'none',
+      duration: 2000
+    });
+    console.log(error)
   }
+};
 
   return (
     <View className='min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50'>
@@ -72,7 +87,7 @@ export default function Register() {
               style={{
                 animationDelay: `${index * 100}ms`
               }}
-              onClick={() => handleSelect(item.id)}
+              onClick={() => handle(item.id)}
             >
               <View className='flex items-center space-x-4'>
                 {/* 图标 */}

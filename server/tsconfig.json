@@ -9,7 +9,10 @@
     "experimentalDecorators": true,
     "sourceMap": false,
     "outDir": "./dist",
-    "baseUrl": "./"
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
   "exclude": ["node_modules"]
   // "include": ["ormconfig.json"]
