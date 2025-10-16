@@ -1,9 +1,8 @@
-import { View, Text  } from '@tarojs/components'
-import { useLoad } from '@tarojs/taro'
+import { View, Text } from '@tarojs/components'
+import Taro, { useLoad } from '@tarojs/taro'
 import { useState } from 'react'
-import Taro from '@tarojs/taro'
 
-export default function Register () {
+export default function Register() {
   const [selectedType, setSelectedType] = useState('')
 
   useLoad(() => {
@@ -51,36 +50,34 @@ export default function Register () {
   return (
     <View className='min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50'>
       {/* 顶部装饰 */}
-      <View className='absolute top-0 left-0 right-0 h-32 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-b-3xl'></View>
-      
-      <View className='relative p-6 pt-8 flex flex-col items-center'>
-        {/* 头部 */}
-        <View className='text-center mb-8 mt-3'>
+      <View className='absolute left-0 right-0 top-0 h-32 rounded-b-3xl bg-gradient-to-r from-blue-500 to-indigo-600'></View>
 
-          <Text className='text-2xl font-bold text-white mb-2'>欢迎加入</Text>
+      <View className='relative flex flex-col items-center p-6 pt-8'>
+        {/* 头部 */}
+        <View className='mb-8 mt-3 text-center'>
+          <Text className='mb-2 text-2xl font-bold text-white'>欢迎加入</Text>
           <Text className='text-blue-100'>请选择您的身份类型开始注册</Text>
         </View>
 
         {/* 身份选择卡片 */}
-        <View className='space-y-4 mb-8 mt-3'>
+        <View className='mb-8 mt-3 space-y-4'>
           {identityTypes.map((item, index) => (
             <View
               key={item.id}
-              className={`relative bg-white rounded-2xl p-4 shadow-lg border-2 transition-all duration-300 transform ${
-                selectedType === item.id 
-                  ? 'border-blue-500 shadow-blue-100 scale-105' 
-                  : 'border-gray-100 hover:border-gray-200 hover:scale-102'
+              className={`relative transform rounded-2xl border-2 bg-white p-4 shadow-lg transition-all duration-300 ${
+                selectedType === item.id
+                  ? 'scale-105 border-blue-500 shadow-blue-100'
+                  : 'hover:scale-102 border-gray-100 hover:border-gray-200'
               }`}
               style={{
                 animationDelay: `${index * 100}ms`
               }}
               onClick={() => handleSelect(item.id)}
             >
-
               <View className='flex items-center space-x-4'>
                 {/* 图标 */}
-                <View 
-                  className='w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-md'
+                <View
+                  className='flex h-14 w-14 items-center justify-center rounded-2xl text-3xl shadow-md'
                   style={{ backgroundColor: item.bgColor }}
                 >
                   <Text>{item.icon}</Text>
@@ -88,21 +85,23 @@ export default function Register () {
 
                 {/* 内容 */}
                 <View className='flex-1'>
-                  <Text className='text-xl font-bold text-gray-800 mb-1'>
+                  <Text className='mb-1 text-xl font-bold text-gray-800'>
                     {item.title}
                   </Text>
-                  <Text className='text-sm text-gray-600 mb-2'>
+                  <Text className='mb-2 text-sm text-gray-600'>
                     {item.subtitle}
                   </Text>
-                  <Text className='text-xs text-gray-500 leading-relaxed'>
+                  <Text className='text-xs leading-relaxed text-gray-500'>
                     {item.description}
                   </Text>
                 </View>
 
                 {/* 箭头 */}
-                <View className={`text-2xl transition-colors duration-200 ${
-                  selectedType === item.id ? 'text-blue-500' : 'text-gray-300'
-                }`}>
+                <View
+                  className={`text-2xl transition-colors duration-200 ${
+                    selectedType === item.id ? 'text-blue-500' : 'text-gray-300'
+                  }`}
+                >
                   <Text>›</Text>
                 </View>
               </View>
@@ -111,9 +110,10 @@ export default function Register () {
         </View>
 
         {/* 底部说明 */}
-        <View className='text-center mb-6'>
-          <Text className='text-sm text-gray-500 leading-relaxed'>
-            选择身份后将进入对应的注册流程，<Text className='text-blue-500'>不同身份享有不同的功能权限</Text>
+        <View className='mb-6 text-center'>
+          <Text className='text-sm leading-relaxed text-gray-500'>
+            选择身份后将进入对应的注册流程，
+            <Text className='text-blue-500'>不同身份享有不同的功能权限</Text>
           </Text>
         </View>
       </View>

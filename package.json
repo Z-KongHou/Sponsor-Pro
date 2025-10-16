@@ -26,13 +26,7 @@
     "@tarojs/components": "4.1.1",
     "@tarojs/helper": "4.1.1",
     "@tarojs/plugin-framework-react": "4.1.1",
-    "@tarojs/plugin-platform-alipay": "4.1.1",
     "@tarojs/plugin-platform-h5": "4.1.1",
-    "@tarojs/plugin-platform-harmony-hybrid": "4.1.1",
-    "@tarojs/plugin-platform-jd": "4.1.1",
-    "@tarojs/plugin-platform-qq": "4.1.1",
-    "@tarojs/plugin-platform-swan": "4.1.1",
-    "@tarojs/plugin-platform-tt": "4.1.1",
     "@tarojs/plugin-platform-weapp": "4.1.1",
     "@tarojs/react": "4.1.1",
     "@tarojs/runtime": "4.1.1",
@@ -60,6 +54,8 @@
     "eslint-config-taro": "4.1.1",
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.4.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-config-prettier": "^9.1.0",
     "postcss": "^8.5.3",
     "react-refresh": "^0.14.0",
     "sass": "^1.89.0",
@@ -68,6 +64,10 @@
     "tsconfig-paths-webpack-plugin": "^4.1.0",
     "typescript": "^5.4.5",
     "weapp-tailwindcss": "^4.1.7",
-    "webpack": "5.91.0"
+    "webpack": "5.91.0",
+    "prettier": "^3.3.3",
+    "prettier-plugin-tailwindcss": "^0.6.8",
+    "@typescript-eslint/parser": "^8.17.0",
+    "@typescript-eslint/eslint-plugin": "^8.17.0"
   }
 }

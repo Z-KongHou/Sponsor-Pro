@@ -1,31 +1,31 @@
-import { View, Text } from '@tarojs/components';
-import { info } from '../../interface/sponsorInfo';
+import { View, Text } from '@tarojs/components'
+import { info } from '../../interface/sponsorInfo'
 
 interface ListItemProps {
-  data: info;
+  data: info
 }
 
 export default function ListItem({ data }: ListItemProps) {
   return (
-    <View className='bg-white rounded-xl p-4 mb-3 shadow-sm border border-gray-100'>
+    <View className='mb-3 rounded-xl border border-gray-100 bg-white p-4 shadow-sm'>
       {/* 学校信息 */}
-      <Text className='text-lg font-bold text-gray-800 mb-1 block'>
+      <Text className='mb-1 block text-lg font-bold text-gray-800'>
         {data.name}
       </Text>
-      <Text className='text-sm text-gray-500 mb-2 block'>{data.school}</Text>
+      <Text className='mb-2 block text-sm text-gray-500'>{data.school}</Text>
 
       {/* 基本信息 */}
-      <View className='flex flex-wrap gap-2 mb-3'>
-        <View className='bg-blue-50 px-2 py-1 rounded text-blue-700 text-xs'>
+      <View className='mb-3 flex flex-wrap gap-2'>
+        <View className='rounded bg-blue-50 px-2 py-1 text-xs text-blue-700'>
           {data.categories}
         </View>
-        <View className='bg-green-50 px-2 py-1 rounded text-green-700 text-xs'>
+        <View className='rounded bg-green-50 px-2 py-1 text-xs text-green-700'>
           {data.position}
         </View>
       </View>
 
       {/* 时间范围 */}
-      <View className='flex items-center text-sm text-gray-500 mb-3'>
+      <View className='mb-3 flex items-center text-sm text-gray-500'>
         <Text>时间:</Text>
         <Text className='ml-1'>
           {data.time_from} 至 {data.time_end}
@@ -35,7 +35,7 @@ export default function ListItem({ data }: ListItemProps) {
       {/* 赞助金额 */}
       {data.value !== undefined && (
         <View className='mt-2'>
-          <View className='flex justify-between items-center'>
+          <View className='flex items-center justify-between'>
             <Text className='text-base font-medium text-gray-800'>
               赞助金额:{' '}
               <Text className='text-blue-600'>
@@ -46,5 +46,5 @@ export default function ListItem({ data }: ListItemProps) {
         </View>
       )}
     </View>
-  );
+  )
 }
