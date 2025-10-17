@@ -1,6 +1,10 @@
+import 'fastify'
+import { PrismaClient } from '@prisma/client'
+import { FastifyRequest } from 'fastify'
 
 declare module 'fastify' {
   interface FastifyRequest {
-    openId?: string;
+    openId?: string
+    prisma: PrismaClient
   }
 }
