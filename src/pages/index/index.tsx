@@ -1,46 +1,13 @@
 import { View, Text, Button, ScrollView } from '@tarojs/components';
 import Taro, { useLoad } from '@tarojs/taro';
-import { getWeChatInfo } from '../../router/api';
+import { wxlogin } from '@/utils/wxlogin';
 import TabBar from '../../components/TabBar';
 
 export default function Index() {
-  useLoad(() => {
+  useLoad(async () => {
+    await wxlogin();
     console.log('Page loaded.');
   });
-
-  const wxLogin = () => {
-    // 获取微信账户信息
-    const accountInfo = Taro.getAccountInfoSync();
-    Taro.login({
-      success: function (res) {
-        console.log(res);
-        if (res.code) {
-          // 自己项目的接口，获取微信信息 为了拿到openid
-          try {
-            getWeChatInfo(res.code, accountInfo.miniProgram.appId).then(
-              (req) => {
-                console.log(req);
-                Taro.setStorageSync('longtoken', req.data.token);
-                if (req.data.code == 200) {
-                  Taro.showToast({ title: '登录成功' });
-                  // Taro.navigateTo({ url: "/pages/home/index" })
-                } else if (req.data.code == 206) {
-                  Taro.showToast({ title: '用户不存在' });
-                  Taro.navigateTo({ url: '/pages/register/index' });
-                }
-              }
-            );
-          } catch (error) {
-            console.error('获取微信信息失败:', error);
-            Taro.showToast({ title: '获取用户信息失败', icon: 'none' });
-          }
-        } else {
-          Taro.showToast({ title: '登录失败' });
-          Taro.navigateTo({ url: '/pages/register/index' });
-        }
-      },
-    });
-  };
 
   const navigateToRegister = () => {
     Taro.navigateTo({ url: '/pages/register/index' });
@@ -54,7 +21,7 @@ export default function Index() {
     <View className='min-h-screen bg-gray-50'>
       <ScrollView className='pb-20' scrollY>
         {/* 顶部横幅 */}
-        <View className='bg-gradient-to-r from-blue-600 to-blue-800 text-white py-8 px-6'>
+        <View className='bg-gradient-to-r from-blue-600 to-blue-800 text-white py-8 px-6 pt-20'>
           <View className='text-center'>
             <Text className='text-2xl font-bold mb-2 block'>Hello Sponsor</Text>
             <Text className='text-sm opacity-90 block'>
@@ -240,7 +207,6 @@ export default function Index() {
         <View className='px-6 py-8 bg-white border-t border-gray-100'>
           <Button
             className='w-full bg-blue-600 text-white py-3 rounded-lg font-medium text-base'
-            onClick={wxLogin}
           >
             微信一键登录
           </Button>

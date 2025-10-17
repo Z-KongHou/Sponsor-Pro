@@ -2153,6 +2153,11 @@
   resolved "https://registry.yarnpkg.com/@tarojs/api/-/api-4.1.1.tgz#56ba36531810311292ef0999a21bce4b7a2b0372"
   integrity sha512-DwDjqSs2E9OqlRCNuzDWmgAe+5nsTQvo+DqsvIPMuSc3Z7jT3f3urbVvIFY8c7Lxp5yfGs/b3GfwsjxWUudc0Q==
 
+"@tarojs/api@4.1.7":
+  version "4.1.7"
+  resolved "https://registry.yarnpkg.com/@tarojs/api/-/api-4.1.7.tgz#18d84c7c40a85b6883b20d438c10e7b6ebc02e96"
+  integrity sha512-ql4joiX7itrNnsCZkRf0rW7uZwbajNMsl/wezD6+JWdkQeQFRUZoT+8zmgQiEuNFQRg0WjkjIn//yoj9qBMigQ==
+
 "@tarojs/binding-darwin-arm64@4.1.1":
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/@tarojs/binding-darwin-arm64/-/binding-darwin-arm64-4.1.1.tgz#48066bcd9f82c4f53937ee7c09c994f380e38163"
@@ -2241,6 +2246,22 @@
     "@tarojs/runtime" "4.1.1"
     "@tarojs/shared" "4.1.1"
     "@tarojs/taro" "4.1.1"
+    classnames "^2.2.5"
+    hammerjs "^2.0.8"
+    hls.js "^1.1.5"
+    resolve-pathname "^3.0.0"
+    swiper "11.1.15"
+    tslib "^2.6.2"
+
+"@tarojs/components@^4.1.7":
+  version "4.1.7"
+  resolved "https://registry.yarnpkg.com/@tarojs/components/-/components-4.1.7.tgz#0f911d70bd5126232dbdf96850175bdd8a43a2a1"
+  integrity sha512-fxdC/baHiUL17/E9dx/x51y2Z3FvTigt+4GBL+Loajv+4rUwp+eABJN0t1T0bCSgM/omEC5/+XJ7cxsHxoq/9A==
+  dependencies:
+    "@stencil/core" "2.22.3"
+    "@tarojs/runtime" "4.1.7"
+    "@tarojs/shared" "4.1.7"
+    "@tarojs/taro" "4.1.7"
     classnames "^2.2.5"
     hammerjs "^2.0.8"
     hls.js "^1.1.5"
@@ -2415,6 +2436,14 @@
     "@tarojs/shared" "4.1.1"
     tslib "^2.6.2"
 
+"@tarojs/runtime@4.1.7":
+  version "4.1.7"
+  resolved "https://registry.yarnpkg.com/@tarojs/runtime/-/runtime-4.1.7.tgz#e7ab84f428def87f3754ec5a393307cc9bdd676a"
+  integrity sha512-dYsjfU9paF/cIjZKXJE1r1emnBUQA9FKWRfCOAQDPR/+MD4T2K2DhbYgkDjMdBFZ7jwQtua7DpxgRGbIiJQ2AQ==
+  dependencies:
+    "@tarojs/shared" "4.1.7"
+    tslib "^2.6.2"
+
 "@tarojs/service@4.1.1":
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/@tarojs/service/-/service-4.1.1.tgz#e7c9228f665af3a4a4398900fe5265dd028eb407"
@@ -2434,6 +2463,11 @@
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/@tarojs/shared/-/shared-4.1.1.tgz#c08397792c53c2835e0a389df19b50fd72c1da23"
   integrity sha512-EQgcEh45G02+d0NYhiqnXJf+aXeuOgVXj9Et1+BE1T6xz1bX68sqV79qA1opsOPoxZsEUA6AQfXHfKtN0OgeBw==
+
+"@tarojs/shared@4.1.7":
+  version "4.1.7"
+  resolved "https://registry.yarnpkg.com/@tarojs/shared/-/shared-4.1.7.tgz#4f67e32f2726cb3cd05bf784cd3cd90d8a422561"
+  integrity sha512-Zafku6MSGIsKsDfcfoj5mAyW2pcxf2UlTWDpCyR2fynJyPP2Rjp85pFfA3gWoJJQMQPM5h3andduc7KOqRzcGw==
 
 "@tarojs/taro-h5@4.1.1":
   version "4.1.1"
@@ -2471,6 +2505,15 @@
   dependencies:
     "@tarojs/api" "4.1.1"
     "@tarojs/runtime" "4.1.1"
+    "@types/postcss-url" "^10.0.4"
+
+"@tarojs/taro@4.1.7", "@tarojs/taro@^4.1.7":
+  version "4.1.7"
+  resolved "https://registry.yarnpkg.com/@tarojs/taro/-/taro-4.1.7.tgz#dfe4363ea7dfb5030ee8f67b2ce9590dec494e29"
+  integrity sha512-b8KGAgAnpXSh626gTTBpJkpFMcYE1w0vNDfPOyJDhJ/kHuQeuZcTPzxuzxIIqte5WLLT4tFselSavXe49uOZbA==
+  dependencies:
+    "@tarojs/api" "4.1.7"
+    "@tarojs/runtime" "4.1.7"
     "@types/postcss-url" "^10.0.4"
 
 "@tarojs/webpack5-prebundle@4.1.1":

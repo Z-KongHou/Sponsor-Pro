@@ -4,14 +4,18 @@
 import Fastify from 'fastify'
 import fastifyCors from '@fastify/cors'
 import prisma from './prisma'
-import Routes from './routes'
+import AccessToken from './utils/acess_token'
+import ApiRoutes from './routes'
 
 const PORT = parseInt(process.env.PORT || '3000', 10)
+
+require('dotenv').config()
 
 const fastify = Fastify({
   logger: true
 })
 
+// 注册CORS插件
 fastify.register(fastifyCors, {
   origin: true
 })
@@ -19,14 +23,12 @@ fastify.register(fastifyCors, {
 fastify.decorate('prisma', prisma)
 
 // Declare a route
-fastify.get('/', async function (request, reply) {
-  const res = await prisma.user.findMany()
-  console.log(res)
-  reply.send({ hello: res })
-})
 
-fastify.register(Routes)
 // Run the server!
+fastify.decorate('prisma', prisma)
+fastify.decorate('token', AccessToken)
+
+fastify.register(ApiRoutes, { prefix: '/api' })
 
 fastify.listen({ port: PORT }, function (err, address) {
   if (err) {

@@ -1,123 +1,67 @@
 import Taro from '@tarojs/taro'
 
-// 登录提示
-const showLoginNotification = () => {
-  // Taro.removeStorageSync('longtoken')
-  Taro.showModal({
-    title: '请先登录',
-    content: '请先登录后再进行操作。',
-    showCancel: false,
-    confirmText: '确定'
-  })
+const BASE_URL = 'http://127.0.0.1:3000/api' // ✅ 修改为你的后端地址
+
+interface RequestOptions {
+  url: string
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
+  data?: any
+  header?: Record<string, string>
 }
 
-// 获取 token
-const longtoken = Taro.getStorageSync('longtoken')
+const request = async (options: RequestOptions) => {
+  const { url, method = 'GET', data} = options
 
-// 获取当前缓存的值（初始值）
-export const getLongToken = (): string | null => longtoken
-
-// 创建请求配置
-const createRequestConfig = (baseURL: string) => ({
-  url: baseURL,
-  timeout: 10000,
-  header: {
-    'Content-Type': 'application/json',
-    Authorization: longtoken ? `Bearer ${longtoken}` : ''
-  }
-})
-
-// 创建 API 实例
-const apiConfig = createRequestConfig('http://localhost:6677')
-
-// 请求拦截器
-const requestInterceptor = (config) => {
-  // 更新 token（每次请求前重新获取，以防 token 被更新）
-  const currentToken = Taro.getStorageSync('longtoken')
-  if (currentToken) {
-    config.header = {
-      ...config.header,
-      Authorization: `Bearer ${currentToken}`
-    }
-  }
-
-  return config
-}
-
-// 响应拦截器 - 成功响应
-const handleUnauthorizedResponse = (response) => {
-  const data = response.data
-
-  if (data?.code === 401 && data?.err_code === 'Error.UnAuthorized') {
-    showLoginNotification()
-    return Promise.reject(new Error('未授权'))
-  }
-
-  return response
-}
-
-// 响应拦截器 - 错误处理
-const handleUnauthorized = (error) => {
-  const data = error.data || error.response?.data
-
-  if (data?.code === 401 && data?.err_code === 'Error.UnAuthorized') {
-    showLoginNotification()
-  }
-
-  return Promise.reject(error)
-}
-
-const createRequest = (baseConfig) => {
-  return (options) => {
-    const fullUrl = options.url.startsWith('http')
-      ? options.url
-      : `${baseConfig.url}${options.url}`
-    const config = {
-      ...baseConfig,
-      ...options,
-      url: fullUrl,
+  const token = Taro.getStorageSync('token')
+  try {
+    const res = await Taro.request({
+      url: BASE_URL + url,
+      method,
+      data,
       header: {
-        ...baseConfig.header,
-        ...options.header
-      }
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    })
+
+    // 根据你的后端约定检查状态码
+    if (res.statusCode === 200) {
+      return res.data
+    } else {
+      Taro.showToast({
+        title: res.data?.message || '请求出错',
+        icon: 'none',
+      })
+      return Promise.reject(res)
     }
-
-    // 应用请求拦截器
-    const interceptedConfig = requestInterceptor(config)
-
-    return Taro.request(interceptedConfig)
-      .then((response) => {
-        // 应用响应拦截器
-        return handleUnauthorizedResponse(response)
-      })
-      .catch((error) => {
-        // 应用错误拦截器
-        return handleUnauthorized(error)
-      })
+  } catch (error) {
+    Taro.showToast({
+      title: '网络错误，请检查连接',
+      icon: 'none',
+    })
+    return Promise.reject(error)
   }
 }
-
-// 创建 API 实例
-const api = createRequest(apiConfig)
 
 // 导出方法
-export const getWeChatInfo = async (code: string, appcode: string) => {
-  const res = await api({
-    url: '/auth/login',
-    method: 'POST',
-    data: {
-      code: code,
-      appcode: appcode
+export const wxLogin = async (code:string) => {
+  const res = await request({
+    url :"/auth/wxlogin",
+    method :"POST",
+    data:{
+      code:code
     }
   })
-  return res.data
+  return res
 }
 
-export const register = async (data: object) => {
-  const res = await api({
-    url: '/auth/register',
-    method: 'POST',
-    data: data
+export const register = async (role: string) => {
+  const res = await request({
+    url :"/protect/register",
+    method :"POST",
+    data:{
+      role:role,
+    }
   })
-  return res.data
+  return res
 }
