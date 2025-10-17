@@ -2,7 +2,7 @@
   "miniprogramRoot": "dist/",
   "projectname": "sponsor",
   "description": "Sth interesting!",
-  "appid": "wx9fdc3c7c860e5afd",
+  "appid": "wx71971be8ba096c4f",
   "setting": {
     "urlCheck": true,
     "es6": false,
@@ -14,7 +14,20 @@
       "ignore": [],
       "disablePlugins": [],
       "outputPath": ""
-    }
+    },
+    "compileWorklet": false,
+    "uglifyFileName": false,
+    "uploadWithSourceMap": true,
+    "packNpmManually": false,
+    "packNpmRelationList": [],
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "useCompilerPlugins": false,
+    "condition": false,
+    "swc": false,
+    "disableSWC": true
   },
   "compileType": "miniprogram",
   "libVersion": "3.8.6",

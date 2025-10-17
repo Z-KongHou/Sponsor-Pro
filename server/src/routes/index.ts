@@ -1,12 +1,9 @@
 import { FastifyInstance } from 'fastify';
 
-// 定义主路由函数，接收fastify实例
-const Routes = async (fastify: FastifyInstance) => {
-  // 注册API路由组，添加/api前缀
-  await fastify.register(import('./api'), { prefix: '/api' });
-
-  // 注册认证路由组，添加/auth前缀
-  // await fastify.register(import('./auth'));
+const ApiRoutes = async (fastify: FastifyInstance) => {
+  await fastify.register(import('./api/auth'), { prefix: '/auth' });
+  await fastify.register(import('./api/protect'), { prefix: '/protect' });
+  await fastify.register(import('./api/offline'), { prefix: '/offline' });
 };
 
-export default Routes;
+export default ApiRoutes;

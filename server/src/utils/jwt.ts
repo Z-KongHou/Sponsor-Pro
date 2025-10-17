@@ -1,25 +1,31 @@
-// import jwt, { SignOptions } from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 
-// const JWT_SECRET = 'misaki_secret_key';
-// const JWT_EXPIRES_IN = '1h';
+// 应该使用环境变量
+const JWT_SECRET = process.env.JWT_SECRET || 'mysercet_appid';
+const JWT_EXPIRES_IN = '24h';
 
-// export interface JwtPayload {
-//     openid: string;
-//     session_key: string;
-// }
+// 定义 token payload 接口
+interface TokenPayload {
+  openId: string;
+}
 
-// export const generateToken = (payload: JwtPayload): string => {
-//     const options: SignOptions = {
-//         expiresIn: JWT_EXPIRES_IN as SignOptions['expiresIn'],
-//     };
-//     return jwt.sign(payload, JWT_SECRET, options);
-// };
+export const generateToken = (openId: string): string => {
+  const payload: TokenPayload = {
+    openId,
+  };
 
-// export const verifyToken = (token: string): JwtPayload | null => {
-//     try {
-//         const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
-//         return decoded;
-//     } catch (error) {
-//         return null;
-//     }
-// };
+  const options: SignOptions = {
+    expiresIn: JWT_EXPIRES_IN,
+  };
+
+  return jwt.sign(payload, JWT_SECRET, options);
+};
+
+export const verifyToken = (token: string): TokenPayload => {
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload;
+        return decoded;
+    } catch (error) {
+        return null;
+    }
+};
