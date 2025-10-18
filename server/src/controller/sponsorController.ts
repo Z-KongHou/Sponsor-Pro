@@ -1,5 +1,12 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
+import { Prisma } from '@prisma/client'
 import '../types/global' // 导入类型定义
+import {
+  deleteSponsorById,
+  getApprovedSponsors,
+  updateSponsorStatusByOperation,
+  SponsorStatus
+} from '../service/sponsorService'
 
 interface CreateSponsorshipBody {
   title: string
@@ -8,6 +15,86 @@ interface CreateSponsorshipBody {
   type: 'SCHOOL_INITIATED' | 'COMPANY_INITIATED'
   initiatorId?: number
   receiverId?: number
+}
+
+interface UpdateSponsorStatusBody {
+  operation: boolean
+}
+
+// 需要一个更为明确的操作判断
+const statusFromOperation = (operation: boolean): SponsorStatus =>
+  operation ? 'COMPLETED' : 'APPROVED'
+
+export const listApprovedSponsors = async (
+  req: FastifyRequest,
+  reply: FastifyReply
+) => {
+  const sponsors = await getApprovedSponsors(req.prisma)
+  return reply.send(sponsors)
+}
+
+export const deleteSponsor = async (
+  req: FastifyRequest<{ Params: { id: string } }>,
+  reply: FastifyReply
+) => {
+  const sponsorId = Number(req.params.id)
+
+  try {
+    const deletedRecord = await deleteSponsorById(req.prisma, sponsorId)
+    return reply.send(deletedRecord)
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === 'P2025'
+    ) {
+      reply.code(404)
+      return reply.send({ message: 'Sponsor record not found' })
+    }
+
+    throw error
+  }
+}
+
+export const updateSponsorStatus = async (
+  req: FastifyRequest<{
+    Params: { id: string }
+    Body: UpdateSponsorStatusBody
+  }>,
+  reply: FastifyReply
+) => {
+  const { operation } = req.body
+
+  if (typeof operation !== 'boolean'  ) {
+    reply.code(400)
+    return reply.send({ message: 'operation must be a boolean value ' })
+  }
+  if (Number.isNaN(req.params.id)) {
+    reply.code(400)
+    return reply.send({ message: 'Invalid sponsor ID' })
+  }
+
+  const sponsorId = Number(req.params.id)
+  const status = statusFromOperation(operation)
+
+  try {
+    const updatedRecord = await updateSponsorStatusByOperation(
+      req.prisma,
+      sponsorId,
+      status
+    )
+
+    return reply.send(updatedRecord)
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === 'P2025'
+    ) {
+      reply.code(404)
+      return reply.send({ message: 'Sponsor record not found' })
+    }
+
+    throw error
+  }
 }
 /**
  * 根据用户ID获取赞助信息

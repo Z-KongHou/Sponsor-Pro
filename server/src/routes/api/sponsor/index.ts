@@ -1,7 +1,10 @@
 import { FastifyInstance } from 'fastify'
 import {
   getSponsorInfoByUserID,
-  createSponsor
+  createSponsor,
+  listApprovedSponsors,
+  deleteSponsor,
+  updateSponsorStatus
 } from '../../../controller/sponsorController'
 
 /**
@@ -15,6 +18,9 @@ export const sponsorRoutes = async (fastify: FastifyInstance) => {
   // 创建新的赞助记录
   // POST /api/sponsor/create
   fastify.post('/create', createSponsor)
+  fastify.get('/list', listApprovedSponsors)
+  fastify.delete('/delete/:id', deleteSponsor)
+  fastify.patch('/update-status/:id', updateSponsorStatus)
 }
 
 export default sponsorRoutes
