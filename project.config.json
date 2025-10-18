@@ -22,6 +22,9 @@
     "packNpmRelationList": [],
     "minifyWXSS": true,
     "minifyWXML": true,
+    "enableEngineNative": false,
+    "enableUpdateWxAppCode": false,
+    "enableUpdateAppServiceCode": false,
     "localPlugins": false,
     "disableUseStrict": false,
     "useCompilerPlugins": false,
@@ -30,7 +33,7 @@
     "disableSWC": true
   },
   "compileType": "miniprogram",
-  "libVersion": "3.8.6",
+  "libVersion": "2.31.0",
   "srcMiniprogramRoot": "dist/",
   "packOptions": {
     "ignore": [],

@@ -20,13 +20,11 @@ fastify.register(fastifyCors, {
   origin: true
 })
 
-fastify.decorate('prisma', prisma)
-
-// Declare a route
-
 // Run the server!
 fastify.decorate('prisma', prisma)
 fastify.decorate('token', AccessToken)
+
+// Declare a route
 
 fastify.register(ApiRoutes, { prefix: '/api' })
 

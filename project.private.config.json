@@ -17,8 +17,10 @@
     "showES6CompileOption": false,
     "checkInvalidKey": true,
     "ignoreDevUnusedFiles": true,
-    "bigPackageSizeSupport": false
+    "bigPackageSizeSupport": false,
+    "enableUpdateWxAppCode": false,
+    "enableUpdateAppServiceCode": false
   },
-  "libVersion": "3.8.6",
+  "libVersion": "3.10.3",
   "condition": {}
 }
