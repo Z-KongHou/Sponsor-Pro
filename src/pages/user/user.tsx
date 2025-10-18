@@ -1,6 +1,7 @@
 import { View, Text, Image, Button } from '@tarojs/components'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { AtPagination } from 'taro-ui'
+import { getUserInfo } from '@/router/api'
 
 interface Activity {
   id: number
@@ -23,6 +24,9 @@ const ActivityPage: React.FC = () => {
   const [tab, setTab] = useState<'on' | 'off'>('on')
   const [page, setPage] = useState(1)
 
+  const { name, email, phone, role } = getUserInfo()
+
+  //赞助记录换页
   const { list, totalPage } = useMemo(() => {
     if (module !== 'activity') return { list: [], totalPage: 1 }
     const source = tab === 'on' ? allOnShelf : allOffShelf
@@ -34,6 +38,9 @@ const ActivityPage: React.FC = () => {
     }
   }, [module, tab, page])
 
+  useEffect(() => {
+    setPage(1)
+  }, [module, tab])
   return (
     <View className='min-h-screen bg-[#f5f7fa]'>
       <View className='flex bg-white px-8 py-6 shadow-sm'>
@@ -43,7 +50,7 @@ const ActivityPage: React.FC = () => {
         />
         <View className='ml-8 flex-1'>
           <Text className='text-[32rpx] font-semibold text-[#222222]'>
-            Your-name
+            {name}
           </Text>
           <View className='mt-6 flex overflow-x-auto whitespace-nowrap'>
             <View className='mr-12 inline-flex items-center'>
@@ -93,6 +100,7 @@ const ActivityPage: React.FC = () => {
               <Button
                 className='ml-4 rounded-full bg-[#1890ff] px-6 py-2 text-[26rpx] text-white'
                 size='mini'
+                onClick={}
               >
                 + 发布赞助
               </Button>
