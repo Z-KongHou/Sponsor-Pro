@@ -1,11 +1,12 @@
 export default defineAppConfig({
   pages: [
-    'pages/index/index', 
+    'pages/index/index',
     'pages/register/index',
     'pages/register/enterprise',
     'pages/register/teacher',
     'pages/register/club',
-    'pages/sponsor/schoolSponsor'
+    'pages/sponsor/schoolSponsor',
+    'pages/user/user'
   ],
 
   window: {
@@ -14,4 +15,4 @@ export default defineAppConfig({
     navigationBarTitleText: 'WeChat',
     navigationBarTextStyle: 'black'
   }
-});
+})

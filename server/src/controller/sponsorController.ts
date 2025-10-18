@@ -37,6 +37,10 @@ export const deleteSponsor = async (
   req: FastifyRequest<{ Params: { id: string } }>,
   reply: FastifyReply
 ) => {
+    if (Number.isNaN(req.params.id)) {
+    reply.code(400)
+    return reply.send({ message: 'Invalid sponsor ID' })
+  }
   const sponsorId = Number(req.params.id)
 
   try {
