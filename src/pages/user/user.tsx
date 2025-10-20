@@ -24,6 +24,7 @@ const ActivityPage: React.FC = () => {
   const [tab, setTab] = useState<'on' | 'off'>('on')
   const [page, setPage] = useState(1)
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { name, email, phone, role } = getUserInfo()
 
   //赞助记录换页
@@ -100,7 +101,7 @@ const ActivityPage: React.FC = () => {
               <Button
                 className='ml-4 rounded-full bg-[#1890ff] px-6 py-2 text-[26rpx] text-white'
                 size='mini'
-                onClick={}
+                onClick={() => {}}
               >
                 + 发布赞助
               </Button>
