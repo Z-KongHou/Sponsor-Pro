@@ -6,7 +6,9 @@ export default defineAppConfig({
     'pages/register/teacher',
     'pages/register/club',
     'pages/sponsor/schoolSponsor',
-    'pages/user/user'
+    'pages/sponsor/enterpriseSponsor',
+    'pages/user/user',
+    'pages/sponsor/detailsponsor',
   ],
 
   window: {

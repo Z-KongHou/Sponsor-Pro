@@ -1,8 +1,7 @@
 import { View, Text } from '@tarojs/components'
-import { info } from '../../interface/sponsorInfo'
 
 interface ListItemProps {
-  data: info
+  data: any
 }
 
 export default function ListItem({ data }: ListItemProps) {
@@ -10,7 +9,7 @@ export default function ListItem({ data }: ListItemProps) {
     <View className='mb-3 rounded-xl border border-gray-100 bg-white p-4 shadow-sm'>
       {/* 学校信息 */}
       <Text className='mb-1 block text-lg font-bold text-gray-800'>
-        {data.name}
+        {data.title}
       </Text>
       <Text className='mb-2 block text-sm text-gray-500'>{data.school}</Text>
 
