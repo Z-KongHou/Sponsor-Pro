@@ -1,28 +1,29 @@
 import Taro from '@tarojs/taro'
-import { UserInfo } from './type'
 
-const BASE_URL = 'http://127.0.0.1:3000/api' // ✅ 修改为你的后端地址
+const BASE_URL = 'http://127.0.0.1:6688/api' // ✅ 修改为你的后端地址
 
 interface RequestOptions {
   url: string
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
-  data?: unknown
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  params?: any
+  data?: any
   header?: Record<string, string>
 }
 
 const request = async (options: RequestOptions) => {
-  const { url, method = 'GET', data } = options
-
+  const { url, method = 'GET', data, params } = options
+  const queryString = new URLSearchParams(params).toString();
   const token = Taro.getStorageSync('token')
   try {
     const res = await Taro.request({
-      url: BASE_URL + url,
+      url: BASE_URL + url + (queryString ? `?${queryString}` : ''),
       method,
       data,
       header: {
         'Content-Type': 'application/json',
         ...(token ? { Authorization: `Bearer ${token}` } : {})
-      }
+      },
     })
 
     // 根据你的后端约定检查状态码
@@ -56,73 +57,40 @@ export const wxLogin = async (code: string) => {
   return res
 }
 
-export const register = async (role: string) => {
+export const register = async (data: any) => {
   const res = await request({
     url: '/protect/register',
     method: 'POST',
-    data: {
-      role: role
-    }
+    data: data
   })
   return res
 }
-// 获取用户信息
+
 export const getUserInfo = async () => {
   const res = await request({
     url: '/protect/userinfo',
     method: 'GET'
   })
-  return res.data as UserInfo
+  return res
 }
 
-// 更新用户信息
-export const updateUserInfo = async (
-  userData: unknown, // 待补充
-  extensionData?: unknown
-) => {
+export const getActivities = async (page: number, type: string, search: string) => {
   const res = await request({
-    url: '/protect/userinfo',
-    method: 'POST',
-    data: {
-      userData,
-      extensionData
+    url: '/offline/sponsor/list',
+    method: 'GET',
+    params: {
+      page,
+      search,
+      type
     }
-  })
-  return res.data
-}
-// 获取用户的赞助记录
-export const getSponsorInfoByUserID = async (userID: string) => {
-  const res = await request({
-    url: `/user/sponsor?userID=${userID}`,
-    method: 'GET'
   })
   return res
 }
 
-// 创建新的赞助记录
-export const createSponsor = async (sponsorData: unknown) => {
+export const getSponsorsInfo = async (id: number) => {
   const res = await request({
-    url: '/sponsor/create',
-    method: 'POST',
-    data: sponsorData
+    url: `/offline/sponsor/detail/${id}`,
+    method: 'GET',
   })
-  return res.data
-}
-// 删除赞助记录
-export const deleteSponsor = async (id: number) => {
-  const res = await request({
-    url: `/sponsor/delete/${id}`,
-    method: 'DELETE'
-  })
-  return res.data
-}
-
-// 更新赞助状态
-export const updateSponsorStatus = async (id: number, status: string) => {
-  const res = await request({
-    url: `/sponsor/update-status/${id}`,
-    method: 'PUT',
-    data: { status }
-  })
-  return res.data
+  return res
 }

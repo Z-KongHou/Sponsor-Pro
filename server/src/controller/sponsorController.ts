@@ -1,11 +1,12 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { Prisma } from '@prisma/client'
-import '../types/global' // 导入类型定义
+import { SponsorshipType } from '@prisma/client';
 import {
   deleteSponsorById,
   getApprovedSponsors,
   updateSponsorStatusByOperation,
-  SponsorStatus
+  SponsorStatus,
+  getInfo
 } from '../service/sponsorService'
 
 interface CreateSponsorshipBody {
@@ -26,16 +27,37 @@ const statusFromOperation = (operation: boolean): SponsorStatus =>
   operation ? 'COMPLETED' : 'APPROVED'
 
 export const listApprovedSponsors = async (
-  req: FastifyRequest,
-  reply: FastifyReply
+  req,
+  reply
 ) => {
-  const sponsors = await getApprovedSponsors(req.prisma)
+  const { page, type, search} = req.query as { 
+    page?: string; 
+    search?: string;
+    type: SponsorshipType
+  };
+  const pageNum = page ? parseInt(page) : 1;
+  const finalSearch = search || '';
+  
+  const sponsors = await getApprovedSponsors(req.server.prisma, type , pageNum , finalSearch)
   return reply.send(sponsors)
 }
 
+export const getSponsorsInfo = async (
+  req,
+  reply
+) => {
+  const { id } = req.params as { 
+    id: string
+  };
+  const sponsorid = parseInt(id);
+
+  const data = await getInfo(req.server.prisma, sponsorid)
+  return reply.send(data)
+}
+
 export const deleteSponsor = async (
-  req: FastifyRequest<{ Params: { id: string } }>,
-  reply: FastifyReply
+  req,
+  reply
 ) => {
     if (Number.isNaN(req.params.id)) {
     reply.code(400)
@@ -44,7 +66,7 @@ export const deleteSponsor = async (
   const sponsorId = Number(req.params.id)
 
   try {
-    const deletedRecord = await deleteSponsorById(req.prisma, sponsorId)
+    const deletedRecord = await deleteSponsorById(req.server.prisma, sponsorId)
     return reply.send(deletedRecord)
   } catch (error) {
     if (
@@ -60,11 +82,8 @@ export const deleteSponsor = async (
 }
 
 export const updateSponsorStatus = async (
-  req: FastifyRequest<{
-    Params: { id: string }
-    Body: UpdateSponsorStatusBody
-  }>,
-  reply: FastifyReply
+  req,
+  reply
 ) => {
   const { operation } = req.body
 
@@ -82,7 +101,7 @@ export const updateSponsorStatus = async (
 
   try {
     const updatedRecord = await updateSponsorStatusByOperation(
-      req.prisma,
+      req.server.prisma,
       sponsorId,
       status
     )
@@ -104,14 +123,14 @@ export const updateSponsorStatus = async (
  * 根据用户ID获取赞助信息
  */
 export const getSponsorInfoByUserID = async (
-  req: FastifyRequest<{ Querystring: { userID: string } }>,
-  reply: FastifyReply
+  req,
+  reply
 ) => {
   try {
     const { userID } = req.query
     const userId = parseInt(userID, 10)
     // 使用扩展后的 FastifyRequest 类型，查询Sponsorship表
-    const userSponsorInfo = await req.prisma.sponsorship.findMany({
+    const userSponsorInfo = await req.server.prisma.sponsorship.findMany({
       where: {
         OR: [{ initiatorId: userId }, { receiverId: userId }]
       },
@@ -145,14 +164,14 @@ export const getSponsorInfoByUserID = async (
 // Define request body type based on Sponsorship model
 
 export const createSponsor = async (
-  req: FastifyRequest<{ Body: CreateSponsorshipBody }>,
-  reply: FastifyReply
+  req,
+  reply
 ) => {
   try {
     const { body } = req
 
     // Create sponsorship with current date for updatedAt
-    const sponsorship = await req.prisma.sponsorship.create({
+    const sponsorship = await req.server.prisma.sponsorship.create({
       data: {
         title: body.title,
         description: body.description,

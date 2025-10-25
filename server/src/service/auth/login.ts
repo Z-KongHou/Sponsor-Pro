@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { generateToken, verifyToken } from '@/utils/jwt';
+import { FastifyRequest, FastifyReply } from 'fastify'
 
 export const wxlogin = async (request, reply) => {
     const { code } = request.body as { code: string };

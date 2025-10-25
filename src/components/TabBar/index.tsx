@@ -15,7 +15,7 @@ export default function TabBar({ current }: TabBarProps) {
     const routeMap: Record<string, string> = {
       home: '/pages/index/index',
       profile: '/pages/user/user',
-      activities: '/pages/activities/activities', //占位
+      activities: '/pages/chat/chat', //占位
       sponsors: '/pages/sponsors/sponsors' // 占位
     }
 
@@ -36,16 +36,16 @@ export default function TabBar({ current }: TabBarProps) {
       active: current === 'home'
     },
     {
-      key: 'activities',
-      text: '学校活动',
-      icon: '活',
-      active: current === 'activities'
+      key: 'sponsors',
+      text: '校企赞助',
+      icon: '赞',
+      active: current === 'sponsors'
     },
     {
-      key: 'sponsors',
-      text: '企业赞助',
-      icon: '企',
-      active: current === 'sponsors'
+      key: 'chat',
+      text: '消息',
+      icon: '聊',
+      active: current === 'chat'
     },
     {
       key: 'profile',

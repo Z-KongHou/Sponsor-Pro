@@ -5,7 +5,8 @@ export default defineAppConfig({
     'pages/register/enterprise',
     'pages/register/teacher',
     'pages/register/club',
-    'pages/sponsor/schoolSponsor',
+    'pages/sponsor/sponsor',
+    'pages/sponsor/detailSponsor',
     'pages/user/user'
   ],
 

@@ -26,22 +26,57 @@ export default function TeacherRegister() {
   }
 
   const handleSubmit = async () => {
-    const isFormValid = Object.values(formData).every(val => {
-      return val != null && val.toString().trim() !== "";
-    });
-    if (!isFormValid) {
+    // 验证必填项
+    if (!formData.name.trim()) {
       Taro.showToast({
-        title: '请填写所有必填信息',
+        title: '请输入姓名',
         icon: 'error'
       });
       return;
     }
-    const res = await register(formData)
-    console.log(res)
-    Taro.showToast({
-      title: res.data.message,
-      icon: res.code==201 || res.code==200 ? 'success':'error'
-    })
+    if (!formData.phone.trim()) {
+      Taro.showToast({
+        title: '请输入联系电话',
+        icon: 'error'
+      });
+      return;
+    }
+    if (!formData.school.trim()) {
+      Taro.showToast({
+        title: '请输入所属学校',
+        icon: 'error'
+      });
+      return;
+    }
+
+    try {
+      Taro.showLoading({ title: '提交中...' });
+      const res = await register(formData);
+      Taro.hideLoading();
+      
+      if (res.success) {
+        Taro.showToast({
+          title: '注册成功',
+          icon: 'success'
+        });
+        // 注册成功后跳转到首页或用户页面
+        setTimeout(() => {
+          Taro.navigateTo({ url: '/pages/index/index' });
+        }, 1500);
+      } else {
+        Taro.showToast({
+          title: res.error || '注册失败',
+          icon: 'error'
+        });
+      }
+    } catch (error) {
+      Taro.hideLoading();
+      Taro.showToast({
+        title: '网络错误，请重试',
+        icon: 'none'
+      });
+      console.error('注册失败:', error);
+    }
   }
 
   const handleBack = () => {
@@ -150,4 +185,4 @@ export default function TeacherRegister() {
       </View>
     </View>
   )
-} 
+}
