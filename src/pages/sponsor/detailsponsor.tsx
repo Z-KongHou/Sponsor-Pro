@@ -2,38 +2,13 @@ import Taro ,{ useRouter } from '@tarojs/taro'
 import { View, Text, ScrollView } from '@tarojs/components'
 import { useState, useEffect } from 'react'
 import { getSponsorsInfo } from "@/router/api"
-// 定义赞助详情接口
-interface SponsorDetailType {
-  id: string;
-  title: string;
-  description: string;
-  amount: number;
-  type: string | null;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-  initiatorId: number;
-  receiverId?: number;
-  // 发布者信息
-  initiator?: {
-    id: number;
-    name: string;
-    email: string;
-  };
-  // 接收者信息
-  receiver?: {
-    id: number;
-    name: string;
-    email: string;
-  };
-}
 
 export default function SponsorDetail() {
   const router = useRouter()
   const { id, type } = router.params;
   
 
-  const [detail, setDetail] = useState<SponsorDetailType | null>(null)
+  const [detail, setDetail] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>('')
 
@@ -49,8 +24,8 @@ export default function SponsorDetail() {
         }
         const res = await getSponsorsInfo(parseInt(id));
 
-        if (res.statusCode === 200 && res.data && res.data.success) {
-          setDetail(res.data.data)
+        if (res.datainfo) {
+          setDetail(res.datainfo)
         } else {
           throw new Error('获取赞助详情失败')
         }
@@ -100,31 +75,8 @@ export default function SponsorDetail() {
     })
   }
 
-  // 获取状态中文显示
-  const getStatusText = (status: string) => {
-    const statusMap: Record<string, string> = {
-      PENDING: '待审核',
-      APPROVED: '已批准',
-      COMPLETED: '已完成'
-    }
-    return statusMap[status] || status
-  }
-
   return (
     <View className='min-h-screen bg-gray-50'>
-      {/* 顶部标题栏 */}
-      <View className='fixed top-0 left-0 right-0 z-10 bg-white px-4 py-3 shadow-sm'>
-        <View className='flex items-center justify-between'>
-          <View
-            className='p-1'
-            onClick={() => Taro.navigateBack()}
-          >
-            <Text className='text-gray-600 text-lg'>←</Text>
-          </View>
-          <Text className='text-lg font-medium text-gray-800'>赞助详情</Text>
-          <View className='w-6' />
-        </View>
-      </View>
 
       <ScrollView className='pt-14 pb-6'>
         {/* 基本信息部分 */}
@@ -136,13 +88,6 @@ export default function SponsorDetail() {
           <View className='mb-4 flex items-center justify-between'>
             <View className='rounded-full bg-blue-100 px-3 py-1 text-xs text-blue-700'>
               {detail.type === 'COMPANY_INITIATED' ? '企业发起' : '学校发起'}
-            </View>
-            <View className={`rounded-full px-3 py-1 text-xs ${
-              detail.status === 'APPROVED' ? 'bg-green-100 text-green-700' :
-              detail.status === 'COMPLETED' ? 'bg-purple-100 text-purple-700' :
-              'bg-yellow-100 text-yellow-700'
-            }`}>
-              {getStatusText(detail.status)}
             </View>
           </View>
 
@@ -196,14 +141,14 @@ export default function SponsorDetail() {
           <Text className='mb-3 block text-lg font-medium text-gray-800'>
             发布者信息
           </Text>
-          {detail.initiator && (
+          {detail.User_Sponsorship_initiatorIdToUser && (
             <View className='mb-4 rounded-lg bg-gray-50 p-4'>
               <Text className='mb-1 block text-sm text-gray-500'>
-                {detail.type === 'COMPANY_INITIATED' ? '企业名称' : '学校名称'}
+                名称
               </Text>
-              <Text className='text-gray-700'>{detail.initiator.name}</Text>
+              <Text className='text-gray-700'>{detail.User_Sponsorship_initiatorIdToUser.name}</Text>
               <Text className='mt-1 block text-sm text-gray-500'>联系方式</Text>
-              <Text className='text-gray-700'>{detail.initiator.email}</Text>
+              <Text className='text-gray-700'>{detail.User_Sponsorship_initiatorIdToUser.email}</Text>
             </View>
           )}
 

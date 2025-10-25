@@ -46,8 +46,7 @@ async function getInfo(prisma: PrismaClient, id: number) {
   }
   
   return {
-    datainfo: sponsorship,
-    userinfo: sponsorship.User_Sponsorship_initiatorIdToUser
+    datainfo: sponsorship
   }
 }
 
