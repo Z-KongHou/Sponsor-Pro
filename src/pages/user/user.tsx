@@ -1,46 +1,53 @@
+import Taro from '@tarojs/taro'
 import { View, Text, Image, Button } from '@tarojs/components'
 import { useState, useMemo, useEffect } from 'react'
 import { AtPagination } from 'taro-ui'
-import { getUserInfo } from '@/router/api'
+import { getSponsorInfoByUserID, getUserInfo } from '@/router/api'
+import { UserInfo } from '@/router/type'
+import { Activity } from './type'
 
-interface Activity {
-  id: number
-  title: string
-  type: string
-  mode: string
-}
 
-const allOnShelf: Activity[] = [
-  { id: 1, title: '校园歌手大赛', type: '文体', mode: '物资' },
-  { id: 2, title: '程序设计挑战', type: '学术', mode: '资金' }
-]
+// Mock数据，待后端完成接口后替换
 const allOffShelf: Activity[] = [
-  { id: 3, title: '公益植树', type: '公益', mode: '志愿服务' }
+  { id: 3, title: '公益植树', type: '公益', status: '' }
 ]
-const PAGE_SIZE = 5
 
 const ActivityPage: React.FC = () => {
-  const [module, setModule] = useState<'activity' | 'profile'>('activity')
-  const [tab, setTab] = useState<'on' | 'off'>('on')
-  const [page, setPage] = useState(1)
 
-  const { name, email, phone, role } = getUserInfo()
-
-  //赞助记录换页
-  const { list, totalPage } = useMemo(() => {
-    if (module !== 'activity') return { list: [], totalPage: 1 }
-    const source = tab === 'on' ? allOnShelf : allOffShelf
-    const start = (page - 1) * PAGE_SIZE
-    const end = start + PAGE_SIZE
-    return {
-      list: source.slice(start, end),
-      totalPage: Math.max(1, Math.ceil(source.length / PAGE_SIZE))
-    }
-  }, [module, tab, page])
 
   useEffect(() => {
-    setPage(1)
-  }, [module, tab])
+    const fetchUserInfo = async () => {
+      try {
+        const res = await getUserInfo()
+        if (res?.role) {
+          setUserInfo(res)
+        }
+      } catch (error) {
+        console.error('获取用户信息失败', error)
+      }
+    }
+    fetchUserInfo()
+  }, [])
+
+  useEffect(() => {
+    const fetchActivities = async () => {
+      try {
+        const res = await getSponsorInfoByUserID(userInfo?.id?.toString() || '')
+        if (res) {
+          setAllOnShelf(res)
+        }
+      } catch (error) {
+        console.error('获取活动信息失败', error)
+      }
+    }
+    fetchActivities()
+  }, [userInfo?.id])
+
+
+
+  //赞助记录换页
+
+
   return (
     <View className='min-h-screen bg-[#f5f7fa]'>
       <View className='flex bg-white px-8 py-6 shadow-sm'>
@@ -49,14 +56,14 @@ const ActivityPage: React.FC = () => {
           className='h-[112rpx] w-[112rpx] rounded-full bg-gray-200'
         />
         <View className='ml-8 flex-1'>
-          <Text className='text-[32rpx] font-semibold text-[#222222]'>
-            {name}
+          <Text className='font-semibold text-[#222222] text-[32rpx]'>
+            {userInfo?.name}
           </Text>
           <View className='mt-6 flex overflow-x-auto whitespace-nowrap'>
             <View className='mr-12 inline-flex items-center'>
-              <Text className='mr-3 text-[24rpx] text-[#666666]'>信息管理</Text>
+              <Text className='mr-3 text-[#666666] text-[24rpx]'>信息管理</Text>
               <Text
-                className={`rounded-full px-4 py-1 text-[28rpx] text-[#666666] ${
+                className={`rounded-full px-4 py-1 text-[#666666] text-[28rpx] ${
                   module === 'activity'
                     ? 'bg-[#1890ff] font-semibold text-white'
                     : ''
@@ -70,9 +77,9 @@ const ActivityPage: React.FC = () => {
               </Text>
             </View>
             <View className='inline-flex items-center'>
-              <Text className='mr-3 text-[24rpx] text-[#666666]'>用户管理</Text>
+              <Text className='mr-3 text-[#666666] text-[24rpx]'>用户管理</Text>
               <Text
-                className={`rounded-full px-4 py-1 text-[28rpx] text-[#666666] ${
+                className={`rounded-full px-4 py-1 text-[#666666] text-[28rpx] ${
                   module === 'profile'
                     ? 'bg-[#1890ff] font-semibold text-white'
                     : ''
@@ -92,15 +99,17 @@ const ActivityPage: React.FC = () => {
       {module === 'activity' ? (
         <View className='mx-6 mt-6 flex min-h-[560rpx] flex-col rounded-2xl bg-white p-9 shadow-lg'>
           <View>
-            <Text className='text-[34rpx] font-bold text-[#222222]'>
+            <Text className='font-bold text-[#222222] text-[34rpx]'>
               活动信息
             </Text>
             <View className='mt-5 flex items-center justify-between'>
-              <Text className='text-[26rpx] text-[#1890ff]'>缴纳保证金</Text>
+              <Text className='text-[#1890ff] text-[26rpx]'>缴纳保证金</Text>
               <Button
                 className='ml-4 rounded-full bg-[#1890ff] px-6 py-2 text-[26rpx] text-white'
                 size='mini'
-                onClick={}
+                onClick={() => {
+                  handleCreateSponsor()
+                }}
               >
                 + 发布赞助
               </Button>
@@ -152,7 +161,7 @@ const ActivityPage: React.FC = () => {
               </View>
 
               {list.length === 0 ? (
-                <View className='py-40 text-center text-[28rpx] text-[#999999]'>
+                <View className='py-40 text-center text-[#999999] text-[28rpx]'>
                   暂无数据
                 </View>
               ) : (
@@ -170,7 +179,7 @@ const ActivityPage: React.FC = () => {
                       {item.type}
                     </Text>
                     <Text className='px-4 py-6 text-center text-[#222222]'>
-                      {item.mode}
+                      {item.status}
                     </Text>
                     <View className='flex items-center justify-center gap-2 px-4 py-6 text-center'>
                       <Text className='text-[#1890ff]'>编辑</Text>
@@ -195,7 +204,7 @@ const ActivityPage: React.FC = () => {
           </View>
         </View>
       ) : (
-        <View className='mx-6 mt-6 flex min-h-[560rpx] flex-col items-center justify-center rounded-2xl bg-white p-12 text-[28rpx] text-[#666666] shadow-lg'>
+        <View className='mx-6 mt-6 flex min-h-[560rpx] flex-col items-center justify-center rounded-2xl bg-white p-12 text-[#666666] text-[28rpx] shadow-lg'>
           <Text>个人信息占位</Text>
         </View>
       )}

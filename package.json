@@ -24,7 +24,6 @@
   "dependencies": {
     "@babel/runtime": "^7.24.4",
     "@reduxjs/toolkit": "^2.2.3",
-    "react-redux": "^9.1.2",
     "@tarojs/components": "^4.1.7",
     "@tarojs/helper": "4.1.1",
     "@tarojs/plugin-framework-react": "4.1.1",
@@ -36,10 +35,10 @@
     "@tarojs/taro": "^4.1.7",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
+    "react-redux": "^9.1.2",
     "taro-ui": "^3.3.0"
   },
   "devDependencies": {
-    "@types/react-redux": "^7.1.33",
     "@babel/core": "^7.24.4",
     "@babel/plugin-transform-class-properties": "7.25.9",
     "@babel/preset-react": "^7.24.1",
@@ -49,6 +48,7 @@
     "@tarojs/webpack5-runner": "4.1.1",
     "@types/node": "^18",
     "@types/react": "^18.0.0",
+    "@types/react-redux": "^7.1.33",
     "@types/sass": "^1.45.0",
     "@types/webpack-env": "^1.13.6",
     "@typescript-eslint/eslint-plugin": "^8.17.0",
