@@ -1,7 +1,6 @@
 import { View, Text } from '@tarojs/components'
 import Taro, { useLoad } from '@tarojs/taro'
 import { useState } from 'react'
-import { register } from '@/router/api'
 
 export default function Register() {
   const [selectedType, setSelectedType] = useState('')
@@ -40,26 +39,11 @@ export default function Register() {
     }
   ]
 
-const handle = async (role: string) => {
-  try {
-    setSelectedType(role);
-    const res = await register(role);
-    if (res.success) {
-      Taro.showToast({
-        title: '注册成功',
-        icon: 'success',
-        duration: 2000
-      });
-      Taro.setStorageSync('role', role);
-    }
-  } catch (error) {
-    Taro.showToast({
-      title: error.data.error || error.message || "注册失败" ,
-      icon: 'none',
-      duration: 2000
-    });
-    console.log(error)
-  }
+const handle = async (type: string) => {
+  setSelectedType(type);
+  Taro.navigateTo({
+    url: `/pages/register/${type}`
+  })
 };
 
   return (

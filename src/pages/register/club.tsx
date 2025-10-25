@@ -1,6 +1,7 @@
 import { View, Text, Input, Button, Textarea } from '@tarojs/components';
 import Taro, { useLoad } from '@tarojs/taro';
 import { useState } from 'react';
+import { register } from '../../router/api';
 
 export default function ClubRegister() {
   const [formData, setFormData] = useState({
@@ -12,6 +13,7 @@ export default function ClubRegister() {
     category: '',
     memberCount: '',
     description: '',
+    role: 'clubMember'
   });
 
   useLoad(() => {
@@ -25,13 +27,65 @@ export default function ClubRegister() {
     }));
   };
 
-  const handleSubmit = () => {
-    console.log('提交社团注册信息:', formData);
-    // 这里可以添加表单验证和提交逻辑
-    Taro.showToast({
-      title: '注册信息已提交',
-      icon: 'success',
-    });
+  const handleSubmit = async () => {
+    // 验证必填项
+    if (!formData.clubName.trim()) {
+      Taro.showToast({
+        title: '请输入社团名称',
+        icon: 'error'
+      });
+      return;
+    }
+    if (!formData.name.trim()) {
+      Taro.showToast({
+        title: '请输入负责人姓名',
+        icon: 'error'
+      });
+      return;
+    }
+    if (!formData.phone.trim()) {
+      Taro.showToast({
+        title: '请输入联系电话',
+        icon: 'error'
+      });
+      return;
+    }
+    if (!formData.school.trim()) {
+      Taro.showToast({
+        title: '请输入所属学校',
+        icon: 'error'
+      });
+      return;
+    }
+
+    try {
+      Taro.showLoading({ title: '提交中...' });
+      const res = await register(formData);
+      Taro.hideLoading();
+      
+      if (res.success) {
+        Taro.showToast({
+          title: '注册成功',
+          icon: 'success'
+        });
+        // 注册成功后跳转到首页或用户页面
+        setTimeout(() => {
+          Taro.navigateTo({ url: '/pages/index/index' });
+        }, 1500);
+      } else {
+        Taro.showToast({
+          title: res.error || '注册失败',
+          icon: 'error'
+        });
+      }
+    } catch (error) {
+      Taro.hideLoading();
+      Taro.showToast({
+        title: '网络错误，请重试',
+        icon: 'none'
+      });
+      console.error('注册失败:', error);
+    }
   };
 
   const handleBack = () => {
