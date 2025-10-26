@@ -3,12 +3,16 @@
 module.exports = {
   presets: [
     [
-      "taro",
+      'taro',
       {
-        framework: "react",
+        framework: 'react',
         ts: true,
-        compiler: "webpack5",
-      },
-    ],
+        compiler: 'webpack5'
+      }
+    ]
   ],
-};
+  plugins: [
+    '@babel/plugin-proposal-optional-chaining',
+    '@babel/plugin-transform-class-properties'
+  ]
+}
