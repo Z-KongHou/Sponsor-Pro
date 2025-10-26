@@ -1,11 +1,13 @@
 import { View, Text, Button, ScrollView } from '@tarojs/components';
 import Taro, { useLoad } from '@tarojs/taro';
-import { wxlogin } from '@/utils/wxlogin';
 import TabBar from '../../components/TabBar';
+import { useAuth } from '@/context/useAuth';
 
 export default function Index() {
+  const { login } = useAuth();
+  
   useLoad(async () => {
-    await wxlogin();
+    await login();
     console.log('Page loaded.');
   });
 
