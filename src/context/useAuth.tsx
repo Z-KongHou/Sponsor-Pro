@@ -3,13 +3,11 @@ import { wxlogin } from '@/utils/wxlogin'
 import Taro from '@tarojs/taro'
 interface AuthContextType {
   isLoggedIn: boolean
-  loading: boolean
   login: () => Promise<boolean>
   logout: () => void
 }
 const AuthContext = createContext<AuthContextType>({
   isLoggedIn: false,
-  loading: true,
   login: async () => false,
   logout: () => {}
 })
@@ -18,14 +16,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children
 }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [loading, setLoading] = useState(true)
-  useEffect(() => {
-    const token = Taro.getStorageSync('token')
-    const role = Taro.getStorageSync('role')
-    if (token && role!="无") {
-      setIsLoggedIn(true)
-    }
-    setLoading(false)
+  useEffect( () => {
+    login()
   }, [])
   const login = async () => {
     try {
@@ -46,7 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, loading, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
       {children}
     </AuthContext.Provider>
   )

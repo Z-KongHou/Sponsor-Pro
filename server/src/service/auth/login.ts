@@ -12,10 +12,11 @@ export const wxlogin = async (request, reply) => {
         const user = await prisma.user.findUnique({
             where: { open_id: openid }
         })
-
+        if (!user) {
+          throw new Error("用户不存在")
+        }
         const token = generateToken(openid);
-
-        const role = user ? user.role : "无"
+        const role = user.role
         
         return reply.send({ token,role });
     } catch (error) {

@@ -1,13 +1,10 @@
 import { View, Text, Button, ScrollView } from '@tarojs/components';
 import Taro, { useLoad } from '@tarojs/taro';
 import TabBar from '../../components/TabBar';
-import { useAuth } from '@/context/useAuth';
 
 export default function Index() {
-  const { login } = useAuth();
   
   useLoad(async () => {
-    await login();
     console.log('Page loaded.');
   });
 
