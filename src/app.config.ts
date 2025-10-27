@@ -12,7 +12,8 @@ export default defineAppConfig({
     'pages/user/editProfile',
     'pages/chat/chat',
     'pages/chat/privateChat',
-    'pages/chat/receiverProfile'
+    'pages/chat/receiverProfile',
+    'pages/sponsor/publish'
   ],
 
   window: {

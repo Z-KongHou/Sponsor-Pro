@@ -26,10 +26,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         return true
       }
       await wxlogin()
+      console.log(1)
       setIsLoggedIn(true)
       return true
     } catch (err) {
-      return console.log('登录失败', err)
+      console.log('登录失败', err)
+      return false
     }
   }
   const logout = () => {

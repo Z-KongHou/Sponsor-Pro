@@ -5,14 +5,15 @@ import TabBar from '@/components/TabBar'
 import FloatingActionButton from '@/components/FloatingActionButton'
 import ListItem from '@/components/sponsorItem'
 import { getActivities } from '../../router/api'
-
+import { info } from '@/interface/sponsorInfo'
 type sponsorType = 'COMPANY_INITIATED' | 'SCHOOL_INITIATED'
 
-const SponsorSponsor = ({ type }: { type: sponsorType }) => {
+export default function SponsorSponsor() {
   // 状态管理
   const [searchKeyword, setSearchKeyword] = useState('')
   const [searchInput, setSearchInput] = useState('') // 临时存储用户输入
-  const [Data, setData] = useState<any[]>([])
+  const [type, setType] = useState<sponsorType>('SCHOOL_INITIATED')
+  const [Data, setData] = useState<info[]>([])
   const [totalCount, setTotalCount] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
   const [loading, setLoading] = useState(false)
@@ -64,6 +65,24 @@ const SponsorSponsor = ({ type }: { type: sponsorType }) => {
 
   return (
     <View className='min-h-screen bg-gray-50 pb-20 pt-20'>
+      <View className='bg-white px-4 py-2 shadow-sm'>
+        <View className='flex overflow-hidden rounded-xl'>
+          <Button
+            className={`py-2 text-base font-medium transition-all duration-200 ${type === 'SCHOOL_INITIATED' ? 'bg-blue-500 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'}`}
+            onClick={() => setType('SCHOOL_INITIATED')}
+          >
+            👨‍🏫 学校发起
+          </Button>
+          <View className='w-0.5 self-stretch bg-gray-200'></View>
+          <Button
+            className={`py-2 text-base font-medium transition-all duration-200 ${type === 'COMPANY_INITIATED' ? 'bg-blue-500 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'}`}
+            onClick={() => setType('COMPANY_INITIATED')}
+          >
+            🏢 企业发起
+          </Button>
+        </View>
+      </View>
+
       {/* 搜索栏 */}
       <View className='sticky top-0 z-10 bg-white p-2 shadow-sm'>
         <View className='align-center flex h-10 gap-2'>
@@ -187,9 +206,7 @@ const SponsorSponsor = ({ type }: { type: sponsorType }) => {
       )}
 
       {/* 底部导航栏 */}
-      <TabBar
-        current={type === 'SCHOOL_INITIATED' ? 'activities' : 'sponsors'}
-      />
+      <TabBar current='sponsors' />
 
       <FloatingActionButton
         text='发布赞助'
@@ -198,8 +215,4 @@ const SponsorSponsor = ({ type }: { type: sponsorType }) => {
       />
     </View>
   )
-}
-
-export default function () {
-  return <SponsorSponsor type='SCHOOL_INITIATED' />
 }
