@@ -31,6 +31,16 @@ export default defineConfig<'webpack5'>(async (merge, {}) => {
       enable: false // Webpack 持久化缓存配置，建议开启。默认配置请参考：https://docs.taro.zone/docs/config-detail#cache
     },
     mini: {
+      sassLoaderOption: {
+        sassOptions: {
+          // 静默 node_modules 内部的 Sass 弃用告警
+          quietDeps: true,
+          // Sass 1.57+ 支持，针对 import / legacy 内置方法等告警
+          // 不同 sass 版本可能不识别该字段，兼容性允许忽略
+          // @ts-ignore
+          silenceDeprecations: ['import', 'legacy-js-api', 'global-builtin']
+        }
+      },
       postcss: {
         pxtransform: {
           enable: true,
@@ -67,6 +77,13 @@ export default defineConfig<'webpack5'>(async (merge, {}) => {
       output: {
         filename: 'js/[name].[hash:8].js',
         chunkFilename: 'js/[name].[chunkhash:8].js'
+      },
+      sassLoaderOption: {
+        sassOptions: {
+          quietDeps: true,
+          // @ts-ignore
+          silenceDeprecations: ['import', 'legacy-js-api', 'global-builtin']
+        }
       },
       miniCssExtractPluginOption: {
         ignoreOrder: true,

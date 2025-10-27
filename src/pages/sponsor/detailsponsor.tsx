@@ -17,7 +17,6 @@ export default function SponsorDetail() {
       setLoading(true)
       setError('')
       try {
-        // 这里假设后端有获取详情的接口，根据项目实际情况调整
         if (!id) {
           throw new Error('无效的赞助ID')
         }
@@ -31,7 +30,6 @@ export default function SponsorDetail() {
       } catch (err) {
         console.error('获取赞助详情错误:', err)
         setError('获取赞助详情失败，请稍后重试')
-        // 为了演示，使用模拟数据
       } finally {
         setLoading(false)
       }
