@@ -15,8 +15,8 @@ export default function TabBar({ current }: TabBarProps) {
     const routeMap: Record<string, string> = {
       home: '/pages/index/index',
       profile: '/pages/user/user',
-      activities: '/pages/chat/chat', //占位
-      sponsors: '/pages/sponsors/sponsors' // 占位
+      chat: '/pages/chat/chat', //占位
+      sponsors: '/pages/sponsor/sponsor' // 占位
     }
 
     if (routeMap[page]) {

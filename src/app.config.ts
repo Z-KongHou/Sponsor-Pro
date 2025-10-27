@@ -8,8 +8,9 @@ export default defineAppConfig({
     'pages/sponsor/sponsor',
     'pages/sponsor/detailSponsor',
     'pages/user/user',
-    'pages/sponsor/publish',
-    'pages/user/editProfile'
+    'pages/chat/chat',
+    'pages/chat/privateChat',
+    'pages/chat/receiverProfile'
   ],
 
   window: {

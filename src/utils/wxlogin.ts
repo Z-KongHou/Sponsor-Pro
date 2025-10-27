@@ -13,11 +13,10 @@ export const wxlogin = async () => {
     
     // 3. 校验返回数据
     if (!wxLoginRes.token) {
-      throw new Error('登录失败：未获取到token')
+      throw new Error('用户不存在')
     }
     
     // 4. 存储token
-    console.log(wxLoginRes.token)
     Taro.setStorageSync('token', wxLoginRes.token)
     Taro.setStorageSync('role', wxLoginRes.role)
     

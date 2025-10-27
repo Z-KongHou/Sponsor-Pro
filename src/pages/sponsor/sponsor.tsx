@@ -27,7 +27,9 @@ const SponsorSponsor = ({ type }: { type: sponsorType }) => {
     const fetchData = async () => {
       setLoading(true)
       try {
+        // 调用API获取数据，type参数根据传入的type值进行替换
         const response = await getActivities(currentPage, type, searchKeyword)
+        // 假设API返回的数据结构包含data数组和totalCount字段
         if (response && response.data) {
           setData(response.data)
           setTotalCount(response.totalCount || response.data.length)
