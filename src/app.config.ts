@@ -7,7 +7,9 @@ export default defineAppConfig({
     'pages/register/club',
     'pages/sponsor/sponsor',
     'pages/sponsor/detailSponsor',
-    'pages/user/user'
+    'pages/user/user',
+    'pages/sponsor/publish',
+    'pages/user/editProfile'
   ],
 
   window: {

@@ -1,22 +1,15 @@
 import { View, Text, Image, Button } from '@tarojs/components'
 import { useState, useMemo, useEffect } from 'react'
 import { AtPagination } from 'taro-ui'
-import { getUserInfo } from '@/router/api'
+import Taro from '@tarojs/taro'
+import { getUserInfo, getSponsorInfoByUserID } from '@/router/api'
 
 interface Activity {
   id: number
   title: string
   type: string
-  mode: string
+  status?: string
 }
-
-const allOnShelf: Activity[] = [
-  { id: 1, title: '校园歌手大赛', type: '文体', mode: '物资' },
-  { id: 2, title: '程序设计挑战', type: '学术', mode: '资金' }
-]
-const allOffShelf: Activity[] = [
-  { id: 3, title: '公益植树', type: '公益', mode: '志愿服务' }
-]
 const PAGE_SIZE = 5
 
 const ActivityPage: React.FC = () => {
@@ -24,13 +17,48 @@ const ActivityPage: React.FC = () => {
   const [tab, setTab] = useState<'on' | 'off'>('on')
   const [page, setPage] = useState(1)
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { name, email, phone, role } = getUserInfo()
+  const [name, setName] = useState<string>('')
+  const [email, setEmail] = useState<string>('')
+  const [phone, setPhone] = useState<string>('')
+  const [role, setRole] = useState<string>('')
+  // const [actionOpen, setActionOpen] = useState(false)
+  const [allActivities, setAllActivities] = useState<Activity[]>([])
 
-  //赞助记录换页
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const profile = await getUserInfo()
+        const u = profile?.user
+        if (u) {
+          setName(u.name || '')
+          setEmail(u.email || '')
+          setPhone(u.phone || '')
+          setRole(u.role || '')
+        }
+        const uid = u?.id
+        if (uid) {
+          const res = await getSponsorInfoByUserID(uid)
+          const list =
+            res?.data?.sponsorships || res?.sponsorships || res?.data || []
+          setAllActivities(list)
+        }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (e) {
+        // ignore
+      }
+    })()
+  }, [])
+
+  // 赞助记录换页（使用真实数据）
   const { list, totalPage } = useMemo(() => {
     if (module !== 'activity') return { list: [], totalPage: 1 }
-    const source = tab === 'on' ? allOnShelf : allOffShelf
+    const onShelf = allActivities.filter((a) =>
+      ['APPROVED', 'COMPLETED'].includes((a.status || '').toUpperCase())
+    )
+    const offShelf = allActivities.filter(
+      (a) => !['APPROVED', 'COMPLETED'].includes((a.status || '').toUpperCase())
+    )
+    const source = tab === 'on' ? onShelf : offShelf
     const start = (page - 1) * PAGE_SIZE
     const end = start + PAGE_SIZE
     return {
@@ -44,7 +72,7 @@ const ActivityPage: React.FC = () => {
   }, [module, tab])
   return (
     <View className='min-h-screen bg-[#f5f7fa]'>
-      <View className='flex bg-white px-8 py-6 shadow-sm'>
+      <View className='relative flex bg-white px-8 py-6 shadow-sm'>
         <Image
           src=''
           className='h-[112rpx] w-[112rpx] rounded-full bg-gray-200'
@@ -53,39 +81,33 @@ const ActivityPage: React.FC = () => {
           <Text className='text-[32rpx] font-semibold text-[#222222]'>
             {name}
           </Text>
-          <View className='mt-6 flex overflow-x-auto whitespace-nowrap'>
-            <View className='mr-12 inline-flex items-center'>
-              <Text className='mr-3 text-[24rpx] text-[#666666]'>信息管理</Text>
-              <Text
-                className={`rounded-full px-4 py-1 text-[28rpx] text-[#666666] ${
-                  module === 'activity'
-                    ? 'bg-[#1890ff] font-semibold text-white'
-                    : ''
-                }`}
-                onClick={() => {
-                  setModule('activity')
-                  setPage(1)
-                }}
-              >
-                活动信息
-              </Text>
-            </View>
-            <View className='inline-flex items-center'>
-              <Text className='mr-3 text-[24rpx] text-[#666666]'>用户管理</Text>
-              <Text
-                className={`rounded-full px-4 py-1 text-[28rpx] text-[#666666] ${
-                  module === 'profile'
-                    ? 'bg-[#1890ff] font-semibold text-white'
-                    : ''
-                }`}
-                onClick={() => {
-                  setModule('profile')
-                  setPage(1)
-                }}
-              >
-                个人信息
-              </Text>
-            </View>
+          <View className='mt-6 flex justify-center gap-10'>
+            <Text
+              className={`select-none whitespace-nowrap rounded-full px-6 py-2 text-[28rpx] ${
+                module === 'activity'
+                  ? 'bg-[#1890ff] font-semibold text-white'
+                  : 'border border-[#eaeaea] text-[#666666]'
+              }`}
+              onClick={() => {
+                setModule('activity')
+                setPage(1)
+              }}
+            >
+              活动信息
+            </Text>
+            <Text
+              className={`select-none whitespace-nowrap rounded-full px-6 py-2 text-[28rpx] ${
+                module === 'profile'
+                  ? 'bg-[#1890ff] font-semibold text-white'
+                  : 'border border-[#eaeaea] text-[#666666]'
+              }`}
+              onClick={() => {
+                setModule('profile')
+                setPage(1)
+              }}
+            >
+              个人信息
+            </Text>
           </View>
         </View>
       </View>
@@ -101,7 +123,9 @@ const ActivityPage: React.FC = () => {
               <Button
                 className='ml-4 rounded-full bg-[#1890ff] px-6 py-2 text-[26rpx] text-white'
                 size='mini'
-                onClick={() => {}}
+                onClick={() =>
+                  Taro.navigateTo({ url: '/pages/sponsor/publish' })
+                }
               >
                 + 发布赞助
               </Button>
@@ -125,7 +149,15 @@ const ActivityPage: React.FC = () => {
                 setPage(1)
               }}
             >
-              已上架信息({allOnShelf.length})
+              已上架信息(
+              {
+                allActivities.filter((a) =>
+                  ['APPROVED', 'COMPLETED'].includes(
+                    (a.status || '').toUpperCase()
+                  )
+                ).length
+              }
+              )
             </Text>
             <Text className='mx-5 text-[#cccccc]'>|</Text>
             <Text
@@ -139,7 +171,16 @@ const ActivityPage: React.FC = () => {
                 setPage(1)
               }}
             >
-              未上架信息({allOffShelf.length})
+              未上架信息(
+              {
+                allActivities.filter(
+                  (a) =>
+                    !['APPROVED', 'COMPLETED'].includes(
+                      (a.status || '').toUpperCase()
+                    )
+                ).length
+              }
+              )
             </Text>
           </View>
 
@@ -171,7 +212,7 @@ const ActivityPage: React.FC = () => {
                       {item.type}
                     </Text>
                     <Text className='px-4 py-6 text-center text-[#222222]'>
-                      {item.mode}
+                      {item.status || '-'}
                     </Text>
                     <View className='flex items-center justify-center gap-2 px-4 py-6 text-center'>
                       <Text className='text-[#1890ff]'>编辑</Text>
@@ -196,10 +237,48 @@ const ActivityPage: React.FC = () => {
           </View>
         </View>
       ) : (
-        <View className='mx-6 mt-6 flex min-h-[560rpx] flex-col items-center justify-center rounded-2xl bg-white p-12 text-[28rpx] text-[#666666] shadow-lg'>
-          <Text>个人信息占位</Text>
+        <View className='mx-6 mt-6 rounded-2xl bg-white p-9 text-[28rpx] text-[#333] shadow-lg'>
+          <Text className='mb-6 block text-[34rpx] font-bold'>个人信息</Text>
+
+          <View className='space-y-4'>
+            <View className='flex items-center justify-between'>
+              <Text className='text-[#888]'>姓名</Text>
+              <Text className='font-medium text-[#222]'>{name || '-'}</Text>
+            </View>
+            <View className='flex items-center justify-between'>
+              <Text className='text-[#888]'>邮箱</Text>
+              <Text className='font-medium text-[#222]'>{email || '-'}</Text>
+            </View>
+            <View className='flex items-center justify-between'>
+              <Text className='text-[#888]'>电话</Text>
+              <Text className='font-medium text-[#222]'>{phone || '-'}</Text>
+            </View>
+            <View className='flex items-center justify-between'>
+              <Text className='text-[#888]'>角色</Text>
+              <Text className='font-medium text-[#222]'>{role || '-'}</Text>
+            </View>
+          </View>
+
+          <View className='mt-8 flex justify-end'>
+            <Button
+              className='rounded bg-[#1890ff] px-6 py-2 text-[26rpx] text-white'
+              onClick={() =>
+                Taro.navigateTo({ url: '/pages/user/editProfile' })
+              }
+            >
+              编辑个人资料
+            </Button>
+          </View>
         </View>
       )}
+      <View className='fixed bottom-8 right-8 z-50'>
+        <Button
+          className='rounded-full bg-blue-600 px-5 py-3 text-white shadow-lg'
+          onClick={() => Taro.navigateTo({ url: '/pages/sponsor/publish' })}
+        >
+          + 发布赞助
+        </Button>
+      </View>
     </View>
   )
 }

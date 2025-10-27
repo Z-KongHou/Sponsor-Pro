@@ -2,7 +2,7 @@ import { View, Text, Input, Button } from '@tarojs/components'
 import { useState, useEffect } from 'react'
 import Taro from '@tarojs/taro'
 import TabBar from '@/components/TabBar'
-import ListItem from '@/components/SponsorItem'
+import ListItem from '@/components/sponsorItem'
 import { getActivities } from '../../router/api'
 
 type sponsorType = 'COMPANY_INITIATED' | 'SCHOOL_INITIATED'
@@ -27,9 +27,7 @@ const SponsorSponsor = ({ type }: { type: sponsorType }) => {
     const fetchData = async () => {
       setLoading(true)
       try {
-        // 调用API获取数据，type参数根据传入的type值进行替换
         const response = await getActivities(currentPage, type, searchKeyword)
-        // 假设API返回的数据结构包含data数组和totalCount字段
         if (response && response.data) {
           setData(response.data)
           setTotalCount(response.totalCount || response.data.length)
@@ -189,6 +187,16 @@ const SponsorSponsor = ({ type }: { type: sponsorType }) => {
       <TabBar
         current={type === 'SCHOOL_INITIATED' ? 'activities' : 'sponsors'}
       />
+
+      {/* 发布赞助浮动按钮 */}
+      <View className='fixed bottom-8 right-8 z-50'>
+        <Button
+          className='rounded-full bg-blue-600 px-5 py-3 text-white shadow-lg'
+          onClick={() => Taro.navigateTo({ url: '/pages/sponsor/publish' })}
+        >
+          + 发布赞助
+        </Button>
+      </View>
     </View>
   )
 }

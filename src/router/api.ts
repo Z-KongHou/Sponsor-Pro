@@ -7,13 +7,13 @@ interface RequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params?: any
-  data?: any
+  data?: unknown
   header?: Record<string, string>
 }
 
 const request = async (options: RequestOptions) => {
   const { url, method = 'GET', data, params } = options
-  const queryString = new URLSearchParams(params).toString();
+  const queryString = new URLSearchParams(params).toString()
   const token = Taro.getStorageSync('token')
   try {
     const res = await Taro.request({
@@ -23,7 +23,7 @@ const request = async (options: RequestOptions) => {
       header: {
         'Content-Type': 'application/json',
         ...(token ? { Authorization: `Bearer ${token}` } : {})
-      },
+      }
     })
 
     // 根据你的后端约定检查状态码
@@ -68,13 +68,17 @@ export const register = async (data: any) => {
 
 export const getUserInfo = async () => {
   const res = await request({
-    url: '/protect/userinfo',
+    url: '/protect/user/profile',
     method: 'GET'
   })
   return res
 }
 
-export const getActivities = async (page: number, type: string, search: string) => {
+export const getActivities = async (
+  page: number,
+  type: string,
+  search: string
+) => {
   const res = await request({
     url: '/offline/sponsor/list',
     method: 'GET',
@@ -90,7 +94,56 @@ export const getActivities = async (page: number, type: string, search: string) 
 export const getSponsorsInfo = async (id: number) => {
   const res = await request({
     url: `/offline/sponsor/detail/${id}`,
+    method: 'GET'
+  })
+  return res
+}
+
+// 创建赞助
+export const createSponsor = async (data: unknown) => {
+  const res = await request({
+    url: '/offline/sponsor/create',
+    method: 'POST',
+    data
+  })
+  return res
+}
+
+// 删除赞助
+export const deleteSponsor = async (id: number) => {
+  const res = await request({
+    url: `/offline/sponsor/delete/${id}`,
+    method: 'DELETE'
+  })
+  return res
+}
+
+// 更新赞助状态
+export const updateSponsorStatus = async (id: number, operation: boolean) => {
+  const res = await request({
+    url: `/offline/sponsor/update-status/${id}`,
+    method: 'PUT',
+    data: { operation }
+  })
+  return res
+}
+
+// 根据用户ID获取赞助信息
+export const getSponsorInfoByUserID = async (id: string | number) => {
+  const res = await request({
+    url: `/offline/sponsor/user/sponsor/${id}`,
     method: 'GET',
+    params: { userID: String(id) }
+  })
+  return res
+}
+
+// 更新用户信息
+export const updateUserInfo = async (data: any) => {
+  const res = await request({
+    url: '/protect/user/profile',
+    method: 'POST',
+    data: { userData: data }
   })
   return res
 }

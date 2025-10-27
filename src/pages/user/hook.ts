@@ -1,9 +1,4 @@
-import { UserInfo } from '@/router/type'
-import {
-  deleteSponsor,
-  getSponsorInfoByUserID,
-  updateSponsorStatus
-} from '@/router/api'
+import { deleteSponsor, getSponsorInfoByUserID, updateSponsorStatus } from '@/router/api'
 import Taro from '@tarojs/taro'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Activity } from './type'
@@ -25,8 +20,9 @@ const splitSponsors = (activities: Activity[]) => {
   return { on, off }
 }
 
-const useUserInfo = (userId: string) => {
-    
+const useUserInfo = () => {
+  const id = Taro.getStorageSync('userId') as string
+  return { id }
 }
 
 const useUserSponsorships = (userId: string) => {
@@ -80,7 +76,7 @@ const useSponsorPage = () => {
   )
 
   // 处理当前活动列表
-  const activeList = tab === 'on' ? onShelf : offShelf
+  // const activeList = tab === 'on' ? onShelf : offShelf
   // 换页处理
   const { list, totalPage } = useMemo(() => {
     if (module !== 'activity') return { list: [], totalPage: 1 }
@@ -105,7 +101,7 @@ const useSponsorPage = () => {
 
   // 更新赞助状态
   const handleUpdateStatus = useCallback(
-    async (id: number, operation: string) => {
+    async (id: number, operation: boolean) => {
       try {
         await updateSponsorStatus(id, operation)
         await refresh()
@@ -132,15 +128,7 @@ const useSponsorPage = () => {
     })
   }
 
-  const handleSwitchModule = useCallback((next: 'activity' | 'profile') => {
-    setModule(next)
-    setPage(1)
-  }, [])
-
-  const handleSwitchTab = useCallback((next: 'on' | 'off') => {
-    setTab(next)
-    setPage(1)
-  }, [])
+  // 页面切换逻辑如需使用可恢复
 
   return {
     loading,

@@ -19,11 +19,17 @@
     "resolveJsonModule": true,
     "typeRoots": ["node_modules/@types"],
     "types": [],
+    "skipLibCheck": true,
+    "baseUrl": ".",
     "paths": {
       // TS5090 leading './'
       "@/*": ["./src/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": [
+    "node_modules",
+    "server"
+  ],
   "compileOnSave": false
 }
