@@ -1,11 +1,12 @@
 import { View, Text, Input, Button } from '@tarojs/components'
 import { useState, useEffect } from 'react'
+import { info } from '@/interface/sponsorInfo'
 import Taro from '@tarojs/taro'
 import TabBar from '@/components/TabBar'
 import FloatingActionButton from '@/components/FloatingActionButton'
 import ListItem from '@/components/sponsorItem'
 import { getActivities } from '../../router/api'
-import { info } from '@/interface/sponsorInfo'
+
 type sponsorType = 'COMPANY_INITIATED' | 'SCHOOL_INITIATED'
 
 export default function SponsorSponsor() {
