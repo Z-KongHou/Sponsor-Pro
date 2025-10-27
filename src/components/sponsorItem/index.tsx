@@ -1,15 +1,7 @@
 import { View, Text } from '@tarojs/components'
-
+import { info } from "@/interface/sponsorInfo"
 interface ListItemProps {
-  data: {
-    title: string
-    school: string
-    categories: string
-    position: string
-    time_from: string
-    time_end: string
-    value?: number
-  }
+  data: info
 }
 
 export default function ListItem({ data }: ListItemProps) {
@@ -19,7 +11,6 @@ export default function ListItem({ data }: ListItemProps) {
       <Text className='mb-1 block text-lg font-bold text-gray-800'>
         {data.title}
       </Text>
-      <Text className='mb-2 block text-sm text-gray-500'>{data.school}</Text>
 
       {/* 基本信息 */}
       <View className='mb-3 flex flex-wrap gap-2'>
@@ -40,13 +31,13 @@ export default function ListItem({ data }: ListItemProps) {
       </View>
 
       {/* 赞助金额 */}
-      {data.value !== undefined && (
+      {data.amount !== undefined && (
         <View className='mt-2'>
           <View className='flex items-center justify-between'>
             <Text className='text-base font-medium text-gray-800'>
               赞助金额:{' '}
               <Text className='text-blue-600'>
-                {data.value.toLocaleString()}
+                {data.amount.toLocaleString()}
               </Text>
             </Text>
           </View>

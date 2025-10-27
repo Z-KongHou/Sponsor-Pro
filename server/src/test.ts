@@ -6,7 +6,6 @@ async function main() {
   // 先创建两个 User，用作 initiator 和 receiver
   const initiator = await prisma.user.findFirst();
 
-  // 往 Sponsorship 表里插入几条测试数据
   const sponsorships = await prisma.sponsorship.createMany({
     data: [
       {
@@ -17,6 +16,8 @@ async function main() {
         status: SponsorshipStatus.PENDING,
         initiatorId: initiator.id,
         updatedAt: new Date(),
+        time_from: new Date('2024-06-30').toISOString().slice(0, 10).replace('T', ' '),
+        time_end: new Date('2024-06-30').toISOString().slice(0, 10).replace('T', ' '),
       },
       {
         title: 'Science Project Grant',
@@ -26,6 +27,8 @@ async function main() {
         status: SponsorshipStatus.APPROVED,
         initiatorId: initiator.id,
         updatedAt: new Date(),
+        time_from: new Date('2024-06-30').toISOString().slice(0, 10).replace('T', ' '),
+        time_end: new Date('2024-07-31').toISOString().slice(0, 10).replace('T', ' '),
       },
         {
         title: 'Art Club Sponsorship',
@@ -35,6 +38,8 @@ async function main() {
         status: SponsorshipStatus.PENDING,
         initiatorId: initiator.id,
         updatedAt: new Date(),
+        time_from: new Date('2024-06-30').toISOString().slice(0, 10).replace('T', ' '),
+        time_end: new Date('2024-08-31').toISOString().slice(0, 10).replace('T', ' '),
         },
         {
         title: 'Music Workshop Funding',
@@ -44,6 +49,8 @@ async function main() {
         status: SponsorshipStatus.APPROVED,
         initiatorId: initiator.id,
         updatedAt: new Date(),
+        time_from: new Date('2024-06-30').toISOString().slice(0, 10).replace('T', ' '),
+        time_end: new Date('2024-09-30').toISOString().slice(0, 10).replace('T', ' '),
         },
         {
         title: 'Robotics Competition Grant',
@@ -53,6 +60,8 @@ async function main() {
         status: SponsorshipStatus.COMPLETED,
         initiatorId: initiator.id,
         updatedAt: new Date(),
+        time_from: new Date('2024-06-30').toISOString().slice(0, 10).replace('T', ' '),
+        time_end: new Date('2024-12-31').toISOString().slice(0, 10).replace('T', ' '),
         },
         {
         title: 'Robotics Competition Grant',
@@ -62,6 +71,8 @@ async function main() {
         status: SponsorshipStatus.COMPLETED,
         initiatorId: initiator.id,
         updatedAt: new Date(),
+        time_from: new Date('2024-06-30').toISOString().slice(0, 10).replace('T', ' '),
+        time_end: new Date('2024-11-30').toISOString().slice(0, 10).replace('T', ' '),
         },
         {
         title: 'Math Club Funding',
@@ -71,6 +82,8 @@ async function main() {
         status: SponsorshipStatus.PENDING,
         initiatorId: initiator.id,
         updatedAt: new Date(),
+        time_from: new Date('2024-06-30').toISOString().slice(0, 10).replace('T', ' '),
+        time_end: new Date('2024-10-31').toISOString().slice(0, 10).replace('T', ' '),
       },
     ],
   });
