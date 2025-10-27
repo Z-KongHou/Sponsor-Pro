@@ -2,12 +2,13 @@ import Taro, { useRouter } from '@tarojs/taro'
 import { View, Text, ScrollView } from '@tarojs/components'
 import { useState, useEffect } from 'react'
 import { getSponsorsInfo } from '@/router/api'
+import { detailinfo } from '@/interface/sponsorInfo'
 
 export default function SponsorDetail() {
   const router = useRouter()
   const { id, type } = router.params
 
-  const [detail, setDetail] = useState<any>(null)
+  const [detail, setDetail] = useState<detailinfo | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>('')
 
@@ -62,16 +63,6 @@ export default function SponsorDetail() {
     )
   }
 
-  // 格式化日期
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('zh-CN', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    })
-  }
-
   return (
     <View className='min-h-screen bg-gray-50'>
       <ScrollView className='pb-6 pt-14'>
@@ -89,12 +80,12 @@ export default function SponsorDetail() {
 
           <View className='mb-4 space-y-2 text-sm text-gray-600'>
             <View className='flex'>
-              <Text className='w-16 text-gray-500'>创建时间：</Text>
-              <Text>{formatDate(detail.createdAt)}</Text>
+              <Text className='w-16 text-gray-500'>起始：</Text>
+              <Text>{detail.time_from}</Text>
             </View>
             <View className='flex'>
-              <Text className='w-16 text-gray-500'>更新时间：</Text>
-              <Text>{formatDate(detail.updatedAt)}</Text>
+              <Text className='w-16 text-gray-500'>结束：</Text>
+              <Text>{detail.time_end}</Text>
             </View>
           </View>
 
@@ -146,21 +137,21 @@ export default function SponsorDetail() {
           <Text className='mb-3 block text-lg font-medium text-gray-800'>
             发布者信息
           </Text>
-          {detail.User_Sponsorship_initiatorIdToUser && (
+          {detail.initiatorIdToUser && (
             <View className='mb-4 rounded-lg bg-gray-50 p-4'>
               <Text className='mb-1 block text-sm text-gray-500'>名称</Text>
               <Text className='text-gray-700'>
-                {detail.User_Sponsorship_initiatorIdToUser.name}
+                {detail.initiatorIdToUser.name}
               </Text>
               <Text className='mt-1 block text-sm text-gray-500'>联系方式</Text>
               <Text className='text-gray-700'>
-                {detail.User_Sponsorship_initiatorIdToUser.email}
+                {detail.initiatorIdToUser.email}
               </Text>
             </View>
           )}
 
           {/* 接收方信息 */}
-          {detail.receiver && (
+          {/* {detail.receiver && (
             <>
               <Text className='mb-3 block text-base font-medium text-gray-700'>
                 合作方信息
@@ -178,7 +169,7 @@ export default function SponsorDetail() {
                 <Text className='text-gray-700'>{detail.receiver.email}</Text>
               </View>
             </>
-          )}
+          )} */}
         </View>
 
         {/* 操作按钮 */}

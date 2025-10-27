@@ -37,7 +37,7 @@ async function getInfo(prisma: PrismaClient, id: number) {
   const sponsorship = await prisma.sponsorship.findUnique({
     where: { id },
     include: {
-      User_Sponsorship_initiatorIdToUser: true
+      initiatorIdToUser: true
     }
   })
   
