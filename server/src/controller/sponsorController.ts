@@ -30,16 +30,23 @@ export const listApprovedSponsors = async (
   req,
   reply
 ) => {
-  const { page, type, search} = req.query as { 
-    page?: string; 
-    search?: string;
-    type: SponsorshipType
-  };
-  const pageNum = page ? parseInt(page) : 1;
-  const finalSearch = search || '';
-  
-  const sponsors = await getApprovedSponsors(req.server.prisma, type , pageNum , finalSearch)
-  return reply.send(sponsors)
+  try {
+    const { page, type, search} = req.query as { 
+      page?: string; 
+      search?: string;
+      type: SponsorshipType
+    };
+    const pageNum = page ? parseInt(page) : 1;
+    const finalSearch = search || '';
+    
+    const sponsors = await getApprovedSponsors(req.server.prisma, type , pageNum , finalSearch)
+    return reply.send(sponsors)
+  } catch (error) {
+    return reply.status(500).send({
+      message: '获取赞助列表失败，请稍后重试',
+      error: error.message || String(error)
+    });
+  }
 }
 
 export const getSponsorsInfo = async (
