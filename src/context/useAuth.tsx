@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { wxlogin } from '@/utils/wxlogin'
 import Taro from '@tarojs/taro'
+
 interface AuthContextType {
   isLoggedIn: boolean
   login: () => Promise<boolean>
@@ -16,7 +17,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children
 }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
-  useEffect( () => {
+  useEffect(() => {
     login()
   }, [])
   const login = async () => {
@@ -28,7 +29,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setIsLoggedIn(true)
       return true
     } catch (err) {
-      return false
+      return console.log('登录失败', err)
     }
   }
   const logout = () => {

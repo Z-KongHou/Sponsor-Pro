@@ -1,7 +1,15 @@
 import { View, Text } from '@tarojs/components'
 
 interface ListItemProps {
-  data: any
+  data: {
+    title: string
+    school: string
+    categories: string
+    position: string
+    time_from: string
+    time_end: string
+    value?: number
+  }
 }
 
 export default function ListItem({ data }: ListItemProps) {
