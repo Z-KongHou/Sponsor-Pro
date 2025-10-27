@@ -2,7 +2,7 @@
   "miniprogramRoot": "dist/",
   "projectname": "sponsor",
   "description": "Sth interesting!",
-  "appid": "wx71971be8ba096c4f",
+  "appid": "touristappid",
   "setting": {
     "urlCheck": true,
     "es6": false,

@@ -7,7 +7,9 @@ export default defineAppConfig({
     'pages/register/club',
     'pages/sponsor/sponsor',
     'pages/sponsor/detailSponsor',
+    'pages/sponsor/publish',
     'pages/user/user',
+    'pages/user/editProfile',
     'pages/chat/chat',
     'pages/chat/privateChat',
     'pages/chat/receiverProfile'

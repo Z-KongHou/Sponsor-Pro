@@ -1,85 +1,38 @@
 import { View, Text, Image, Button } from '@tarojs/components'
-import { useState, useMemo, useEffect } from 'react'
-import { AtPagination } from 'taro-ui'
 import Taro from '@tarojs/taro'
-import { getUserInfo, getSponsorInfoByUserID } from '@/router/api'
-
-interface Activity {
-  id: number
-  title: string
-  type: string
-  status?: string
-}
-const PAGE_SIZE = 5
+import TabBar from '../../components/TabBar'
+import { useSponsorPage } from './hook'
+import { AtPagination } from 'taro-ui'
+import FloatingActionButton from '../../components/FloatingActionButton'
 
 const ActivityPage: React.FC = () => {
-  const [module, setModule] = useState<'activity' | 'profile'>('activity')
-  const [tab, setTab] = useState<'on' | 'off'>('on')
-  const [page, setPage] = useState(1)
+  const {
+    loading,
+    module,
+    setModule,
+    tab,
+    setTab,
+    page,
+    setPage,
+    profile,
+    list,
+    totalPage,
+    pageSize,
+    onShelfCount,
+    offShelfCount,
+    handleCreateSponsor
+  } = useSponsorPage()
 
-  const [name, setName] = useState<string>('')
-  const [email, setEmail] = useState<string>('')
-  const [phone, setPhone] = useState<string>('')
-  const [role, setRole] = useState<string>('')
-  // const [actionOpen, setActionOpen] = useState(false)
-  const [allActivities, setAllActivities] = useState<Activity[]>([])
-
-  useEffect(() => {
-    ;(async () => {
-      try {
-        const profile = await getUserInfo()
-        const u = profile?.user
-        if (u) {
-          setName(u.name || '')
-          setEmail(u.email || '')
-          setPhone(u.phone || '')
-          setRole(u.role || '')
-        }
-        const uid = u?.id
-        if (uid) {
-          const res = await getSponsorInfoByUserID(uid)
-          const list =
-            res?.data?.sponsorships || res?.sponsorships || res?.data || []
-          setAllActivities(list)
-        }
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch (e) {
-        // ignore
-      }
-    })()
-  }, [])
-
-  // 赞助记录换页（使用真实数据）
-  const { list, totalPage } = useMemo(() => {
-    if (module !== 'activity') return { list: [], totalPage: 1 }
-    const onShelf = allActivities.filter((a) =>
-      ['APPROVED', 'COMPLETED'].includes((a.status || '').toUpperCase())
-    )
-    const offShelf = allActivities.filter(
-      (a) => !['APPROVED', 'COMPLETED'].includes((a.status || '').toUpperCase())
-    )
-    const source = tab === 'on' ? onShelf : offShelf
-    const start = (page - 1) * PAGE_SIZE
-    const end = start + PAGE_SIZE
-    return {
-      list: source.slice(start, end),
-      totalPage: Math.max(1, Math.ceil(source.length / PAGE_SIZE))
-    }
-  }, [module, tab, page])
-
-  useEffect(() => {
-    setPage(1)
-  }, [module, tab])
   return (
-    <View className='min-h-screen bg-[#f5f7fa]'>
+    <View className='min-h-screen bg-[#f5f7fa] pb-24 pt-20'>
       <View className='relative flex bg-white px-8 py-6 shadow-sm'>
         <Image
           src=''
           className='h-[112rpx] w-[112rpx] rounded-full bg-gray-200'
         />
         <View className='ml-8 flex-1'>
-          <Text className='text-[32rpx] font-semibold text-[#222222]'>
-            {name}
+          <Text className='font-semibold text-[#222222] text-[32rpx]'>
+            {profile.name || '-'}
           </Text>
           <View className='mt-6 flex justify-center gap-10'>
             <Text
@@ -90,7 +43,6 @@ const ActivityPage: React.FC = () => {
               }`}
               onClick={() => {
                 setModule('activity')
-                setPage(1)
               }}
             >
               活动信息
@@ -103,7 +55,6 @@ const ActivityPage: React.FC = () => {
               }`}
               onClick={() => {
                 setModule('profile')
-                setPage(1)
               }}
             >
               个人信息
@@ -115,20 +66,11 @@ const ActivityPage: React.FC = () => {
       {module === 'activity' ? (
         <View className='mx-6 mt-6 flex min-h-[560rpx] flex-col rounded-2xl bg-white p-9 shadow-lg'>
           <View>
-            <Text className='text-[34rpx] font-bold text-[#222222]'>
+            <Text className='font-bold text-[#222222] text-[34rpx]'>
               活动信息
             </Text>
-            <View className='mt-5 flex items-center justify-between'>
-              <Text className='text-[26rpx] text-[#1890ff]'>缴纳保证金</Text>
-              <Button
-                className='ml-4 rounded-full bg-[#1890ff] px-6 py-2 text-[26rpx] text-white'
-                size='mini'
-                onClick={() =>
-                  Taro.navigateTo({ url: '/pages/sponsor/publish' })
-                }
-              >
-                + 发布赞助
-              </Button>
+            <View className='mt-5'>
+              <Text className='text-[#1890ff] text-[26rpx]'>缴纳保证金</Text>
             </View>
             <View className='mt-2 flex items-center text-[24rpx]'>
               <Text className='text-[#ff8c00]'>banner推荐</Text>
@@ -146,18 +88,10 @@ const ActivityPage: React.FC = () => {
               }`}
               onClick={() => {
                 setTab('on')
-                setPage(1)
               }}
             >
               已上架信息(
-              {
-                allActivities.filter((a) =>
-                  ['APPROVED', 'COMPLETED'].includes(
-                    (a.status || '').toUpperCase()
-                  )
-                ).length
-              }
-              )
+              {onShelfCount})
             </Text>
             <Text className='mx-5 text-[#cccccc]'>|</Text>
             <Text
@@ -168,19 +102,10 @@ const ActivityPage: React.FC = () => {
               }`}
               onClick={() => {
                 setTab('off')
-                setPage(1)
               }}
             >
               未上架信息(
-              {
-                allActivities.filter(
-                  (a) =>
-                    !['APPROVED', 'COMPLETED'].includes(
-                      (a.status || '').toUpperCase()
-                    )
-                ).length
-              }
-              )
+              {offShelfCount})
             </Text>
           </View>
 
@@ -193,8 +118,12 @@ const ActivityPage: React.FC = () => {
                 <Text className='px-4 py-5 text-center'>操作</Text>
               </View>
 
-              {list.length === 0 ? (
-                <View className='py-40 text-center text-[28rpx] text-[#999999]'>
+              {loading ? (
+                <View className='py-40 text-center text-[#999999] text-[28rpx]'>
+                  加载中...
+                </View>
+              ) : list.length === 0 ? (
+                <View className='py-40 text-center text-[#999999] text-[28rpx]'>
                   暂无数据
                 </View>
               ) : (
@@ -229,33 +158,41 @@ const ActivityPage: React.FC = () => {
             <AtPagination
               className='mt-8 flex justify-center text-[26rpx]'
               icon
-              total={totalPage * PAGE_SIZE}
-              pageSize={PAGE_SIZE}
+              total={totalPage * pageSize}
+              pageSize={pageSize}
               current={page}
               onPageChange={(e) => setPage(e.current)}
             />
           </View>
         </View>
       ) : (
-        <View className='mx-6 mt-6 rounded-2xl bg-white p-9 text-[28rpx] text-[#333] shadow-lg'>
-          <Text className='mb-6 block text-[34rpx] font-bold'>个人信息</Text>
+        <View className='mx-6 mt-6 rounded-2xl bg-white p-9 text-[#333] text-[28rpx] shadow-lg'>
+          <Text className='mb-6 block font-bold text-[34rpx]'>个人信息</Text>
 
           <View className='space-y-4'>
             <View className='flex items-center justify-between'>
               <Text className='text-[#888]'>姓名</Text>
-              <Text className='font-medium text-[#222]'>{name || '-'}</Text>
+              <Text className='font-medium text-[#222]'>
+                {profile.name || '-'}
+              </Text>
             </View>
             <View className='flex items-center justify-between'>
               <Text className='text-[#888]'>邮箱</Text>
-              <Text className='font-medium text-[#222]'>{email || '-'}</Text>
+              <Text className='font-medium text-[#222]'>
+                {profile.email || '-'}
+              </Text>
             </View>
             <View className='flex items-center justify-between'>
               <Text className='text-[#888]'>电话</Text>
-              <Text className='font-medium text-[#222]'>{phone || '-'}</Text>
+              <Text className='font-medium text-[#222]'>
+                {profile.phone || '-'}
+              </Text>
             </View>
             <View className='flex items-center justify-between'>
               <Text className='text-[#888]'>角色</Text>
-              <Text className='font-medium text-[#222]'>{role || '-'}</Text>
+              <Text className='font-medium text-[#222]'>
+                {profile.role || '-'}
+              </Text>
             </View>
           </View>
 
@@ -271,14 +208,14 @@ const ActivityPage: React.FC = () => {
           </View>
         </View>
       )}
-      <View className='fixed bottom-8 right-8 z-50'>
-        <Button
-          className='rounded-full bg-blue-600 px-5 py-3 text-white shadow-lg'
-          onClick={() => Taro.navigateTo({ url: '/pages/sponsor/publish' })}
-        >
-          + 发布赞助
-        </Button>
-      </View>
+      {module === 'activity' && (
+        <FloatingActionButton
+          text='发布赞助'
+          bottomOffset={180}
+          onClick={handleCreateSponsor}
+        />
+      )}
+      <TabBar current='profile' />
     </View>
   )
 }

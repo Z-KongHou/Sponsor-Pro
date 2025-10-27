@@ -2,6 +2,7 @@ import { View, Text, Input, Button } from '@tarojs/components'
 import { useState, useEffect } from 'react'
 import Taro from '@tarojs/taro'
 import TabBar from '@/components/TabBar'
+import FloatingActionButton from '@/components/FloatingActionButton'
 import ListItem from '@/components/sponsorItem'
 import { getActivities } from '../../router/api'
 
@@ -190,15 +191,11 @@ const SponsorSponsor = ({ type }: { type: sponsorType }) => {
         current={type === 'SCHOOL_INITIATED' ? 'activities' : 'sponsors'}
       />
 
-      {/* 发布赞助浮动按钮 */}
-      <View className='fixed bottom-8 right-8 z-50'>
-        <Button
-          className='rounded-full bg-blue-600 px-5 py-3 text-white shadow-lg'
-          onClick={() => Taro.navigateTo({ url: '/pages/sponsor/publish' })}
-        >
-          + 发布赞助
-        </Button>
-      </View>
+      <FloatingActionButton
+        text='发布赞助'
+        bottomOffset={180}
+        onClick={() => Taro.navigateTo({ url: '/pages/sponsor/publish' })}
+      />
     </View>
   )
 }
