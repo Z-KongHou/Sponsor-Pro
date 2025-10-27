@@ -26,6 +26,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         return true
       }
       await wxlogin()
+      console.log(1)
       setIsLoggedIn(true)
       return true
     } catch (err) {

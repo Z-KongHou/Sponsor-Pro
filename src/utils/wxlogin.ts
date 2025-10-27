@@ -34,6 +34,7 @@ export const wxlogin = async () => {
       icon: 'none',
       duration: 2000 
     })
+    throw new Error(errorMsg)
   } finally {
     Taro.hideLoading()
   }
