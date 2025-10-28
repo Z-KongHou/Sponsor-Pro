@@ -25,8 +25,8 @@ jobs:
             git reset --hard
             git pull
             yarn install
-            npx prisma generate
             npx prisma db pull
+            npx prisma generate
             npx tsc
             pm2 restart sponsor-server || pm2 start dist/app.js --name sponsor-server
           EOF
