@@ -3,7 +3,7 @@ import Taro from '@tarojs/taro'
 import TabBar from '../../components/TabBar'
 import { useSponsorPage } from './hook'
 import { AtPagination } from 'taro-ui'
-import FloatingActionButton from '../../components/FloatingActionButton'
+import FloatingActionButton from '../../components/SponsorButton'
 
 const ActivityPage: React.FC = () => {
   const {
@@ -31,7 +31,7 @@ const ActivityPage: React.FC = () => {
           className='h-[112rpx] w-[112rpx] rounded-full bg-gray-200'
         />
         <View className='ml-8 flex-1'>
-          <Text className='font-semibold text-[#222222] text-[32rpx]'>
+          <Text className='text-[32rpx] font-semibold text-[#222222]'>
             {profile.name || '-'}
           </Text>
           <View className='mt-6 flex justify-center gap-10'>
@@ -66,11 +66,11 @@ const ActivityPage: React.FC = () => {
       {module === 'activity' ? (
         <View className='mx-6 mt-6 flex min-h-[560rpx] flex-col rounded-2xl bg-white p-9 shadow-lg'>
           <View>
-            <Text className='font-bold text-[#222222] text-[34rpx]'>
+            <Text className='text-[34rpx] font-bold text-[#222222]'>
               活动信息
             </Text>
             <View className='mt-5'>
-              <Text className='text-[#1890ff] text-[26rpx]'>缴纳保证金</Text>
+              <Text className='text-[26rpx] text-[#1890ff]'>缴纳保证金</Text>
             </View>
             <View className='mt-2 flex items-center text-[24rpx]'>
               <Text className='text-[#ff8c00]'>banner推荐</Text>
@@ -119,11 +119,11 @@ const ActivityPage: React.FC = () => {
               </View>
 
               {loading ? (
-                <View className='py-40 text-center text-[#999999] text-[28rpx]'>
+                <View className='py-40 text-center text-[28rpx] text-[#999999]'>
                   加载中...
                 </View>
               ) : list.length === 0 ? (
-                <View className='py-40 text-center text-[#999999] text-[28rpx]'>
+                <View className='py-40 text-center text-[28rpx] text-[#999999]'>
                   暂无数据
                 </View>
               ) : (
@@ -166,8 +166,8 @@ const ActivityPage: React.FC = () => {
           </View>
         </View>
       ) : (
-        <View className='mx-6 mt-6 rounded-2xl bg-white p-9 text-[#333] text-[28rpx] shadow-lg'>
-          <Text className='mb-6 block font-bold text-[34rpx]'>个人信息</Text>
+        <View className='mx-6 mt-6 rounded-2xl bg-white p-9 text-[28rpx] text-[#333] shadow-lg'>
+          <Text className='mb-6 block text-[34rpx] font-bold'>个人信息</Text>
 
           <View className='space-y-4'>
             <View className='flex items-center justify-between'>

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { info } from '@/interface/sponsorInfo'
 import Taro from '@tarojs/taro'
 import TabBar from '@/components/TabBar'
-import FloatingActionButton from '@/components/FloatingActionButton'
+import FloatingActionButton from '@/components/SponsorButton'
 import ListItem from '@/components/sponsorItem'
 import { getActivities } from '../../router/api'
 
@@ -209,11 +209,7 @@ export default function SponsorSponsor() {
       {/* 底部导航栏 */}
       <TabBar current='sponsors' />
 
-      <FloatingActionButton
-        text='发布赞助'
-        bottomOffset={180}
-        onClick={() => Taro.navigateTo({ url: '/pages/sponsor/publish' })}
-      />
+      <FloatingActionButton />
     </View>
   )
 }
