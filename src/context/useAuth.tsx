@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { wxlogin } from '@/utils/wxlogin'
 import Taro from '@tarojs/taro'
+import { useAppDispatch } from '@/app/hooks'
+import { clearUserProfile } from '@/features/user'
 
 interface AuthContextType {
   isLoggedIn: boolean
@@ -17,6 +19,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children
 }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const dispatch = useAppDispatch()
   useEffect(() => {
     login()
   }, [])
@@ -37,6 +40,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const logout = () => {
     Taro.removeStorageSync('token')
     Taro.removeStorageSync('role')
+    dispatch(clearUserProfile())
     setIsLoggedIn(false)
   }
 

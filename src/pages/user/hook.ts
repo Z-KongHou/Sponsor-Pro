@@ -1,11 +1,17 @@
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import Taro from '@tarojs/taro'
+import { useAppDispatch, useAppSelector } from '@/app/hooks'
+import {
+  setUserProfile,
+  setUserStatus,
+  UserProfile as StoreUserProfile
+} from '@/features/user'
 import {
   deleteSponsor,
   getSponsorInfoByUserID,
   getUserInfo,
   updateSponsorStatus
 } from '@/router/api'
-import Taro from '@tarojs/taro'
-import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Activity } from './type'
 
 const PAGE_SIZE = 5
@@ -52,26 +58,14 @@ const normalizeSponsorResponse = (payload: unknown): Activity[] => {
   return []
 }
 
-interface UserProfile {
-  id: string
-  name: string
-  email: string
-  phone: string
-  role: string
-}
-
 const useUserProfile = () => {
-  const [loading, setLoading] = useState(true)
-  const [profile, setProfile] = useState<UserProfile>({
-    id: '',
-    name: '',
-    email: '',
-    phone: '',
-    role: ''
-  })
+  const dispatch = useAppDispatch()
+  const status = useAppSelector((state) => state.user.status)
+  const profile = useAppSelector((state) => state.user.profile)
+  const error = useAppSelector((state) => state.user.error)
 
   const refresh = useCallback(async () => {
-    setLoading(true)
+    dispatch(setUserStatus({ status: 'loading' }))
     try {
       const response = await getUserInfo()
       const user =
@@ -88,31 +82,51 @@ const useUserProfile = () => {
           ? (response as Record<string, unknown>)
           : {}) as Record<string, unknown>
 
-      setProfile({
-        id: target?.id ? String(target.id) : '',
-        name: (target?.name as string) || '',
-        email: (target?.email as string) || '',
-        phone: (target?.phone as string) || '',
-        role: (target?.role as string) || ''
-      })
-    } catch (error) {
+      dispatch(
+        setUserProfile({
+          id: target?.id ? String(target.id) : '',
+          name: (target?.name as string) || '',
+          email: (target?.email as string) || '',
+          phone: (target?.phone as string) || '',
+          role: (target?.role as string) || '',
+          avatarUrl: (target?.avatarUrl as string) || ''
+        })
+      )
+    } catch (err) {
+      dispatch(
+        setUserStatus({
+          status: 'failed',
+          error: err instanceof Error ? err.message : '获取用户信息失败'
+        })
+      )
       Taro.showToast({
         title: '获取用户信息失败',
         icon: 'none'
       })
-      console.error('获取用户信息失败', error)
-    } finally {
-      setLoading(false)
+      console.error('获取用户信息失败', err)
     }
-  }, [])
+  }, [dispatch])
 
   useEffect(() => {
-    refresh()
-  }, [refresh])
+    if ((status === 'idle' || status === 'failed') && !profile) {
+      void refresh()
+    }
+  }, [status, profile, refresh])
+
+  const safeProfile: StoreUserProfile = profile ?? {
+    id: '',
+    name: '',
+    email: '',
+    phone: '',
+    role: '',
+    avatarUrl: ''
+  }
 
   return {
-    loading,
-    profile,
+    loading: status === 'loading',
+    profile: safeProfile,
+    status,
+    error,
     refresh
   }
 }
