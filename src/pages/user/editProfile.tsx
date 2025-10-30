@@ -1,30 +1,30 @@
 import { View, Text, Input, Button } from '@tarojs/components'
 import Taro, { useUnload } from '@tarojs/taro'
 import { useEffect, useRef, useState } from 'react'
-import { getUserInfo, updateUserInfo } from '@/router/api'
+import { updateUserInfo } from '@/router/api'
+import { useAppDispatch } from '@/app/hooks'
+import { updateUserProfile } from '@/features/user'
+import { useUserProfile } from './hook'
 
 export default function EditProfile() {
+  const dispatch = useAppDispatch()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const dirtyRef = useRef(false)
+  const { profile, status, refresh } = useUserProfile()
 
   useEffect(() => {
-    ;(async () => {
-      try {
-        const res = await getUserInfo()
-        const u = res?.user
-        if (u) {
-          setName(u.name || '')
-          setEmail(u.email || '')
-          setPhone(u.phone || '')
-        }
-      } catch (e) {
-        // ignore
-      }
-    })()
-  }, [])
+    if (status === 'succeeded') {
+      setName(profile.name || '')
+      setEmail(profile.email || '')
+      setPhone(profile.phone || '')
+      dirtyRef.current = false
+    } else if (status === 'failed') {
+      void refresh()
+    }
+  }, [status, profile.name, profile.email, profile.phone, refresh])
 
   const handleChange = (setter: (v: string) => void) => (e) => {
     setter(e.detail.value)
@@ -35,6 +35,7 @@ export default function EditProfile() {
     setSubmitting(true)
     try {
       await updateUserInfo({ name, email, phone })
+      dispatch(updateUserProfile({ name, email, phone }))
       dirtyRef.current = false
       Taro.showToast({ title: '已保存', icon: 'success' })
       setTimeout(() => {
@@ -52,6 +53,7 @@ export default function EditProfile() {
     if (dirtyRef.current && !submitting) {
       // 触发异步保存，不阻塞卸载
       updateUserInfo({ name, email, phone }).finally(() => {
+        dispatch(updateUserProfile({ name, email, phone }))
         dirtyRef.current = false
       })
     }

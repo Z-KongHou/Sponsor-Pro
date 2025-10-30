@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { useAuth } from '@/context/useAuth'
 import Taro from '@tarojs/taro'
 

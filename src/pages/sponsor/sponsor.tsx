@@ -1,17 +1,19 @@
 import { View, Text, Input, Button } from '@tarojs/components'
 import { useState, useEffect } from 'react'
+import { info } from '@/interface/sponsorInfo'
 import Taro from '@tarojs/taro'
 import TabBar from '@/components/TabBar'
+import FloatingActionButton from '@/components/SponsorButton'
 import ListItem from '@/components/sponsorItem'
 import { getActivities } from '../../router/api'
-import { info } from "@/interface/sponsorInfo"
+
 type sponsorType = 'COMPANY_INITIATED' | 'SCHOOL_INITIATED'
 
 export default function SponsorSponsor() {
   // 状态管理
   const [searchKeyword, setSearchKeyword] = useState('')
   const [searchInput, setSearchInput] = useState('') // 临时存储用户输入
-  const [ type, setType ] = useState<sponsorType>("SCHOOL_INITIATED")
+  const [type, setType] = useState<sponsorType>('SCHOOL_INITIATED')
   const [Data, setData] = useState<info[]>([])
   const [totalCount, setTotalCount] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
@@ -64,25 +66,24 @@ export default function SponsorSponsor() {
 
   return (
     <View className='min-h-screen bg-gray-50 pb-20 pt-20'>
-
       <View className='bg-white px-4 py-2 shadow-sm'>
-        <View className='flex rounded-xl overflow-hidden'>
+        <View className='flex overflow-hidden rounded-xl'>
           <Button
-            className={` py-2 text-base font-medium transition-all duration-200 ${type === 'SCHOOL_INITIATED' ? 'bg-blue-500 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'}`}
+            className={`py-2 text-base font-medium transition-all duration-200 ${type === 'SCHOOL_INITIATED' ? 'bg-blue-500 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'}`}
             onClick={() => setType('SCHOOL_INITIATED')}
           >
-           👨‍🏫 学校发起
+            👨‍🏫 学校发起
           </Button>
-          <View className='w-0.5 bg-gray-200 self-stretch'></View>
+          <View className='w-0.5 self-stretch bg-gray-200'></View>
           <Button
-            className={` py-2 text-base font-medium transition-all duration-200 ${type === 'COMPANY_INITIATED' ? 'bg-blue-500 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'}`}
+            className={`py-2 text-base font-medium transition-all duration-200 ${type === 'COMPANY_INITIATED' ? 'bg-blue-500 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'}`}
             onClick={() => setType('COMPANY_INITIATED')}
           >
-            🏢 企业发起  
+            🏢 企业发起
           </Button>
         </View>
       </View>
-      
+
       {/* 搜索栏 */}
       <View className='sticky top-0 z-10 bg-white p-2 shadow-sm'>
         <View className='align-center flex h-10 gap-2'>
@@ -207,15 +208,8 @@ export default function SponsorSponsor() {
 
       {/* 底部导航栏 */}
       <TabBar current='sponsors' />
-      {/* 发布赞助浮动按钮 */}
-      <View className='fixed bottom-8 right-8 z-50'>
-        <Button
-          className='rounded-full bg-blue-600 px-5 py-3 text-white shadow-lg'
-          onClick={() => Taro.navigateTo({ url: '/pages/sponsor/publish' })}
-        >
-          + 发布赞助
-        </Button>
-      </View>
+
+      <FloatingActionButton />
     </View>
   )
 }
