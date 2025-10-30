@@ -1,6 +1,8 @@
 import { PropsWithChildren } from 'react'
 import { useLaunch } from '@tarojs/taro'
-import { AuthProvider } from "@/context/useAuth"
+import { Provider } from 'react-redux'
+import { AuthProvider } from '@/context/useAuth'
+import { store } from './app/store'
 import './app.scss'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -10,9 +12,9 @@ function App({ children }: PropsWithChildren<any>) {
   })
   // children 是将要会渲染的页面
   return (
-    <AuthProvider>
-      {children}
-    </AuthProvider>
+    <Provider store={store}>
+      <AuthProvider>{children}</AuthProvider>
+    </Provider>
   )
 }
 

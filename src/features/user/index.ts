@@ -1,14 +1,70 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-const oppositeSlice = createSlice({
-  name: 'opposite',
-  initialState: {},
+export interface UserProfile {
+  id: string
+  name: string
+  email: string
+  phone: string
+  role: string
+  avatarUrl?: string
+}
+
+type UserStatus = 'idle' | 'loading' | 'succeeded' | 'failed'
+
+interface UserState {
+  profile: UserProfile | null
+  status: UserStatus
+  error?: string
+}
+
+const initialState: UserState = {
+  profile: null,
+  status: 'idle',
+  error: undefined
+}
+
+const userSlice = createSlice({
+  name: 'user',
+  initialState,
   reducers: {
-    setOpposite: (state, action) => {
-      state[action.payload.key] = action.payload.value
-    }
+    setUserStatus: (
+      state,
+      action: PayloadAction<{ status: UserStatus; error?: string }>
+    ) => {
+      state.status = action.payload.status
+      state.error = action.payload.error
+    },
+    setUserProfile: (state, action: PayloadAction<UserProfile>) => {
+      state.profile = action.payload
+      state.status = 'succeeded'
+      state.error = undefined
+    },
+    updateUserProfile: (
+      state,
+      action: PayloadAction<Partial<UserProfile>>
+    ) => {
+      if (!state.profile) {
+        state.profile = {
+          id: '',
+          name: '',
+          email: '',
+          phone: '',
+          role: '',
+          ...action.payload
+        }
+      } else {
+        state.profile = { ...state.profile, ...action.payload }
+      }
+    },
+    clearUserProfile: () => initialState
   }
 })
 
-export const { setOpposite } = oppositeSlice.actions
-export default oppositeSlice.reducer
+export const {
+  setUserStatus,
+  setUserProfile,
+  updateUserProfile,
+  clearUserProfile
+} = userSlice.actions
+
+export default userSlice.reducer
