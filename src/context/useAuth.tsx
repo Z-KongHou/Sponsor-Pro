@@ -6,11 +6,13 @@ import { clearUserProfile } from '@/features/user'
 
 interface AuthContextType {
   isLoggedIn: boolean
+  setIsLoggedIn: (value: boolean) => void
   login: () => Promise<boolean>
   logout: () => void
 }
 const AuthContext = createContext<AuthContextType>({
   isLoggedIn: false,
+  setIsLoggedIn: () => {},
   login: async () => false,
   logout: () => {}
 })
@@ -45,7 +47,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, login, logout ,setIsLoggedIn}}>
       {children}
     </AuthContext.Provider>
   )

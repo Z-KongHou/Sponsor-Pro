@@ -72,7 +72,7 @@ export default function EnterpriseRegister() {
     } catch (error) {
       Taro.hideLoading();
       Taro.showToast({
-        title: '网络错误，请重试',
+        title: error || '网络错误，请重试',
         icon: 'none'
       });
       console.error('注册失败:', error);
