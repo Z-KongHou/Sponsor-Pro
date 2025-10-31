@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect } from 'react'
+import { useState } from 'react'
 import { View, Text, Input, Button, ScrollView } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import ChatBox from '../../components/ChatBox'
@@ -39,12 +39,8 @@ export default function PrivateChat() {
   ])
 
   const [inputValue, setInputValue] = useState('')
-  const [startHeight, setStartHeight] = useState(0)
-
-  useLayoutEffect(() => {
-    setStartHeight(Taro.getMenuButtonBoundingClientRect().height)
-  }, [])
-
+  const startHeightBottom = Taro.getMenuButtonBoundingClientRect().bottom
+  const startHeightTop = Taro.getMenuButtonBoundingClientRect().top
   const handleSend = () => {
     if (inputValue.trim()) {
       // 这里可以添加发送消息的逻辑
@@ -62,21 +58,21 @@ export default function PrivateChat() {
       style={{ backgroundColor: '#EDEDED' }}
     >
       <View
-        className='flex items-center justify-between bg-blue-500 px-4 py-3'
-        style={{ height: startHeight }}
-      ></View>
-      <View className='flex items-center bg-[#3B82F6] bg-blue-500 px-4 py-3'>
-        <View
-          className='text-sm text-white'
-          onClick={() => Taro.navigateBack()}
-          style={{ backgroundColor: 'transparent', border: 0 }}
-        >
-          {'<'}
+        className='flex flex-col bg-blue-500 px-4'
+        style={{ height: startHeightBottom + 16 }}
+      >
+        <View style={{ height: startHeightTop, width: '100%' }}></View>
+        <View className='flex items-start justify-between bg-blue-500 px-4'>
+          <View
+            className='text-sm text-white'
+            onClick={() => Taro.navigateBack()}
+            style={{ backgroundColor: 'transparent', border: 0 }}
+          >
+            {'<'}
+          </View>
+          <View className='text-base text-white'>私信聊天</View>
+          <View className='w-8'></View>
         </View>
-        <Text className='ml-4 flex-1 text-center text-lg font-medium text-white'>
-          私信聊天
-        </Text>
-        <View className='w-8'></View>
       </View>
 
       {/* 聊天消息区域 */}
