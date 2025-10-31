@@ -7,7 +7,6 @@ import fastifyWebSocket from '@fastify/websocket'
 import prisma from './prisma'
 import AccessToken from './utils/acess_token'
 import ApiRoutes from './routes'
-import WebSocketHandler from './utils/socket_map'
 
 const PORT = parseInt(process.env.PORT || '3000', 10)
 
