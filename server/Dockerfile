@@ -21,7 +21,7 @@ COPY --from=builder /Sponsor-Pro/prisma ./prisma
 COPY package.json .
 
 # 在运行时阶段只安装生产依赖
-RUN yarn install --frozen-lockfile --production && yarn cache clean
+RUN yarn install && yarn cache clean
 RUN npx prisma generate
 
 EXPOSE 6688
