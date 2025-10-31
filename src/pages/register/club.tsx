@@ -2,8 +2,10 @@ import { View, Text, Input, Button, Textarea } from '@tarojs/components';
 import Taro, { useLoad } from '@tarojs/taro';
 import { useState } from 'react';
 import { register } from '../../router/api';
+import { useAuth } from '@/context/useAuth';
 
 export default function ClubRegister() {
+  const { setIsLoggedIn } = useAuth()
   const [formData, setFormData] = useState({
     clubName: '',
     name: '',
@@ -69,6 +71,7 @@ export default function ClubRegister() {
           icon: 'success'
         });
         // 注册成功后跳转到首页或用户页面
+        setIsLoggedIn(true)
         setTimeout(() => {
           Taro.navigateTo({ url: '/pages/index/index' });
         }, 1500);

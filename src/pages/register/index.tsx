@@ -11,7 +11,7 @@ export default function Register() {
 
   const identityTypes = [
     {
-      id: 'companyMember',
+      id: 'enterprise',
       title: '企业身份',
       subtitle: '赞助商、合作伙伴',
       description: '为企业提供赞助管理和活动参与服务',
@@ -29,7 +29,7 @@ export default function Register() {
       bgColor: '#ECFDF5'
     },
     {
-      id: 'clubMember',
+      id: 'club',
       title: '社团身份',
       subtitle: '学生组织、社团',
       description: '为学生社团提供活动组织和资源对接',
