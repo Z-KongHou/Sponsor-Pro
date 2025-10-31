@@ -185,7 +185,7 @@ export const createSponsor = async (
         amount: body.amount,
         type: body.type,
         initiatorId: body.initiatorId,
-        receiverId: body.receiverId,
+        // receiverId: body.receiverId,
         status: 'PENDING', // 明确设置状态，即使数据库有默认值
         updatedAt: new Date()
       },

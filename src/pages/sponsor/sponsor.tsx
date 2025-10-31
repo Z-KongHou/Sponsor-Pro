@@ -4,7 +4,7 @@ import { info } from '@/interface/sponsorInfo'
 import Taro from '@tarojs/taro'
 import TabBar from '@/components/TabBar'
 import FloatingActionButton from '@/components/SponsorButton'
-import ListItem from '@/components/sponsorItem'
+import ListItem from '@/components/SponsorItem'
 import { getActivities } from '../../router/api'
 
 type sponsorType = 'COMPANY_INITIATED' | 'SCHOOL_INITIATED'

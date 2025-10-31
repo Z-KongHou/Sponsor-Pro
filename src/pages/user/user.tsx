@@ -1,8 +1,8 @@
 import { View, Text, Image, Button } from '@tarojs/components'
 import Taro from '@tarojs/taro'
+import { AtPagination } from 'taro-ui'
 import TabBar from '../../components/TabBar'
 import { useSponsorPage } from './hook'
-import { AtPagination } from 'taro-ui'
 import FloatingActionButton from '../../components/SponsorButton'
 
 const ActivityPage: React.FC = () => {

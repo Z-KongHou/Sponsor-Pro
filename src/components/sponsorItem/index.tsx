@@ -1,5 +1,6 @@
 import { View, Text } from '@tarojs/components'
-import { info } from "@/interface/sponsorInfo"
+import { info } from '@/interface/sponsorInfo'
+
 interface ListItemProps {
   data: info
 }
