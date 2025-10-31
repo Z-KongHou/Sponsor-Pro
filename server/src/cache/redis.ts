@@ -1,6 +1,6 @@
 import Redis from "ioredis";
 
-export const redis = new Redis({
+const redis = new Redis({
   host: "redis",
   port: 6379,
   db: 0,
@@ -9,12 +9,12 @@ export const redis = new Redis({
   connectTimeout: 10000,
 });
 
-export const sub = new Redis({
+const sub = new Redis({
   host: "redis",
   port: 6379,
   db: 0,
   retryStrategy: times => Math.min(times * 50, 2000)
 });
 
-
+export { redis,sub }
 

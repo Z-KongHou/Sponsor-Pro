@@ -878,6 +878,22 @@ fastify-plugin@^5.0.0, fastify-plugin@^5.0.1:
   resolved "https://registry.npmmirror.com/fastify-plugin/-/fastify-plugin-5.1.0.tgz#7083e039d6418415f9a669f8c25e72fc5bf2d3e7"
   integrity sha512-FAIDA8eovSt5qcDgcBvDuX/v0Cjz0ohGhENZ/wpc3y+oZCY2afZ9Baqql3g/lC+OHRnciQol4ww7tuthOb9idw==
 
+"fastify-websocket-deprecated@npm:fastify-websocket@4.2.2":
+  version "4.2.2"
+  resolved "https://registry.npmmirror.com/fastify-websocket/-/fastify-websocket-4.2.2.tgz#7fba0edee66d1d056ee900a4e58c8b5fd6af5ef0"
+  integrity sha512-Cx4CZwercvoPq4fc6f09VAoa3wqp9qOQUDHp8wMkCHau4zw7wGa+C3Oi2QNUvhvNqw6N4mH8WWYLEnGXUlnumg==
+  dependencies:
+    fastify-plugin "^3.0.0"
+    ws "^8.0.0"
+
+fastify-websocket@^4.3.0:
+  version "4.3.0"
+  resolved "https://registry.npmmirror.com/fastify-websocket/-/fastify-websocket-4.3.0.tgz#0eec382f4677886f62ae40d695f4f1f122d26dbf"
+  integrity sha512-PLoXjlKHaWOEIJ7tHStM2i8aL4kdYVB8d1Umf7TdpQ93kG7OopO7eV4IAyO545kRiE8pyL1AbjlJeZ7irDA1aA==
+  dependencies:
+    fastify-websocket-deprecated "npm:fastify-websocket@4.2.2"
+    process-warning "^1.0.0"
+
 fastify@^5.6.1:
   version "5.6.1"
   resolved "https://registry.npmmirror.com/fastify/-/fastify-5.6.1.tgz#551248a047758ed82741aea15ac4396875d73687"
@@ -1653,6 +1669,11 @@ prisma@^6.11.1:
   dependencies:
     "@prisma/config" "6.11.1"
     "@prisma/engines" "6.11.1"
+
+process-warning@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npmmirror.com/process-warning/-/process-warning-1.0.0.tgz#980a0b25dc38cd6034181be4b7726d89066b4616"
+  integrity sha512-du4wfLyj4yCZq1VupnVSZmRsPJsNuxoDQFdCFHLaYiEbFBD7QE0a+I4D7hOxrVnh78QE/YipFAj9lXHiXocV+Q==
 
 process-warning@^4.0.0:
   version "4.0.1"
