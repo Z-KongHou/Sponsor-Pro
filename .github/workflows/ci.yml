@@ -24,9 +24,22 @@ jobs:
             cd /var/www/Sponsor-Pro/server   # ← 替换成你的项目部署目录
             git reset --hard
             git pull
-            yarn install
-            npx prisma generate
-            npx prisma db pull
-            npx tsc
-            pm2 restart sponsor-server || pm2 start dist/app.js --name sponsor-server
+
+            echo "🛑 停止旧容器..."
+            docker compose down || echo "⚠️ 无旧容器可停止"
+
+            echo "🔨 构建新镜像..."
+            docker compose build --no-cache || {
+              echo "❌ 构建失败";
+              exit 1;
+            }
+
+            echo "🚀 启动新版本..."
+            docker compose up -d --force-recreate --remove-orphans || {
+                echo "❌ 启动失败";
+                exit 1;
+            }
+
+            docker container prune -f || echo "⚠️ 无容器可清理"
+            docker image prune -a -f --filter "until=24h" || echo "⚠️ 无镜像可清理"
           EOF

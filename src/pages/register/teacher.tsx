@@ -2,8 +2,10 @@ import { View, Text, Input, Button } from '@tarojs/components'
 import Taro,{ useLoad } from '@tarojs/taro'
 import { useState } from 'react'
 import { register } from '../../router/api'
+import { useAuth } from '@/context/useAuth'
 
 export default function TeacherRegister() {
+  const { setIsLoggedIn } = useAuth()
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -60,6 +62,7 @@ export default function TeacherRegister() {
           icon: 'success'
         });
         // 注册成功后跳转到首页或用户页面
+        setIsLoggedIn(true)
         setTimeout(() => {
           Taro.navigateTo({ url: '/pages/index/index' });
         }, 1500);

@@ -51,7 +51,7 @@ export const register = async (request, reply) => {
           // 处理老师扩展数据
           extensionRecord = await tx.teacher.create({
             data: {
-              userId: updatedUser.id,
+              userId: updatedUser.open_id,
               school: otherData.school,
               department: otherData.department,
               subject: otherData.subject
@@ -62,7 +62,7 @@ export const register = async (request, reply) => {
           // 处理社团扩展数据
           extensionRecord = await tx.clubMember.create({
             data: {
-              userId: updatedUser.id,
+              userId: updatedUser.open_id,
               clubName: otherData.clubName,
               school: otherData.school,
               category: otherData.category,
@@ -75,7 +75,7 @@ export const register = async (request, reply) => {
           // 处理企业扩展数据
           extensionRecord = await tx.companyMember.create({
             data: {
-              userId: updatedUser.id,
+              userId: updatedUser.open_id,
               companyName: otherData.companyName,
               industry: otherData.industry,
               description: otherData.description
