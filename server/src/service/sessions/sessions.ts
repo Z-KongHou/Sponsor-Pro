@@ -16,6 +16,21 @@ export const createSession = async (request: FastifyRequest, reply: FastifyReply
   const { UserA, UserB, sessionId } = request.body as CreateSessionBody;
   
   try {
+    const same = UserA == UserB
+    if(same) {
+      reply.send("你无法私聊自己");
+      return
+    }
+    const existingSession = await prisma.session.findFirst({
+      where: {
+        session_id: sessionId
+      },
+    });
+
+    if (existingSession) {
+      reply.send("获取会话成功")
+      return;
+    }
     await prisma.session.create({
         data: {
             session_id: sessionId,
@@ -25,7 +40,7 @@ export const createSession = async (request: FastifyRequest, reply: FastifyReply
         }
     });
     
-    reply.send("创建会话成功");
+    reply.send("获取会话成功");
   } catch (error) {
     console.error('创建会话失败:', error);
     reply.status(500).send({ error: '创建会话失败', details: error.message });
