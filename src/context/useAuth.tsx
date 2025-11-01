@@ -2,7 +2,8 @@ import React, { createContext, useContext, useEffect, useState } from 'react'
 import { wxlogin } from '@/utils/wxlogin'
 import Taro from '@tarojs/taro'
 import { useAppDispatch } from '@/app/hooks'
-import { clearUserProfile } from '@/features/user'
+import { clearUserProfile, setUserProfile } from '@/features/user'
+import { getUserInfo } from '@/router/api'
 
 interface AuthContextType {
   isLoggedIn: boolean
@@ -31,8 +32,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         return true
       }
       await wxlogin()
+      const userInfo = await getUserInfo()
+      dispatch(setUserProfile(userInfo))
       console.log(1)
       setIsLoggedIn(true)
+
       return true
     } catch (err) {
       console.log('登录失败', err)
@@ -47,7 +51,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout ,setIsLoggedIn}}>
+    <AuthContext.Provider value={{ isLoggedIn, login, logout, setIsLoggedIn }}>
       {children}
     </AuthContext.Provider>
   )

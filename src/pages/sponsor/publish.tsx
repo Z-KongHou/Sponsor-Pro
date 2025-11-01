@@ -1,6 +1,7 @@
 import { View, Text, Input, Textarea, Picker, Button } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import { useState } from 'react'
+import { useAppSelector } from '@/app/hooks'
 import { createSponsor } from '@/router/api'
 import RequireAuth from '@/components/requireAuth'
 
@@ -17,6 +18,7 @@ function Publish() {
   const [amount, setAmount] = useState('')
   const [typeIdx, setTypeIdx] = useState(0)
   const [submitting, setSubmitting] = useState(false)
+  const userId = useAppSelector((state) => state.user.profile?.id)
 
   const handleSubmit = async () => {
     if (!title) {
@@ -26,6 +28,7 @@ function Publish() {
     setSubmitting(true)
     try {
       await createSponsor({
+        initiatorId: userId,
         time_from: time_from,
         time_end: time_end,
         title,

@@ -188,10 +188,7 @@ export const createSponsor = async (req, reply) => {
         time_end: body.time_end
       },
       include: {
-        User_Sponsorship_initiatorIdToUser: {
-          select: { id: true, name: true, email: true }
-        },
-        User_Sponsorship_receiverIdToUser: {
+        ItiatorId: {
           select: { id: true, name: true, email: true }
         }
       }

@@ -153,7 +153,6 @@ export default function PrivateChat() {
           placeholder='输入消息...'
           value={inputValue}
           onInput={(e) => setInputValue(e.detail.value)}
-          onConfirm={handleSend}
         />
         <Button
           className='rounded-full bg-blue-500 px-4 py-2 text-sm text-white'
