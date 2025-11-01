@@ -2,7 +2,6 @@
 // ESM
 import Fastify from 'fastify'
 import fastifyCors from '@fastify/cors'
-import fastifyWebSocket from '@fastify/websocket'
 import prisma from './prisma'
 import AccessToken from './utils/acess_token'
 import ApiRoutes from './routes/index'
@@ -16,9 +15,6 @@ require('dotenv').config()
 const fastify = Fastify({
   logger: true
 })
-
-// 注册WebSocket插件
-fastify.register(fastifyWebSocket)
 
 // 注册CORS插件
 fastify.register(fastifyCors, {
