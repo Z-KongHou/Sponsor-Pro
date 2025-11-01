@@ -13,6 +13,7 @@ module.exports = {
   ],
   plugins: [
     '@babel/plugin-proposal-optional-chaining',
-    '@babel/plugin-transform-class-properties'
+    '@babel/plugin-transform-class-properties',
+    '@babel/plugin-proposal-nullish-coalescing-operator'
   ]
 }

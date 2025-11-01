@@ -1,6 +1,6 @@
 import Taro from '@tarojs/taro'
 
-const BASE_URL = 'http://127.0.0.1:6688/api' // ✅ 修改为你的后端地址
+const BASE_URL = 'https://testapi.helloworld-hdu.com/api' // ✅ 修改为你的后端地址
 
 interface RequestOptions {
   url: string

@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { Prisma } from '@prisma/client'
-import { SponsorshipType } from '@prisma/client';
+import { SponsorshipType } from '@prisma/client'
 import {
   deleteSponsorById,
   getApprovedSponsors,
@@ -26,47 +26,43 @@ interface UpdateSponsorStatusBody {
 const statusFromOperation = (operation: boolean): SponsorStatus =>
   operation ? 'COMPLETED' : 'APPROVED'
 
-export const listApprovedSponsors = async (
-  req,
-  reply
-) => {
+export const listApprovedSponsors = async (req, reply) => {
   try {
-    const { page, type, search} = req.query as { 
-      page?: string; 
-      search?: string;
+    const { page, type, search } = req.query as {
+      page?: string
+      search?: string
       type: SponsorshipType
-    };
-    const pageNum = page ? parseInt(page) : 1;
-    const finalSearch = search || '';
-    
-    const sponsors = await getApprovedSponsors(req.server.prisma, type , pageNum , finalSearch)
+    }
+    const pageNum = page ? parseInt(page) : 1
+    const finalSearch = search || ''
+
+    const sponsors = await getApprovedSponsors(
+      req.server.prisma,
+      type,
+      pageNum,
+      finalSearch
+    )
     return reply.send(sponsors)
   } catch (error) {
     return reply.status(500).send({
       message: '获取赞助列表失败，请稍后重试',
       error: error.message || String(error)
-    });
+    })
   }
 }
 
-export const getSponsorsInfo = async (
-  req,
-  reply
-) => {
-  const { id } = req.params as { 
+export const getSponsorsInfo = async (req, reply) => {
+  const { id } = req.params as {
     id: string
-  };
-  const sponsorid = parseInt(id);
+  }
+  const sponsorid = parseInt(id)
 
   const data = await getInfo(req.server.prisma, sponsorid)
   return reply.send(data)
 }
 
-export const deleteSponsor = async (
-  req,
-  reply
-) => {
-    if (Number.isNaN(req.params.id)) {
+export const deleteSponsor = async (req, reply) => {
+  if (Number.isNaN(req.params.id)) {
     reply.code(400)
     return reply.send({ message: 'Invalid sponsor ID' })
   }
@@ -88,13 +84,10 @@ export const deleteSponsor = async (
   }
 }
 
-export const updateSponsorStatus = async (
-  req,
-  reply
-) => {
+export const updateSponsorStatus = async (req, reply) => {
   const { operation } = req.body
 
-  if (typeof operation !== 'boolean'  ) {
+  if (typeof operation !== 'boolean') {
     reply.code(400)
     return reply.send({ message: 'operation must be a boolean value ' })
   }
@@ -129,10 +122,7 @@ export const updateSponsorStatus = async (
 /**
  * 根据用户ID获取赞助信息
  */
-export const getSponsorInfoByUserID = async (
-  req,
-  reply
-) => {
+export const getSponsorInfoByUserID = async (req, reply) => {
   try {
     const { userID } = req.query
     const userId = parseInt(userID, 10)
@@ -170,10 +160,7 @@ export const getSponsorInfoByUserID = async (
 
 // Define request body type based on Sponsorship model
 
-export const createSponsor = async (
-  req,
-  reply
-) => {
+export const createSponsor = async (req, reply) => {
   try {
     const { body } = req
 
@@ -187,7 +174,15 @@ export const createSponsor = async (
         initiatorId: body.initiatorId,
         // receiverId: body.receiverId,
         status: 'PENDING', // 明确设置状态，即使数据库有默认值
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        time_from: new Date('2024-06-30')
+          .toISOString()
+          .slice(0, 10)
+          .replace('T', ' '),
+        time_end: new Date('2024-06-30')
+          .toISOString()
+          .slice(0, 10)
+          .replace('T', ' ')
       },
       include: {
         User_Sponsorship_initiatorIdToUser: {

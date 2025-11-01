@@ -5,8 +5,8 @@ import fastifyCors from '@fastify/cors'
 import prisma from './prisma'
 import AccessToken from './utils/acess_token'
 import ApiRoutes from './routes/index'
-import wsRoutes from "./routes/ws"
-import websocket from '@fastify/websocket';
+import wsRoutes from './routes/ws'
+import websocket from '@fastify/websocket'
 
 const PORT = parseInt(process.env.PORT || '3000', 10)
 
