@@ -2,6 +2,7 @@ import { sub,redis } from "@/cache/redis";
 import { saveChatMessage,getChatHistory,getChatInfo } from "@/cache/cache";
 
 const userSockets = new Map();
+const subscribedChannels = new Set();
 
 const Handler = {
     "openChat": open_chat,
@@ -9,20 +10,22 @@ const Handler = {
     "chat": chat
 }
 
-export function chatWithWs(socket, req) {
-    userSockets.set(req.openId, socket.id);
-    sub.on('message', (channel, message) => {
-        const sessionId = channel.split(":")[2];
-        const message1 = JSON.parse(message);
+sub.on('message', (channel, message) => {
+    const sessionId = channel.split(":")[2];
+    const message1 = JSON.parse(message);
       // 推送给在线用户
-        const targetSocket = userSockets.get(message1.to);
-        if (targetSocket) {
-            socket.to(targetSocket).emit("new_message", message1);
-        }
-    })
+    const targetSocket = userSockets.get(message1.to);
+     if (targetSocket) {
+        targetSocket.send(JSON.stringify({eventType: "chat",message1}));
+    }
+})
+
+export function chatWithWs(socket, req) {
+    userSockets.set(req.openId, socket);
     socket.on('message', async (msg) => {
-        const { eventType } = msg.content
-        Handler[eventType](socket,msg)
+        const message = JSON.parse(msg);
+        const { eventType } = message.content
+        Handler[eventType](socket,message)
     })
 
     socket.on('disconnect', () => {
@@ -37,11 +40,11 @@ export function chatWithWs(socket, req) {
 async function open_chat (socket,msg) {
     const { from, to, sessionId, content } = msg.content;
     const history = await getChatHistory(sessionId, 50, from);
-    socket.emit({eventType: "openChat" ,history});
+    socket.send(JSON.stringify({eventType: "openChat" ,history}));
 }
 
 async function chat(socket,msg) {
-    const { from, to, sessionId, content } = msg;
+    const { from, to, sessionId, content } = msg.content;
     const message = {
         time: Date.now(),
         to: to,
@@ -70,11 +73,14 @@ async function initialize(socket, req) {
       // 并发处理所有会话，提高效率
       const enhancedSessions = await Promise.all(
         sessions.map(async (session) => {
-
           try {
             // 获取聊天信息
             const chatInfo = await getChatInfo(session.session_id, userWithSessions.id.toString());
-            sub.subscribe(`chat:session:${session.session_id}:pubsub`);
+            // 检查是否已订阅该频道
+            if (!subscribedChannels.has(`chat:session:${session.session_id}:pubsub`)) {
+              sub.subscribe(`chat:session:${session.session_id}:pubsub`);
+              subscribedChannels.add(`chat:session:${session.session_id}:pubsub`);
+            }
             // 合并原始会话数据和聊天信息
             return {
               ...session,
