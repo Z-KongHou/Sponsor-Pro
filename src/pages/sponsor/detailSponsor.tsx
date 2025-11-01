@@ -134,7 +134,7 @@ export default function SponsorDetail() {
                   name: sponsorInfo.initiatorIdToUser.name,
                   email: sponsorInfo.initiatorIdToUser.email,
                   role: sponsorInfo.initiatorIdToUser.role,
-                  avatarUrl: sponsorInfo.initiatorIdToUser.avatarurl
+                  avatarUrl: sponsorInfo.initiatorIdToUser.avatarUrl
                 })
               )
               // 使用当前用户ID创建会话

@@ -26,7 +26,7 @@ export interface detailInfo {
   receiverId?: number
   initiatorIdToUser: {
     id: number
-    avatarurl?: string
+    avatarUrl?: string
     email: string
     name: string
     phone: string

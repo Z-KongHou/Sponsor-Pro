@@ -23,7 +23,7 @@ export default function PrivateChat() {
 
   // ✅ 初始化连接
   useEffect(() => {
-    wsSingleton.connect('ws://localhost:8080/chat')
+    wsSingleton.connect('wss://testapi.helloworld-hdu.com/ws/chat/')
   }, [])
 
   // ✅ 订阅当前 session 的消息
