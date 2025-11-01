@@ -6,7 +6,3 @@ export interface ChatMessage {
   type?: 'text' | 'system' | 'ping'
 }
 export type SocketStatus = 'idle' | 'connecting' | 'open' | 'closed' | 'error'
-export interface UseChatSocketOptions {
-  sessionId: string
-  userId: string
-}

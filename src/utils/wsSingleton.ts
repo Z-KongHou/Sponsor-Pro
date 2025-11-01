@@ -1,5 +1,4 @@
 import Taro from '@tarojs/taro'
-import { getUserIdForWs } from '@/features/common'
 
 type RawHandler = (data: string) => void
 
@@ -16,19 +15,10 @@ export const subscribe = (fn: RawHandler) => {
 }
 
 /* 发送任意字符串 */
-export const send = (str: string) => {
+export const send = (frame: string) => {
   if (globalStatus === 'open' && task) {
-    const { receiverId, senderId } = getUserIdForWs()
-    if (!receiverId || !senderId) return
-    const frame = {
-      receiverId,
-      token: Taro.getStorageSync('token'),
-      type: 'text',
-      sessionId: `SessionId-${[receiverId, senderId].sort().join('')}`,
-      content: str
-    }
     Taro.sendSocketMessage({
-      data: JSON.stringify(frame)
+      data: frame
     })
   } else {
     console.warn('[ws-singleton] 未连接，消息丢弃')

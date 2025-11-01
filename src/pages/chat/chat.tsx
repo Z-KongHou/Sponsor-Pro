@@ -2,6 +2,8 @@ import Taro from '@tarojs/taro'
 import { View, Text, Image, ScrollView } from '@tarojs/components'
 import TabBar from '@/components/TabBar'
 import { useState } from 'react'
+import { useAppDispatch } from '@/app/hooks'
+import { setUserInfo } from '@/features/oppositeUser'
 
 interface ChatItem {
   id: string
@@ -14,61 +16,21 @@ interface ChatItem {
 
 export default function Chat() {
   // 模拟对话列表数据
-  const [chatList] = useState<ChatItem[]>([
-    {
-      id: '1',
-      name: '清华大学学生会',
-      avatar: 'https://img.yzcdn.cn/vant/cat.jpeg',
-      lastMessage: '关于这次活动的赞助事宜，我们希望能够...',
-      lastTime: '14:30',
-      unreadCount: 2
-    },
-    {
-      id: '2',
-      name: '北京大学科技协会',
-      avatar: 'https://img.yzcdn.cn/vant/logo.png',
-      lastMessage: '好的，我们会尽快安排会议时间',
-      lastTime: '昨天',
-      unreadCount: 0
-    },
-    {
-      id: '3',
-      name: '复旦大学创业俱乐部',
-      avatar: 'https://img.yzcdn.cn/vant/logo.png',
-      lastMessage: '活动方案已经发送到您的邮箱，请查收',
-      lastTime: '周三',
-      unreadCount: 5
-    },
-    {
-      id: '4',
-      name: '上海交通大学学生会',
-      avatar: 'https://img.yzcdn.cn/vant/cat.jpeg',
-      lastMessage: '期待与您的进一步合作',
-      lastTime: '12月15日',
-      unreadCount: 0
-    },
-    {
-      id: '5',
-      name: '浙江大学学术交流中心',
-      avatar: 'https://img.yzcdn.cn/vant/logo.png',
-      lastMessage: '我们会认真考虑您的提案',
-      lastTime: '12月14日',
-      unreadCount: 1
-    },
-    {
-      id: '6',
-      name: '南京大学学生组织联合会',
-      avatar: 'https://img.yzcdn.cn/vant/cat.jpeg',
-      lastMessage: '谢谢您的支持！',
-      lastTime: '12月13日',
-      unreadCount: 0
-    }
-  ])
+  const [chatList] = useState<ChatItem[]>([])
 
+  const dispatch = useAppDispatch()
   // 处理聊天项点击事件
   const handleChatItemClick = (chatItem: ChatItem) => {
+    // 先设置接收方信息
+    dispatch(
+      setUserInfo({
+        id: chatItem.id,
+        name: chatItem.name,
+        avatarUrl: chatItem.avatar
+      })
+    )
     Taro.navigateTo({
-      url: `/pages/chat/privateChat?userId=${chatItem.id}&userName=${chatItem.name}&userAvatar=${chatItem.avatar}`
+      url: `/pages/chat/privateChat`
     })
   }
 

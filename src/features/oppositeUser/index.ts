@@ -9,39 +9,22 @@ export interface UserProfile {
   avatarUrl?: string
 }
 
-type UserStatus = 'idle' | 'loading' | 'succeeded' | 'failed'
-
-interface UserState {
-  profile: UserProfile | null
-  status: UserStatus
-  error?: string
-}
-
-const initialState: UserState = {
-  profile: null,
-  status: 'idle',
-  error: undefined
+const initialState: UserProfile = {
+  id: '',
+  name: '',
+  email: '',
+  phone: '',
+  role: '',
+  avatarUrl: ''
 }
 
 const userSlice = createSlice({
-  name: 'user',
+  name: 'anotherUser',
   initialState,
   reducers: {
-    setUserStatus: (
-      state,
-      action: PayloadAction<{ status: UserStatus; error?: string }>
-    ) => {
-      state.status = action.payload.status
-      state.error = action.payload.error
-    },
-    setUserProfile: (state, action: PayloadAction<UserProfile>) => {
-      state.profile = action.payload
-      state.status = 'succeeded'
-      state.error = undefined
-    },
-    updateUserProfile: (state, action: PayloadAction<Partial<UserProfile>>) => {
-      if (!state.profile) {
-        state.profile = {
+    setUserInfo: (state, action: PayloadAction<Partial<UserProfile>>) => {
+      if (!state.id) {
+        state = {
           id: '',
           name: '',
           email: '',
@@ -50,18 +33,14 @@ const userSlice = createSlice({
           ...action.payload
         }
       } else {
-        state.profile = { ...state.profile, ...action.payload }
+        state = { ...state, ...action.payload }
       }
     },
+
     clearUserProfile: () => initialState
   }
 })
 
-export const {
-  setUserStatus,
-  setUserProfile,
-  updateUserProfile,
-  clearUserProfile
-} = userSlice.actions
+export const { setUserInfo, clearUserProfile } = userSlice.actions
 
 export default userSlice.reducer
