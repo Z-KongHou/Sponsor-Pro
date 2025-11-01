@@ -1,6 +1,6 @@
 export interface ChatMessage {
   sessionId: string
-  from: string
+  from: number
   time: number
   content: string
   type?: 'text' | 'system' | 'ping'

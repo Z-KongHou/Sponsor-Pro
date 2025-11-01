@@ -22,7 +22,10 @@ async function getApprovedSponsors(
     prisma.sponsorship.findMany({
       where,
       skip,
-      take: pageSize
+      take: pageSize,
+      include: {
+        initiatorIdToUser: true,
+      }
     }),
     prisma.sponsorship.count({
       where

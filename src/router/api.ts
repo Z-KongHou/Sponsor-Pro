@@ -147,3 +147,12 @@ export const updateUserInfo = async (data: unknown) => {
   })
   return res
 }
+
+export const CreateSession = async ( UserA: number, UserB: number, sessionId: string ) => {
+  const res = await request({
+    url: '/protect/createSession',
+    method: 'POST',
+    data: { UserA, UserB, sessionId }
+  })
+  return res
+}
