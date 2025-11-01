@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export interface UserProfile {
-  id: string
+  id: number
   name: string
   email: string
   phone: string
@@ -10,7 +10,7 @@ export interface UserProfile {
 }
 
 const initialState: UserProfile = {
-  id: '',
+  id: 0,
   name: '',
   email: '',
   phone: '',
@@ -25,7 +25,7 @@ const userSlice = createSlice({
     setUserInfo: (state, action: PayloadAction<Partial<UserProfile>>) => {
       if (!state.id) {
         state = {
-          id: '',
+          id: 0,
           name: '',
           email: '',
           phone: '',

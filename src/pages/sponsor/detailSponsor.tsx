@@ -2,9 +2,13 @@ import Taro from '@tarojs/taro'
 import { View, Text, ScrollView } from '@tarojs/components'
 import { setUserInfo } from '@/features/oppositeUser'
 import { useAppSelector, useAppDispatch } from '@/app/hooks'
+import { CreateSession } from '@/router/api'
+
 
 export default function SponsorDetail() {
   const sponsorInfo = useAppSelector((state) => state.sponsorInfo)
+  // 从全局状态中获取当前用户信息
+  const currentUser = useAppSelector((state) => state.user.profile)
   const dispatch = useAppDispatch()
 
   return (
@@ -124,16 +128,24 @@ export default function SponsorDetail() {
         <View className='mx-4 mt-6 space-y-3'>
           <View
             className='w-full rounded-full bg-blue-600 py-3 text-center font-medium text-white transition-colors hover:bg-blue-700'
-            onClick={() => {
+            onClick={async () => {
               dispatch(
                 setUserInfo({
                   id: sponsorInfo.initiatorIdToUser.id,
                   name: sponsorInfo.initiatorIdToUser.name,
                   email: sponsorInfo.initiatorIdToUser.email,
-                  type: sponsorInfo.initiatorIdToUser.type,
-                  avatar: sponsorInfo.initiatorIdToUser.avatar
+                  role: sponsorInfo.initiatorIdToUser.role,
+                  avatarUrl: sponsorInfo.initiatorIdToUser.avatarurl
                 })
               )
+              // 使用当前用户ID创建会话
+              if (currentUser) {
+                const sessionId = `sessionId-${[sponsorInfo.initiatorIdToUser.id, currentUser.id].sort().join('-')}`
+                await CreateSession(sponsorInfo.initiatorIdToUser.id, currentUser.id, sessionId)
+              } else {
+                Taro.showToast({ title: '请先登录', icon: 'none' })
+                return
+              }
               Taro.navigateTo({
                 url: `/pages/chat/privateChat`
               })
