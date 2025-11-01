@@ -13,7 +13,7 @@ const PORT = parseInt(process.env.PORT || '3000', 10)
 require('dotenv').config()
 
 const fastify = Fastify({
-  logger: true
+  logger: false
 })
 
 // 注册CORS插件
