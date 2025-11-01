@@ -6,7 +6,7 @@ WORKDIR /Sponsor-Pro
 COPY . .
 
 # 安装所有依赖（包括开发依赖）以确保构建成功
-RUN yarn install --frozen-lockfile && yarn cache clean
+RUN yarn install && yarn cache clean
 
 # 先运行tsc编译TypeScript，然后运行tsc-alias处理路径别名
 RUN npx tsc && npx tsc-alias
