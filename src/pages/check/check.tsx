@@ -7,7 +7,7 @@ export default function Check() {
       <Button
         className='rounded-lg bg-blue-500 px-6 py-3 text-white transition-colors hover:bg-blue-600'
         onClick={() => {
-          checkSponsorInfo(1)
+          checkSponsorInfo(8)
         }}
       >
         检查赞助
