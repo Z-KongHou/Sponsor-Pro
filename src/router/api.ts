@@ -100,7 +100,7 @@ export const getSponsorsInfo = async (id: number) => {
 }
 
 // 创建赞助
-export const createSponsor = async (data: unknown) => {
+export const createSponsor = async (data: any) => {
   const res = await request({
     url: '/offline/sponsor/create',
     method: 'POST',
@@ -163,9 +163,8 @@ export const createSession = async (
 
 export const checkSponsorInfo = async (sponsorId: number) => {
   const res = await request({
-    url: '/protect/checkSponsorInfo',
-    method: 'GET',
-    params: { sponsorId }
+    url: `/protect/sponsor/${sponsorId}`,
+    method: 'GET'
   })
   return res
 }

@@ -33,7 +33,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       }
       await wxlogin()
       const userInfo = await getUserInfo()
-      dispatch(setUserProfile(userInfo))
+      dispatch(setUserProfile(userInfo.user))
       console.log(1)
       setIsLoggedIn(true)
 

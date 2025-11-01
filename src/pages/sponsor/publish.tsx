@@ -18,7 +18,7 @@ function Publish() {
   const [amount, setAmount] = useState('')
   const [typeIdx, setTypeIdx] = useState(0)
   const [submitting, setSubmitting] = useState(false)
-  const userId = useAppSelector((state) => state.user.profile?.id)
+  const userInfo = useAppSelector((state) => state.user)
 
   const handleSubmit = async () => {
     if (!title) {
@@ -27,8 +27,18 @@ function Publish() {
     }
     setSubmitting(true)
     try {
+      console.log('userInfo', userInfo)
+      console.log('前端请求体：', {
+        initiatorId: userInfo?.profile?.id,
+        time_from,
+        time_end,
+        title,
+        description,
+        amount,
+        type: types[typeIdx].value
+      })
       await createSponsor({
-        initiatorId: userId,
+        initiatorId: userInfo?.profile?.id,
         time_from: time_from,
         time_end: time_end,
         title,
@@ -40,6 +50,11 @@ function Publish() {
       setTimeout(() => {
         Taro.navigateBack()
       }, 500)
+    } catch (error) {
+      Taro.showToast({
+        title: error.message || '提交失败',
+        icon: 'none'
+      })
     } finally {
       setSubmitting(false)
     }

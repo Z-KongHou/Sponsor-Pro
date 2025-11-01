@@ -169,7 +169,11 @@ export const getSponsorInfoByUserID = async (req, reply) => {
 
 // Define request body type based on Sponsorship model
 
-export const createSponsor = async (req, reply) => {
+export const createSponsor = async (
+  req: FastifyRequest,
+  reply: FastifyReply
+) => {
+  console.log('req.body', req)
   try {
     const { body } = req
 
@@ -214,16 +218,23 @@ export const createSponsor = async (req, reply) => {
 
 export const checkSponsorInfo = async (req, reply) => {
   try {
-    const { sponsorId } = req.params as {
-      sponsorId: number
+    // 从路径参数中解析 sponsorId，并转成数字
+    const sponsorId = Number(req.params.sponsorId)
+    if (isNaN(sponsorId)) {
+      return reply.status(400).send({
+        success: false,
+        message: '无效的 sponsorId'
+      })
     }
+
+    // 更新赞助状态
     await req.server.prisma.sponsorship.update({
       where: { id: sponsorId },
-      data: {
-        status: 'APPROVED'
-      }
+      data: { status: 'APPROVED' }
     })
-    reply.status(201).send({
+
+    // 返回结果
+    reply.status(200).send({
       success: true,
       message: '赞助信息检查成功'
     })
