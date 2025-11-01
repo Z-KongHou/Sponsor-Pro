@@ -177,7 +177,7 @@ export const createSponsor = async (
 ) => {
   console.log('req.body', req)
   try {
-    const { body } = req
+    const { body } = req as any
 
     // Create sponsorship with current date for updatedAt
     const sponsorship = await req.server.prisma.sponsorship.create({
