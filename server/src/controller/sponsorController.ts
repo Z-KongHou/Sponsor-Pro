@@ -211,3 +211,31 @@ export const createSponsor = async (req, reply) => {
     })
   }
 }
+
+export const checkSponsorInfo = async (req, reply) => {
+  try {
+    const { sponsorId } = req.params as {
+      sponsorId: number
+    }
+    await req.server.prisma.sponsorship.update({
+      where: { id: sponsorId },
+      data: {
+        status: 'APPROVED'
+      }
+    })
+    reply.status(201).send({
+      success: true,
+      message: '赞助信息检查成功'
+    })
+  } catch (error) {
+    console.error('检查赞助信息失败:', error)
+    reply.status(500).send({
+      success: false,
+      error: '检查赞助信息失败',
+      message:
+        process.env.NODE_ENV === 'development'
+          ? (error as Error).message
+          : '服务器内部错误'
+    })
+  }
+}

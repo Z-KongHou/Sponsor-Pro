@@ -2,8 +2,7 @@ import Taro from '@tarojs/taro'
 import { View, Text, ScrollView } from '@tarojs/components'
 import { setUserInfo } from '@/features/oppositeUser'
 import { useAppSelector, useAppDispatch } from '@/app/hooks'
-import { CreateSession } from '@/router/api'
-
+import { createSession } from '@/router/api'
 
 export default function SponsorDetail() {
   const sponsorInfo = useAppSelector((state) => state.sponsorInfo)
@@ -141,7 +140,11 @@ export default function SponsorDetail() {
               // 使用当前用户ID创建会话
               if (currentUser) {
                 const sessionId = `sessionId-${[sponsorInfo.initiatorIdToUser.id, currentUser.id].sort().join('-')}`
-                await CreateSession(sponsorInfo.initiatorIdToUser.id, currentUser.id, sessionId)
+                await createSession(
+                  sponsorInfo.initiatorIdToUser.id,
+                  currentUser.id,
+                  sessionId
+                )
               } else {
                 Taro.showToast({ title: '请先登录', icon: 'none' })
                 return

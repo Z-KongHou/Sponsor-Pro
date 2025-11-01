@@ -148,11 +148,24 @@ export const updateUserInfo = async (data: unknown) => {
   return res
 }
 
-export const CreateSession = async ( UserA: number, UserB: number, sessionId: string ) => {
+export const createSession = async (
+  UserA: number,
+  UserB: number,
+  sessionId: string
+) => {
   const res = await request({
     url: '/protect/createSession',
     method: 'POST',
     data: { UserA, UserB, sessionId }
+  })
+  return res
+}
+
+export const checkSponsorInfo = async (sponsorId: number) => {
+  const res = await request({
+    url: '/protect/checkSponsorInfo',
+    method: 'GET',
+    params: { sponsorId }
   })
   return res
 }
