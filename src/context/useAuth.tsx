@@ -4,6 +4,9 @@ import Taro from '@tarojs/taro'
 import { useAppDispatch } from '@/app/hooks'
 import { clearUserProfile, setUserProfile } from '@/features/user'
 import { getUserInfo } from '@/router/api'
+import { wsSingleton } from '@/utils/wsSingleton'
+import { ChatMessage } from '@/interface/webSocket'
+import { pushMessage } from '@/features/chat'
 
 interface AuthContextType {
   isLoggedIn: boolean
@@ -18,9 +21,7 @@ const AuthContext = createContext<AuthContextType>({
   logout: () => {}
 })
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
-  children
-}) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const dispatch = useAppDispatch()
   useEffect(() => {
@@ -34,9 +35,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       await wxlogin()
       const userInfo = await getUserInfo()
       dispatch(setUserProfile(userInfo.user))
-      console.log(1)
       setIsLoggedIn(true)
-
+      await wsSingleton.connect({
+        url: `wss://${process.env.TARO_APP_DOMAIN}/ws/chat/`,
+        headers: {
+          Authorization: `Bearer ${Taro.getStorageSync('token')}`
+        }
+      })
+      wsSingleton.subscribe('__mine__', (msg, sid) => {
+        dispatch(pushMessage({ sessionId: sid!, msg: msg as ChatMessage }))
+      })
+      wsSingleton.send({
+        eventType: 'init'
+      })
       return true
     } catch (err) {
       console.log('登录失败', err)
