@@ -49,7 +49,10 @@ export const updateUser = async (
   reply: FastifyReply
 ) => {
   try {
-    const { userData, extensionData } = request.body
+    const { userData, extensionData } = request.body as {
+      userData: any
+      extensionData: any
+    }
     const { prisma } = request.server
     // 验证必要参数
     if (!userData) {
