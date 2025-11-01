@@ -1,28 +1,63 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { View, Text, Input, Button, ScrollView } from '@tarojs/components'
 import Taro from '@tarojs/taro'
-import { useWebSocket } from '@/hooks/useWebSocket'
+import { useAppSelector } from '@/app/hooks'
+import { wsSingleton } from '@/utils/wsSingleton'
+import { ChatMessage } from '@/interface/webSocket'
 import ChatBox from '../../components/ChatBox'
 
 export default function PrivateChat() {
-  const { messages, sendMessage, status } = useWebSocket()
+  const senderId = useAppSelector((state) => state.user.profile?.id)
+  const receiverInfo = useAppSelector((state) => state.opposite)
+  const sessionId = useMemo(
+    () => `sessionId-${[senderId, receiverInfo.id].sort().join('-')}`,
+    [senderId, receiverInfo]
+  )
+
+  const [messages, setMessages] = useState<ChatMessage[]>([])
   const [inputValue, setInputValue] = useState('')
   const scrollRef = useRef<string>('')
 
   const startHeightBottom = Taro.getMenuButtonBoundingClientRect().bottom
   const startHeightTop = Taro.getMenuButtonBoundingClientRect().top
 
-  // 当有新消息时，更新滚动到最底部
+  // ✅ 初始化连接
   useEffect(() => {
-    if (messages.length > 0) {
-      scrollRef.current = `msg-${messages[messages.length - 1].time}`
-    }
-  }, [messages])
+    wsSingleton.connect('ws://localhost:8080/chat')
+  }, [])
 
+  // ✅ 订阅当前 session 的消息
+  useEffect(() => {
+    const handleMsg = (msg: ChatMessage) => {
+      setMessages((prev) => [...prev, msg])
+      scrollRef.current = `msg-${msg.time}`
+    }
+
+    wsSingleton.subscribe(sessionId, handleMsg)
+    return () => {
+      wsSingleton.unsubscribe(sessionId, handleMsg)
+    }
+  }, [sessionId])
+
+  // ✅ 发送消息
   const handleSend = () => {
     if (!inputValue.trim()) return
-    sendMessage(inputValue.trim())
+    if (!senderId || !receiverInfo?.id) {
+      Taro.showToast({ title: '用户信息不完整', icon: 'none' })
+      return
+    }
+
+    const msg: ChatMessage = {
+      from: senderId,
+      sessionId,
+      content: inputValue.trim(),
+      time: Date.now()
+    }
+
+    wsSingleton.send(sessionId, msg)
+    setMessages((prev) => [...prev, msg]) // 本地立即显示
     setInputValue('')
+    scrollRef.current = `msg-${msg.time}`
   }
 
   return (
@@ -43,10 +78,8 @@ export default function PrivateChat() {
           >
             {'<'}
           </View>
-          <View className='text-base text-white'>私信聊天</View>
-          <View className='w-8 text-xs text-white'>
-            {status === 'open' ? '在线' : '连接中'}
-          </View>
+          <View className='text-base text-white'>{receiverInfo.name}</View>
+          <View className='w-8 text-xs text-white'></View>
         </View>
       </View>
 
@@ -55,6 +88,7 @@ export default function PrivateChat() {
         className='box-border w-full flex-1'
         scrollY
         scrollIntoView={scrollRef.current}
+        scrollWithAnimation
       >
         <View className='w-full px-4 py-3'>
           {messages.map((message) => (
@@ -66,13 +100,12 @@ export default function PrivateChat() {
               </View>
               <View
                 className={`mb-4 flex items-end ${
-                  message.from === message.sessionId.split('-')[1]
-                    ? 'justify-end'
-                    : 'justify-start'
+                  message.from === senderId ? 'justify-end' : 'justify-start'
                 }`}
                 style={{ width: '100%' }}
               >
-                {message.from !== message.sessionId.split('-')[1] && (
+                {/* 对方头像 */}
+                {message.from !== senderId && (
                   <View className='mr-3 flex flex-shrink-0 flex-col items-center'>
                     <View
                       className='flex h-10 w-10 items-center justify-center rounded-full border-2 border-blue-200'
@@ -83,25 +116,21 @@ export default function PrivateChat() {
                   </View>
                 )}
 
+                {/* 聊天内容 */}
                 <View
                   className={`flex flex-col ${
-                    message.from === message.sessionId.split('-')[1]
-                      ? 'items-end'
-                      : 'items-start'
+                    message.from === senderId ? 'items-end' : 'items-start'
                   }`}
                   style={{ maxWidth: 'calc(100% - 60px)' }}
                 >
                   <ChatBox
-                    user={
-                      message.from === message.sessionId.split('-')[1]
-                        ? 'Sender'
-                        : 'Receiver'
-                    }
+                    user={message.from === senderId ? 'Sender' : 'Receiver'}
                     content={message.content}
                   />
                 </View>
 
-                {message.from === message.sessionId.split('-')[1] && (
+                {/* 我方头像 */}
+                {message.from === senderId && (
                   <View className='ml-3 flex flex-shrink-0 flex-col items-center'>
                     <View
                       className='flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-200'
