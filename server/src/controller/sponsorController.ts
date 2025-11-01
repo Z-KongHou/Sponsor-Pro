@@ -26,7 +26,10 @@ interface UpdateSponsorStatusBody {
 const statusFromOperation = (operation: boolean): SponsorStatus =>
   operation ? 'COMPLETED' : 'APPROVED'
 
-export const listApprovedSponsors = async (req, reply) => {
+export const listApprovedSponsors = async (
+  req: FastifyRequest,
+  reply: FastifyReply
+) => {
   try {
     const { page, type, search } = req.query as {
       page?: string
@@ -51,7 +54,10 @@ export const listApprovedSponsors = async (req, reply) => {
   }
 }
 
-export const getSponsorsInfo = async (req, reply) => {
+export const getSponsorsInfo = async (
+  req: FastifyRequest,
+  reply: FastifyReply
+) => {
   const { id } = req.params as {
     id: string
   }
@@ -61,12 +67,15 @@ export const getSponsorsInfo = async (req, reply) => {
   return reply.send(data)
 }
 
-export const deleteSponsor = async (req, reply) => {
-  if (Number.isNaN(req.params.id)) {
+export const deleteSponsor = async (
+  req: FastifyRequest,
+  reply: FastifyReply
+) => {
+  if (Number.isNaN(Number((req.params as { id: string }).id))) {
     reply.code(400)
     return reply.send({ message: 'Invalid sponsor ID' })
   }
-  const sponsorId = Number(req.params.id)
+  const sponsorId = Number((req.params as { id: string }).id)
 
   try {
     const deletedRecord = await deleteSponsorById(req.server.prisma, sponsorId)

@@ -57,7 +57,7 @@ export const wxLogin = async (code: string) => {
   return res
 }
 
-export const register = async (data: any) => {
+export const register = async (data: unknown) => {
   const res = await request({
     url: '/protect/register',
     method: 'POST',
@@ -139,7 +139,7 @@ export const getSponsorInfoByUserID = async (id: string | number) => {
 }
 
 // 更新用户信息
-export const updateUserInfo = async (data: any) => {
+export const updateUserInfo = async (data: unknown) => {
   const res = await request({
     url: '/protect/user/profile',
     method: 'POST',

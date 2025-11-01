@@ -5,6 +5,8 @@ import Taro from '@tarojs/taro'
 import TabBar from '@/components/TabBar'
 import FloatingActionButton from '@/components/SponsorButton'
 import ListItem from '@/components/SponsorItem'
+import { useAppDispatch } from '@/app/hooks'
+import { setSponsorInfo } from '@/features/sponsorInfo'
 import { getActivities } from '../../router/api'
 
 type sponsorType = 'COMPANY_INITIATED' | 'SCHOOL_INITIATED'
@@ -20,6 +22,7 @@ export default function SponsorSponsor() {
   const [loading, setLoading] = useState(false)
   const pageSize = 6
 
+  const dispatch = useAppDispatch()
   // 当搜索关键词变化时重置到第一页
   useEffect(() => {
     setCurrentPage(1)
@@ -142,11 +145,12 @@ export default function SponsorSponsor() {
           displayData.map((item, index) => (
             <View
               key={index}
-              onClick={() =>
+              onClick={() => {
+                dispatch(setSponsorInfo(item))
                 Taro.navigateTo({
-                  url: `/pages/sponsor/detailSponsor?id=${item.id}&type=${type}`
+                  url: `/pages/sponsor/detailSponsor`
                 })
-              }
+              }}
             >
               <ListItem data={item} />
             </View>

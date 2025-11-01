@@ -2,13 +2,13 @@ import Taro, { useRouter } from '@tarojs/taro'
 import { View, Text, ScrollView } from '@tarojs/components'
 import { useState, useEffect } from 'react'
 import { getSponsorsInfo } from '@/router/api'
-import { detailinfo } from '@/interface/sponsorInfo'
+import { detailInfo } from '@/interface/sponsorInfo'
 
 export default function SponsorDetail() {
   const router = useRouter()
   const { id, type } = router.params
 
-  const [detail, setDetail] = useState<detailinfo | null>(null)
+  const [detail, setDetail] = useState<detailInfo | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>('')
 

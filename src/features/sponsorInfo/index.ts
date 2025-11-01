@@ -1,11 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { detailInfo } from '@/interface/sponsorInfo'
 
 const sponsorInfoSlice = createSlice({
   name: 'sponsorInfo',
-  initialState: {},
+  initialState: {} as detailInfo,
   reducers: {
     setSponsorInfo: (state, action) => {
-      state[action.payload.key] = action.payload.value
+      return action.payload
     }
   }
 })
