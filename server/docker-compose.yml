@@ -21,6 +21,8 @@ services:
       POSTGRES_DB: testdb
     volumes:
       - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
 
   redis:
     image: redis:7-alpine
