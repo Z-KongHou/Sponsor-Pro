@@ -2,7 +2,7 @@ import { View, Text, Input, Textarea, Picker, Button } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import { useState } from 'react'
 import { createSponsor } from '@/router/api'
-import RequireAuth from "@/components/requireAuth"
+import RequireAuth from '@/components/requireAuth'
 
 const types = [
   { label: '校方发起', value: 'SCHOOL_INITIATED' },
@@ -11,6 +11,8 @@ const types = [
 
 function Publish() {
   const [title, setTitle] = useState('')
+  const [time_from, setTimeFrom] = useState('2024-06-01')
+  const [time_end, setTimeEnd] = useState('2024-06-30')
   const [description, setDescription] = useState('')
   const [amount, setAmount] = useState('')
   const [typeIdx, setTypeIdx] = useState(0)
@@ -24,6 +26,8 @@ function Publish() {
     setSubmitting(true)
     try {
       await createSponsor({
+        time_from: time_from,
+        time_end: time_end,
         title,
         description,
         amount: amount ? Number(amount) : undefined,
@@ -50,7 +54,6 @@ function Publish() {
             onInput={(e) => setTitle(e.detail.value)}
           />
         </View>
-
         <View>
           <Text className='mb-2 block text-sm text-gray-600'>赞助类型</Text>
           <Picker
@@ -61,6 +64,32 @@ function Publish() {
           >
             <View className='rounded border border-gray-200 p-2'>
               {types[typeIdx].label}
+            </View>
+          </Picker>
+        </View>
+
+        <View>
+          <Text className='mb-2 block text-sm text-gray-600'>开始时间</Text>
+          <Picker
+            mode='date'
+            value={time_from}
+            onChange={(e) => setTimeFrom(e.detail.value)}
+          >
+            <View className='rounded border border-gray-200 p-2'>
+              {time_from}
+            </View>
+          </Picker>
+        </View>
+
+        <View>
+          <Text className='mb-2 block text-sm text-gray-600'>结束时间</Text>
+          <Picker
+            mode='date'
+            value={time_end}
+            onChange={(e) => setTimeEnd(e.detail.value)}
+          >
+            <View className='rounded border border-gray-200 p-2'>
+              {time_end}
             </View>
           </Picker>
         </View>
@@ -98,7 +127,7 @@ function Publish() {
   )
 }
 
-export default function PublishSponsor(){
+export default function PublishSponsor() {
   return (
     <RequireAuth>
       <Publish />

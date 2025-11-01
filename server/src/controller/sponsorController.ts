@@ -175,14 +175,8 @@ export const createSponsor = async (req, reply) => {
         // receiverId: body.receiverId,
         status: 'PENDING', // 明确设置状态，即使数据库有默认值
         updatedAt: new Date(),
-        time_from: new Date('2024-06-30')
-          .toISOString()
-          .slice(0, 10)
-          .replace('T', ' '),
-        time_end: new Date('2024-06-30')
-          .toISOString()
-          .slice(0, 10)
-          .replace('T', ' ')
+        time_from: body.time_from,
+        time_end: body.time_end
       },
       include: {
         User_Sponsorship_initiatorIdToUser: {
