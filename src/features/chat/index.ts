@@ -26,6 +26,7 @@ export const chatSlice = createSlice({
     ) => {
       state[payload.sessionId] = payload.list
     },
+    // 获取某会话的历史消息
     // 清空某会话
     clearSession: (state, { payload }: PayloadAction<{ sessionId: string }>) => {
       delete state[payload.sessionId]

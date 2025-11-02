@@ -23,20 +23,8 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     setUserInfo: (state, action: PayloadAction<Partial<UserProfile>>) => {
-      if (!state.id) {
-        state = {
-          id: 0,
-          name: '',
-          email: '',
-          phone: '',
-          role: '',
-          ...action.payload
-        }
-      } else {
-        state = { ...state, ...action.payload }
-      }
+      return { ...state, ...action.payload }
     },
-
     clearUserProfile: () => initialState
   }
 })

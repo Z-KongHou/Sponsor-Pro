@@ -4,6 +4,8 @@ export interface ChatMessage {
     sessionId: string
     from: number
     to: number
+    avatar: string
+    name: string
     time: number
     content: string
     type?: 'text' | 'system' | 'ping'

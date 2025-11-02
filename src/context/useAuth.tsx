@@ -36,24 +36,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const userInfo = await getUserInfo()
       dispatch(setUserProfile(userInfo.user))
       setIsLoggedIn(true)
-      await wsSingleton.connect({
-        url: `wss://testapi.helloworld-hdu.com/ws/chat/`,
-        headers: {
-          Authorization: `Bearer ${Taro.getStorageSync('token')}`
-        }
-      })
-      wsSingleton.subscribe('__mine__', (msg, sid) => {
-        dispatch(pushMessage({ sessionId: sid!, msg: msg as ChatMessage }))
-      })
-      wsSingleton.send({
-        eventType: 'init'
-      })
+
       return true
     } catch (err) {
       console.log('登录失败', err)
       return false
     }
   }
+  useEffect(() => {
+    if (!isLoggedIn) {
+      return
+    }
+    wsSingleton.connect({
+      url: `wss://testapi.helloworld-hdu.com/chat/`,
+      headers: {
+        Authorization: `Bearer ${Taro.getStorageSync('token')}`
+      }
+    })
+    wsSingleton.subscribe('__mine__', (msg, sid) => {
+      dispatch(pushMessage({ sessionId: sid!, msg: msg as ChatMessage }))
+    })
+    return () => {
+      wsSingleton.close()
+    }
+  }, [isLoggedIn])
   const logout = () => {
     Taro.removeStorageSync('token')
     Taro.removeStorageSync('role')

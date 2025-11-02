@@ -1,8 +1,8 @@
 import Taro from '@tarojs/taro'
 import { View, Text, Image, ScrollView } from '@tarojs/components'
 import TabBar from '@/components/TabBar'
-import { useState } from 'react'
-import { useAppDispatch } from '@/app/hooks'
+import { useState, useEffect } from 'react'
+import { useAppDispatch, useAppSelector } from '@/app/hooks'
 import { setUserInfo } from '@/features/oppositeUser'
 import { wsSingleton } from '@/utils/wsSingleton'
 
@@ -10,7 +10,7 @@ export interface ChatItem {
   sessionId: string
   id: number
   name: string
-  avatar: string
+  avatar?: string
   lastMessage: string
   lastTime: string
   unreadCount: number
@@ -19,7 +19,12 @@ export interface ChatItem {
 export default function Chat() {
   // 模拟对话列表数据
   const [chatList, setChatList] = useState<ChatItem[]>([])
-  setChatList(wsSingleton.getChatSessions())
+  const userInfo = useAppSelector((state) => state.opposite)
+
+  useEffect(() => {
+    setChatList(wsSingleton.getChatSessions())
+  }, [])
+
   const dispatch = useAppDispatch()
   // 处理聊天项点击事件
   const handleChatItemClick = (chatItem: ChatItem) => {
@@ -28,15 +33,11 @@ export default function Chat() {
       setUserInfo({
         id: chatItem.id,
         name: chatItem.name,
-        avatarUrl: chatItem.avatar
+        avatarUrl: chatItem.avatar || ''
       })
     )
-    wsSingleton.send(
-      {
-        eventType: 'openChat'
-      },
-      chatItem.sessionId
-    )
+
+    console.log(userInfo)
     Taro.navigateTo({
       url: `/pages/chat/privateChat`
     })
@@ -78,7 +79,7 @@ export default function Chat() {
             {/* 头像区域 */}
             <View className='relative mr-3'>
               <Image
-                src={chatItem.avatar}
+                src={chatItem.avatar || ''}
                 className='h-12 w-12 rounded-full border-2 border-white shadow-sm'
               />
               {/* 未读消息红点 */}

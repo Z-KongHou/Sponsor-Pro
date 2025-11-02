@@ -9,11 +9,11 @@ import ChatBox from '../../components/ChatBox'
 
 export default function PrivateChat() {
   const dispatch = useAppDispatch()
-  const senderId = useAppSelector((state) => state.user.profile?.id)
+  const senderInfo = useAppSelector((state) => state.user.profile)
   const receiverInfo = useAppSelector((state) => state.opposite)
   const sessionId = useMemo(
-    () => `sessionId-${[senderId, receiverInfo.id].sort().join('-')}`,
-    [senderId, receiverInfo]
+    () => `sessionId-${[senderInfo?.id, receiverInfo.id].sort().join('-')}`,
+    [senderInfo, receiverInfo]
   )
 
   const [inputValue, setInputValue] = useState('')
@@ -25,7 +25,6 @@ export default function PrivateChat() {
   useEffect(() => {
     // 1. 先清空/初始化会话槽
     dispatch(setHistory({ sessionId, list: [] }))
-
     const handleLogic = (msg: ChatMessage | ChatMessage[]) => {
       const m = Array.isArray(msg) ? msg : [msg] // openChat 是数组，chat 是单条
       m.forEach((v) => dispatch(pushMessage({ sessionId, msg: v })))
@@ -39,12 +38,12 @@ export default function PrivateChat() {
       dispatch(setHistory({ sessionId, list: [] })) // 离开时也清空，防止残留
     }
   }, [sessionId, dispatch])
-  const messages = useAppSelector((state) => state.chat.history[sessionId]?.list || [])
+  const messages = useAppSelector((state) => state.chat[sessionId] || [])
 
   // ✅ 发送消息
   const handleSend = () => {
     if (!inputValue.trim()) return
-    if (!senderId || !receiverInfo?.id) {
+    if (!senderInfo?.id || !receiverInfo?.id) {
       Taro.showToast({ title: '用户信息不完整', icon: 'none' })
       return
     }
@@ -52,7 +51,9 @@ export default function PrivateChat() {
     const msg: ChatMessage = {
       eventType: 'chat',
       data: {
-        from: senderId,
+        avatar: senderInfo.avatarUrl || '',
+        name: senderInfo.name || '',
+        from: senderInfo.id,
         to: receiverInfo.id,
         sessionId,
         content: inputValue.trim(),
@@ -61,6 +62,8 @@ export default function PrivateChat() {
     }
 
     wsSingleton.send(msg, sessionId)
+    // 4. 本地追加
+    dispatch(pushMessage({ sessionId, msg }))
     setInputValue('')
     scrollRef.current = `msg-${msg.data?.time}`
   }
@@ -102,12 +105,12 @@ export default function PrivateChat() {
               </View>
               <View
                 className={`mb-4 flex items-end ${
-                  message.data?.from === senderId ? 'justify-end' : 'justify-start'
+                  message.data?.from === senderInfo?.id ? 'justify-end' : 'justify-start'
                 }`}
                 style={{ width: '100%' }}
               >
                 {/* 对方头像 */}
-                {message.data?.from !== senderId && (
+                {message.data?.from !== senderInfo?.id && (
                   <View className='mr-3 flex flex-shrink-0 flex-col items-center'>
                     <View
                       className='flex h-10 w-10 items-center justify-center rounded-full border-2 border-blue-200'
@@ -121,18 +124,18 @@ export default function PrivateChat() {
                 {/* 聊天内容 */}
                 <View
                   className={`flex flex-col ${
-                    message.data?.from === senderId ? 'items-end' : 'items-start'
+                    message.data?.from === senderInfo?.id ? 'items-end' : 'items-start'
                   }`}
                   style={{ maxWidth: 'calc(100% - 60px)' }}
                 >
                   <ChatBox
-                    user={message.data?.from === senderId ? 'Sender' : 'Receiver'}
+                    user={message.data?.from === senderInfo?.id ? 'Sender' : 'Receiver'}
                     content={message.data?.content || ''}
                   />
                 </View>
 
                 {/* 我方头像 */}
-                {message.data?.from === senderId && (
+                {message.data?.from === senderInfo?.id && (
                   <View className='ml-3 flex flex-shrink-0 flex-col items-center'>
                     <View
                       className='flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-200'

@@ -8,19 +8,19 @@ type WSCallback = (msg: ChatMessage | ChatMessage[], sessionId?: string) => void
 /** 初始化事件：服务器下发所有会话 */
 interface WSInitEvent {
   eventType: 'init'
-  content: ChatItem[]
+  data: ChatItem[]
 }
 
 /** 打开某个会话时的历史消息 */
 interface WSOpenChatEvent {
   eventType: 'openChat'
-  content: { sessionId: string; messages: ChatMessage[] }
+  data: { sessionId: string; messages: ChatMessage[] }
 }
 
 /** 实时聊天消息事件 */
 interface WSChatEvent {
   eventType: 'chat'
-  content: { sessionId: string; message: ChatMessage }
+  data: { sessionId: string; message: ChatMessage }
 }
 
 /** 统一的 WebSocket 事件类型 */
@@ -47,6 +47,9 @@ class WSSingleton {
         console.log('✅ WebSocket 已连接')
         this.isConnected = true
         this.connecting = false
+        wsSingleton.send({
+          eventType: 'init'
+        })
       })
 
       task.onClose(() => {
@@ -56,19 +59,21 @@ class WSSingleton {
       })
 
       task.onMessage((msg) => {
+        console.log('✅ 收到消息:', msg.data)
         try {
           const data: WSEvent = JSON.parse(msg.data as string)
 
           switch (data.eventType) {
             /** 初始化会话列表 */
             case 'init': {
-              this.chatSessions = data.content
+              this.chatSessions = data.data
+              console.log('✅ 初始化会话列表:', this.chatSessions)
               break
             }
 
             /** 打开会话（历史消息） */
             case 'openChat': {
-              const { sessionId, messages } = data.content
+              const { sessionId, messages } = data.data
               const callback = this.listeners.get(sessionId)
               if (callback) callback(messages, sessionId)
               break
@@ -76,7 +81,7 @@ class WSSingleton {
 
             /** 收到实时消息 */
             case 'chat': {
-              const { sessionId, message } = data.content
+              const { sessionId, message } = data.data
               const callback = this.listeners.get(sessionId)
               if (callback) callback(message, sessionId)
               break
@@ -95,6 +100,12 @@ class WSSingleton {
     }
   }
 
+  close() {
+    this.socketTask?.close({
+      code: 1000,
+      reason: '正常关闭'
+    })
+  }
   /** 发送消息 */
   send(content: ChatMessage, sessionId?: string) {
     if (!this.isConnected || !this.socketTask) {
@@ -103,6 +114,7 @@ class WSSingleton {
     }
     const payload = JSON.stringify({ sessionId, content })
     this.socketTask.send({ data: payload })
+    console.log('✅ 已发送消息:', payload)
   }
 
   /** 获取所有会话 */
