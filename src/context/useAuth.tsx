@@ -37,7 +37,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       dispatch(setUserProfile(userInfo.user))
       setIsLoggedIn(true)
       await wsSingleton.connect({
-        url: `wss://${process.env.TARO_APP_DOMAIN}/ws/chat/`,
+        url: `wss://testapi.helloworld-hdu.com/ws/chat/`,
         headers: {
           Authorization: `Bearer ${Taro.getStorageSync('token')}`
         }

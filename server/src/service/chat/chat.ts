@@ -26,7 +26,7 @@ export function chatWithWs(socket, req) {
     socket.on('message', async (msg) => {
         const message = JSON.parse(msg);
         const { eventType } = message.content
-        Handler[eventType](socket,message)
+        Handler[eventType](socket, req, message);
     })
 
     socket.on('disconnect', () => {
@@ -38,13 +38,13 @@ export function chatWithWs(socket, req) {
 
 }
 
-async function open_chat (socket,msg) {
+async function open_chat (socket, req, msg) {
     const { from, to, sessionId, content } = msg.content;
     const history = await getChatHistory(sessionId, 50, from);
     socket.send(JSON.stringify({eventType: "openChat" ,history}));
 }
 
-async function chat(socket,msg) {
+async function chat(socket,req ,msg) {
     const { from, to, sessionId, content } = msg.content;
     const message = {
         time: Date.now(),
@@ -57,8 +57,8 @@ async function chat(socket,msg) {
 }
 
 
-async function initialize(socket, req) {
-  const { prisma } = req.server
+async function initialize(socket, req, message) {
+  const { prisma } = req.server;
   const userWithSessions = await prisma.user.findUnique({
     where: { open_id: req.openId },
     include: {
