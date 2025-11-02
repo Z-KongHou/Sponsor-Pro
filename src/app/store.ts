@@ -3,12 +3,14 @@ import { configureStore } from '@reduxjs/toolkit'
 import sponsorInfoReducer from '@/features/sponsorInfo'
 import userReducer from '@/features/user'
 import oppositeReducer from '@/features/oppositeUser'
+import chatReducer from '@/features/chat'
 
 export const store = configureStore({
   reducer: {
     sponsorInfo: sponsorInfoReducer,
     user: userReducer,
-    opposite: oppositeReducer
+    opposite: oppositeReducer,
+    chat: chatReducer
   }
   // 如果想关 devTools 或加中间件可继续写
 })

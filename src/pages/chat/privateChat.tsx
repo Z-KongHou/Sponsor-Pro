@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { View, Text, Input, Button, ScrollView } from '@tarojs/components'
 import Taro from '@tarojs/taro'
-import { useAppSelector } from '@/app/hooks'
+import { useAppSelector, useAppDispatch } from '@/app/hooks'
+import { setHistory, pushMessage } from '@/features/chat'
 import { wsSingleton } from '@/utils/wsSingleton'
 import { ChatMessage } from '@/interface/webSocket'
 import ChatBox from '../../components/ChatBox'
 
 export default function PrivateChat() {
+  const dispatch = useAppDispatch()
   const senderId = useAppSelector((state) => state.user.profile?.id)
   const receiverInfo = useAppSelector((state) => state.opposite)
   const sessionId = useMemo(
@@ -14,30 +16,30 @@ export default function PrivateChat() {
     [senderId, receiverInfo]
   )
 
-  const [messages, setMessages] = useState<ChatMessage[]>([])
   const [inputValue, setInputValue] = useState('')
   const scrollRef = useRef<string>('')
 
   const startHeightBottom = Taro.getMenuButtonBoundingClientRect().bottom
   const startHeightTop = Taro.getMenuButtonBoundingClientRect().top
-
-  // ✅ 初始化连接
-  useEffect(() => {
-    wsSingleton.connect('wss://testapi.helloworld-hdu.com/ws/chat/')
-  }, [])
-
   // ✅ 订阅当前 session 的消息
   useEffect(() => {
-    const handleMsg = (msg: ChatMessage) => {
-      setMessages((prev) => [...prev, msg])
-      scrollRef.current = `msg-${msg.time}`
-    }
+    // 1. 先清空/初始化会话槽
+    dispatch(setHistory({ sessionId, list: [] }))
 
-    wsSingleton.subscribe(sessionId, handleMsg)
-    return () => {
-      wsSingleton.unsubscribe(sessionId, handleMsg)
+    const handleLogic = (msg: ChatMessage | ChatMessage[]) => {
+      const m = Array.isArray(msg) ? msg : [msg] // openChat 是数组，chat 是单条
+      m.forEach((v) => dispatch(pushMessage({ sessionId, msg: v })))
     }
-  }, [sessionId])
+    // 2. 订阅：把后续实时消息**追加**进去
+    wsSingleton.subscribe(sessionId, handleLogic)
+    // 3. 拉历史（只一次）
+    wsSingleton.send({ eventType: 'openChat' }, sessionId)
+    return () => {
+      wsSingleton.unsubscribe(sessionId)
+      dispatch(setHistory({ sessionId, list: [] })) // 离开时也清空，防止残留
+    }
+  }, [sessionId, dispatch])
+  const messages = useAppSelector((state) => state.chat.history[sessionId]?.list || [])
 
   // ✅ 发送消息
   const handleSend = () => {
@@ -48,16 +50,19 @@ export default function PrivateChat() {
     }
 
     const msg: ChatMessage = {
-      from: senderId,
-      sessionId,
-      content: inputValue.trim(),
-      time: Date.now()
+      eventType: 'chat',
+      data: {
+        from: senderId,
+        to: receiverInfo.id,
+        sessionId,
+        content: inputValue.trim(),
+        time: Date.now()
+      }
     }
 
-    wsSingleton.send(sessionId, msg)
-    setMessages((prev) => [...prev, msg]) // 本地立即显示
+    wsSingleton.send(msg, sessionId)
     setInputValue('')
-    scrollRef.current = `msg-${msg.time}`
+    scrollRef.current = `msg-${msg.data?.time}`
   }
 
   return (
@@ -72,10 +77,7 @@ export default function PrivateChat() {
       >
         <View style={{ height: startHeightTop, width: '100%' }}></View>
         <View className='flex items-start justify-between bg-blue-500 px-4'>
-          <View
-            className='text-sm text-white'
-            onClick={() => Taro.navigateBack()}
-          >
+          <View className='text-sm text-white' onClick={() => Taro.navigateBack()}>
             {'<'}
           </View>
           <View className='text-base text-white'>{receiverInfo.name}</View>
@@ -92,20 +94,20 @@ export default function PrivateChat() {
       >
         <View className='w-full px-4 py-3'>
           {messages.map((message) => (
-            <View key={message.time} id={`msg-${message.time}`}>
+            <View key={message.data?.time} id={`msg-${message.data?.time}`}>
               <View className='mb-2 flex justify-center'>
                 <Text className='text-xs text-gray-500'>
-                  {new Date(message.time).toLocaleTimeString()}
+                  {new Date(message.data?.time || 0).toLocaleTimeString()}
                 </Text>
               </View>
               <View
                 className={`mb-4 flex items-end ${
-                  message.from === senderId ? 'justify-end' : 'justify-start'
+                  message.data?.from === senderId ? 'justify-end' : 'justify-start'
                 }`}
                 style={{ width: '100%' }}
               >
                 {/* 对方头像 */}
-                {message.from !== senderId && (
+                {message.data?.from !== senderId && (
                   <View className='mr-3 flex flex-shrink-0 flex-col items-center'>
                     <View
                       className='flex h-10 w-10 items-center justify-center rounded-full border-2 border-blue-200'
@@ -119,18 +121,18 @@ export default function PrivateChat() {
                 {/* 聊天内容 */}
                 <View
                   className={`flex flex-col ${
-                    message.from === senderId ? 'items-end' : 'items-start'
+                    message.data?.from === senderId ? 'items-end' : 'items-start'
                   }`}
                   style={{ maxWidth: 'calc(100% - 60px)' }}
                 >
                   <ChatBox
-                    user={message.from === senderId ? 'Sender' : 'Receiver'}
-                    content={message.content}
+                    user={message.data?.from === senderId ? 'Sender' : 'Receiver'}
+                    content={message.data?.content || ''}
                   />
                 </View>
 
                 {/* 我方头像 */}
-                {message.from === senderId && (
+                {message.data?.from === senderId && (
                   <View className='ml-3 flex flex-shrink-0 flex-col items-center'>
                     <View
                       className='flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-200'

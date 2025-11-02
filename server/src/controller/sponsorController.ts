@@ -9,13 +9,15 @@ import {
   getInfo
 } from '../service/sponsorService'
 
-interface CreateSponsorshipBody {
+interface SponsorRequestBody {
   title: string
-  description?: string
-  amount?: number
-  type: 'SCHOOL_INITIATED' | 'COMPANY_INITIATED'
-  initiatorId?: number
-  receiverId?: number
+  description: string
+  amount: number
+  type: SponsorshipType
+  initiatorId: number
+  status?: string
+  time_from: string
+  time_end: string
 }
 
 interface UpdateSponsorStatusBody {
@@ -170,7 +172,7 @@ export const getSponsorInfoByUserID = async (req, reply) => {
 // Define request body type based on Sponsorship model
 
 export const createSponsor = async (
-  req: FastifyRequest,
+  req: FastifyRequest<{ Body: SponsorRequestBody }>,
   reply: FastifyReply
 ) => {
   console.log('req.body', req)

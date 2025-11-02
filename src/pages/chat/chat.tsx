@@ -4,9 +4,11 @@ import TabBar from '@/components/TabBar'
 import { useState } from 'react'
 import { useAppDispatch } from '@/app/hooks'
 import { setUserInfo } from '@/features/oppositeUser'
+import { wsSingleton } from '@/utils/wsSingleton'
 
-interface ChatItem {
-  id: string
+export interface ChatItem {
+  sessionId: string
+  id: number
   name: string
   avatar: string
   lastMessage: string
@@ -16,8 +18,8 @@ interface ChatItem {
 
 export default function Chat() {
   // 模拟对话列表数据
-  const [chatList] = useState<ChatItem[]>([])
-
+  const [chatList, setChatList] = useState<ChatItem[]>([])
+  setChatList(wsSingleton.getChatSessions())
   const dispatch = useAppDispatch()
   // 处理聊天项点击事件
   const handleChatItemClick = (chatItem: ChatItem) => {
@@ -28,6 +30,12 @@ export default function Chat() {
         name: chatItem.name,
         avatarUrl: chatItem.avatar
       })
+    )
+    wsSingleton.send(
+      {
+        eventType: 'openChat'
+      },
+      chatItem.sessionId
     )
     Taro.navigateTo({
       url: `/pages/chat/privateChat`
@@ -95,9 +103,7 @@ export default function Chat() {
               </View>
               <Text
                 className={`text-sm ${
-                  chatItem.unreadCount > 0
-                    ? 'font-medium text-gray-900'
-                    : 'text-gray-600'
+                  chatItem.unreadCount > 0 ? 'font-medium text-gray-900' : 'text-gray-600'
                 } truncate`}
                 numberOfLines={1}
               >
