@@ -119,7 +119,7 @@ async function initialize(socket, req, message) {
       console.log('增强后的会话列表:', sessions);
 
       socket.send(JSON.stringify({
-        type: 'init',
+        eventType: 'init',
         data: sessions
       }));
     } catch (error) {
