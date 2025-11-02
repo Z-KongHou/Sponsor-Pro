@@ -40,8 +40,12 @@ export function chatWithWs(socket, req) {
 
 async function open_chat (socket, req, msg) {
     const chatID = req.openId;
-    const { from, to, sessionId, content } = msg.content;
-    const history = await getChatHistory(sessionId, 50, from);
+    const from = req.server.prisma.user.findUnique({
+        where: { open_id: chatID },
+        select: { id: true },
+    });
+    const { to, sessionId, content } = msg.content;
+    const history = await getChatHistory(sessionId, 50, from.id);
     socket.send(JSON.stringify({eventType: "openChat" ,data:history}));
 }
 
@@ -62,9 +66,7 @@ async function initialize(socket, req, message) {
   const { prisma } = req.server;
   const userWithSessions = await prisma.user.findUnique({
     where: { open_id: req.openId },
-    include: {
-      sessions: true, // 会拿到该用户关联的所有 session
-    },
+    include: { sessions: { select: { session_id: true , participants: { select: { id: true, name: true, avatarurl: true } } } } }
   });
 
   let sessions = userWithSessions?.sessions ?? [];
