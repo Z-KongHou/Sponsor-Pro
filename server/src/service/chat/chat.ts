@@ -44,8 +44,8 @@ async function open_chat (socket, req, msg) {
         where: { open_id: chatID },
         select: { id: true },
     });
-    const { to, sessionId, content } = msg.content;
-    const history = await getChatHistory(sessionId, 50, from.id);
+    console.log("拉取历史记录:", msg);
+    const history = await getChatHistory(msg.sessionId, 50, from.id);
     socket.send(JSON.stringify({eventType: "openChat" ,data:history}));
 }
 
@@ -101,15 +101,7 @@ async function initialize(socket, req, message) {
             };
           } catch (error) {
             console.error(`获取会话 ${session.session_id} 的聊天信息失败:`, error);
-            return {
-              id: '',
-              name: '未知用户',
-              avatar: '',
-              sessionId: session.session_id,
-              unreadCount: 0,
-              lastMessage: '',
-              lastTime: null
-            };
+            return;
           }
         })
       );
