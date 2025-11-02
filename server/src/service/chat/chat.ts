@@ -22,6 +22,7 @@ sub.on('message', (channel, message) => {
 
 export function chatWithWs(socket, req) {
     userSockets.set(req.openId, socket);
+    console.log(`用户 ${req.openId} 已连接 WebSocket`);
     socket.on('message', async (msg) => {
         const message = JSON.parse(msg);
         const { eventType } = message.content
