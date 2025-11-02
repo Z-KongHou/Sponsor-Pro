@@ -50,11 +50,15 @@ async function open_chat (socket, req, msg) {
 }
 
 async function chat(socket,req ,msg) {
-    const { from, to, sessionId, content } = msg.content;
+    const { from, to, sessionId, content , name , avatar} = msg.content.data;
+
     const message = {
         time: Date.now(),
         to: to,
         content: content,
+        from: from,
+        name: name,
+        avatar: avatar
     };
         // 保存消息到 Redis
     await saveChatMessage(sessionId, message);

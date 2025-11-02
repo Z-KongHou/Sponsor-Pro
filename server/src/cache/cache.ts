@@ -8,6 +8,9 @@ interface Message {
   time: number;
   content: string;
   to: string;
+  from: string;
+  name: string;
+  avatar: string;
 }
 
 /**

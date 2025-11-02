@@ -26,8 +26,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    volumes:
-      - redis_data:/data
+
 
   nginx:
     image: nginx:alpine
@@ -36,7 +35,6 @@ services:
     
 volumes:
   db_data:
-  redis_data:
     
     
 
