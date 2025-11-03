@@ -12,13 +12,9 @@ const Handler = {
 }
 
 sub.on('message', (channel, message) => {
-    console.log(`收到频道 ${channel} 的消息: ${message}`);
     const sessionId = channel.split(":")[2];
     const message1 = JSON.parse(message);
-    console.log("推送消息到会话:", sessionId);
-    console.log("消息内容:", message1);
     const targetSocket = userSockets.get(message1.to);
-    console.log("目标用户socket:", targetSocket);
      if (targetSocket) {
         targetSocket.send(JSON.stringify({eventType: "chat",data:{ sessionId: sessionId, message: message1}}));
     }
@@ -47,8 +43,7 @@ async function open_chat (socket, req, msg) {
         where: { open_id: chatID },
         select: { id: true },
     });
-    console.log("拉取历史记录:", msg);
-    const history = await getChatHistory(msg.sessionId, 50, from.id);
+    const history = await getChatHistory(msg.sessionId, 50, from.id.toString());
     socket.send(JSON.stringify({eventType: "openChat" ,data:{ sessionId: msg.sessionId, messages: history}}));
 }
 
@@ -64,8 +59,12 @@ async function chat(socket,req ,msg) {
         avatar: avatar
     };
         // 保存消息到 Redis
-    await saveChatMessage(sessionId, message);
-    await redis.publish(`chat:session:${sessionId}:pubsub`, JSON.stringify(message));
+    try {
+        await saveChatMessage(sessionId, message);
+        await redis.publish(`chat:session:${sessionId}:pubsub`, JSON.stringify(message));
+    } catch (error) {
+        console.error('❌ 保存或发布聊天消息失败:', error);
+    }
     console.log(`用户 ${from} 发送消息到 ${to}: ${content}`);
 }
 
