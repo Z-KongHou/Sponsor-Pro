@@ -1,5 +1,6 @@
 import { sub,redis } from "@/cache/redis";
 import { saveChatMessage,getChatHistory,getChatInfo } from "@/cache/cache";
+import { Session } from "inspector/promises";
 
 const userSockets = new Map();
 const subscribedChannels = new Set();
@@ -11,12 +12,13 @@ const Handler = {
 }
 
 sub.on('message', (channel, message) => {
+    console.log(`收到频道 ${channel} 的消息: ${message}`);
     const sessionId = channel.split(":")[2];
     const message1 = JSON.parse(message);
       // 推送给在线用户
     const targetSocket = userSockets.get(message1.to);
      if (targetSocket) {
-        targetSocket.send(JSON.stringify({eventType: "chat",data:message1}));
+        targetSocket.send(JSON.stringify({eventType: "chat",data:{ sessionId: sessionId, message: message1}}));
     }
 })
 
@@ -46,7 +48,7 @@ async function open_chat (socket, req, msg) {
     });
     console.log("拉取历史记录:", msg);
     const history = await getChatHistory(msg.sessionId, 50, from.id);
-    socket.send(JSON.stringify({eventType: "openChat" ,data:history}));
+    socket.send(JSON.stringify({eventType: "openChat" ,data:{ sessionId: msg.sessionId, messages: history}}));
 }
 
 async function chat(socket,req ,msg) {
@@ -62,7 +64,8 @@ async function chat(socket,req ,msg) {
     };
         // 保存消息到 Redis
     await saveChatMessage(sessionId, message);
-    await redis.publish(`chat:session:${sessionId}:pubsub`, JSON.stringify(message));
+    await sub.publish(`chat:session:${sessionId}:pubsub`, JSON.stringify(message));
+    console.log(`用户 ${from} 发送消息到 ${to}: ${content}`);
 }
 
 
@@ -105,7 +108,6 @@ async function initialize(socket, req, message) {
             };
           } catch (error) {
             console.error(`获取会话 ${session.session_id} 的聊天信息失败:`, error);
-            return;
           }
         })
       );
