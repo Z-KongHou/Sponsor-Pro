@@ -72,6 +72,7 @@ class WSSingleton {
             }
 
             /** 打开会话（历史消息） */
+
             case 'openChat': {
               const { sessionId, messages } = data.data
               const callback = this.listeners.get(sessionId)
@@ -122,6 +123,18 @@ class WSSingleton {
     return this.chatSessions
   }
 
+  setChatSessions(sessionId: string, count: number) {
+    const index = this.chatSessions.findIndex((item) => item.sessionId === sessionId)
+    if (index !== -1) {
+      this.chatSessions[index].unreadCount = count
+    }
+  }
+  addChatSessions(sessionId: string, count: number) {
+    const index = this.chatSessions.findIndex((item) => item.sessionId === sessionId)
+    if (index !== -1) {
+      this.chatSessions[index].unreadCount += count
+    }
+  }
   /** 注册某个会话的监听 */
   subscribe(sessionId: string, callback: WSCallback) {
     this.listeners.set(sessionId, callback)
@@ -134,3 +147,11 @@ class WSSingleton {
 }
 
 export const wsSingleton = new WSSingleton()
+
+// {
+//   eventType: string,
+//   data:{
+//     sessionId: string,
+//     messages: {},
+//   }
+// }

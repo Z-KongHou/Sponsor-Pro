@@ -15,6 +15,7 @@ export default function PrivateChat() {
     () => `sessionId-${[senderInfo?.id, receiverInfo.id].sort().join('-')}`,
     [senderInfo, receiverInfo]
   )
+  const testChatInfo = useAppSelector((state) => state.chat[sessionId])
 
   const [inputValue, setInputValue] = useState('')
   const scrollRef = useRef<string>('')
@@ -23,14 +24,37 @@ export default function PrivateChat() {
   const startHeightTop = Taro.getMenuButtonBoundingClientRect().top
   // ✅ 订阅当前 session 的消息
   useEffect(() => {
-    // 1. 先清空/初始化会话槽
+    // 1. 先清空/初始化会话槽位
+    wsSingleton.setChatSessions(sessionId, 0)
+    console.log(wsSingleton.getChatSessions())
     dispatch(setHistory({ sessionId, list: [] }))
-    const handleLogic = (msg: ChatMessage | ChatMessage[]) => {
-      const m = Array.isArray(msg) ? msg : [msg] // openChat 是数组，chat 是单条
-      m.forEach((v) => dispatch(pushMessage({ sessionId, msg: v })))
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleLogic = (msg: any) => {
+      const m = Array.isArray(msg) ? msg : [msg] // o
+      console.log(m)
+      m.forEach((v) =>
+        dispatch(
+          pushMessage({
+            sessionId,
+            msg: {
+              eventType: 'chat',
+              data: {
+                sessionId: sessionId,
+                from: v.from || 0,
+                to: v.to || 0,
+                avatar: v.avatar || '',
+                name: v.name || '',
+                time: v.time || 0,
+                content: v.content || ''
+              }
+            }
+          })
+        )
+      )
+      console.log(testChatInfo)
     }
-    // 2. 订阅：把后续实时消息**追加**进去
     wsSingleton.subscribe(sessionId, handleLogic)
+    // 2. 订阅：把后续实时消息**追加**进去
     // 3. 拉历史（只一次）
     wsSingleton.send({ eventType: 'openChat' }, sessionId)
     return () => {

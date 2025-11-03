@@ -55,6 +55,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     })
     wsSingleton.subscribe('__mine__', (msg, sid) => {
       dispatch(pushMessage({ sessionId: sid!, msg: msg as ChatMessage }))
+      wsSingleton.addChatSessions(sid!, 1)
     })
     return () => {
       wsSingleton.close()
