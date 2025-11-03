@@ -64,7 +64,7 @@ async function chat(socket,req ,msg) {
     };
         // 保存消息到 Redis
     await saveChatMessage(sessionId, message);
-    await sub.publish(`chat:session:${sessionId}:pubsub`, JSON.stringify(message));
+    await redis.publish(`chat:session:${sessionId}:pubsub`, JSON.stringify(message));
     console.log(`用户 ${from} 发送消息到 ${to}: ${content}`);
 }
 
