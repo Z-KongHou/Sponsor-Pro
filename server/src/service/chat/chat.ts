@@ -15,8 +15,10 @@ sub.on('message', (channel, message) => {
     console.log(`收到频道 ${channel} 的消息: ${message}`);
     const sessionId = channel.split(":")[2];
     const message1 = JSON.parse(message);
-      // 推送给在线用户
+    console.log("推送消息到会话:", sessionId);
+    console.log("消息内容:", message1);
     const targetSocket = userSockets.get(message1.to);
+    console.log("目标用户socket:", targetSocket);
      if (targetSocket) {
         targetSocket.send(JSON.stringify({eventType: "chat",data:{ sessionId: sessionId, message: message1}}));
     }
