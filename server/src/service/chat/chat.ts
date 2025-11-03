@@ -25,7 +25,6 @@ sub.on('message', (channel, message) => {
 })
 
 export function chatWithWs(socket, req) {
-    userSockets.set(req.openId, socket);
     console.log(`用户 ${req.openId} 已连接 WebSocket`);
     socket.on('message', async (msg) => {
         const message = JSON.parse(msg);
@@ -74,10 +73,28 @@ async function chat(socket,req ,msg) {
 async function initialize(socket, req, message) {
   const { prisma } = req.server;
   const userWithSessions = await prisma.user.findUnique({
-    where: { open_id: req.openId },
-    include: { sessions: { select: { session_id: true , participants: { select: { id: true, name: true, avatarurl: true } } } } }
+  where: { open_id: req.openId },
+    select: { 
+      id: true,
+      sessions: { 
+        select: { 
+            session_id: true,
+            participants: { 
+              select: { 
+                id: true, 
+                name: true, 
+                avatarurl: true 
+              } 
+            }
+        } 
+      } 
+    }
   });
+  if (!userWithSessions) {
+    throw new Error('用户不存在');
+  }
 
+  userSockets.set(userWithSessions.id, socket);
   let sessions = userWithSessions?.sessions ?? [];
 
   // 遍历sessions并为每个session添加未读状态和最后一条消息
