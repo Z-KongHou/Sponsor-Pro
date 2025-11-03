@@ -39,12 +39,16 @@ export function chatWithWs(socket, req) {
 
 async function open_chat (socket, req, msg) {
     const chatID = req.openId;
-    const from = req.server.prisma.user.findUnique({
+    const from = await req.server.prisma.user.findUnique({
         where: { open_id: chatID },
         select: { id: true },
     });
-    const history = await getChatHistory(msg.sessionId, 50, from.id.toString());
-    socket.send(JSON.stringify({eventType: "openChat" ,data:{ sessionId: msg.sessionId, messages: history}}));
+    try { 
+      const history = await getChatHistory(msg.sessionId, 50, from.id.toString());
+      socket.send(JSON.stringify({eventType: "openChat" ,data:{ sessionId: msg.sessionId, messages: history}}));
+    } catch (error) {
+        console.error('获取历史记录失败:', error);
+    }
 }
 
 async function chat(socket,req ,msg) {
