@@ -1,5 +1,6 @@
 import { sub,redis } from "@/cache/redis";
 import { saveChatMessage,getChatHistory,getChatInfo } from "@/cache/cache";
+import { Session } from "inspector/promises";
 
 const userSockets = new Map();
 const subscribedChannels = new Set();
@@ -13,15 +14,13 @@ const Handler = {
 sub.on('message', (channel, message) => {
     const sessionId = channel.split(":")[2];
     const message1 = JSON.parse(message);
-      // 推送给在线用户
     const targetSocket = userSockets.get(message1.to);
      if (targetSocket) {
-        targetSocket.send(JSON.stringify({eventType: "chat",data:message1}));
+        targetSocket.send(JSON.stringify({eventType: "chat",data:{ sessionId: sessionId, message: message1}}));
     }
 })
 
 export function chatWithWs(socket, req) {
-    userSockets.set(req.openId, socket);
     console.log(`用户 ${req.openId} 已连接 WebSocket`);
     socket.on('message', async (msg) => {
         const message = JSON.parse(msg);
@@ -44,9 +43,8 @@ async function open_chat (socket, req, msg) {
         where: { open_id: chatID },
         select: { id: true },
     });
-    console.log("拉取历史记录:", msg);
-    const history = await getChatHistory(msg.sessionId, 50, from.id);
-    socket.send(JSON.stringify({eventType: "openChat" ,data:history}));
+    const history = await getChatHistory(msg.sessionId, 50, from.id.toString());
+    socket.send(JSON.stringify({eventType: "openChat" ,data:{ sessionId: msg.sessionId, messages: history}}));
 }
 
 async function chat(socket,req ,msg) {
@@ -61,18 +59,41 @@ async function chat(socket,req ,msg) {
         avatar: avatar
     };
         // 保存消息到 Redis
-    await saveChatMessage(sessionId, message);
-    await redis.publish(`chat:session:${sessionId}:pubsub`, JSON.stringify(message));
+    try {
+        await saveChatMessage(sessionId, message);
+        await redis.publish(`chat:session:${sessionId}:pubsub`, JSON.stringify(message));
+    } catch (error) {
+        console.error('❌ 保存或发布聊天消息失败:', error);
+    }
+    console.log(`用户 ${from} 发送消息到 ${to}: ${content}`);
 }
 
 
 async function initialize(socket, req, message) {
   const { prisma } = req.server;
   const userWithSessions = await prisma.user.findUnique({
-    where: { open_id: req.openId },
-    include: { sessions: { select: { session_id: true , participants: { select: { id: true, name: true, avatarurl: true } } } } }
+  where: { open_id: req.openId },
+    select: { 
+      id: true,
+      sessions: { 
+        select: { 
+            session_id: true,
+            participants: { 
+              select: { 
+                id: true, 
+                name: true, 
+                avatarurl: true 
+              } 
+            }
+        } 
+      } 
+    }
   });
+  if (!userWithSessions) {
+    throw new Error('用户不存在');
+  }
 
+  userSockets.set(userWithSessions.id, socket);
   let sessions = userWithSessions?.sessions ?? [];
 
   // 遍历sessions并为每个session添加未读状态和最后一条消息
@@ -105,7 +126,6 @@ async function initialize(socket, req, message) {
             };
           } catch (error) {
             console.error(`获取会话 ${session.session_id} 的聊天信息失败:`, error);
-            return;
           }
         })
       );

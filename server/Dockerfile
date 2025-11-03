@@ -4,6 +4,7 @@ WORKDIR /Sponsor-Pro
 
 COPY . .
 
+RUN yarn config set registry https://registry.npmmirror.com
 # 一次性安装所有依赖并构建
 RUN yarn install && yarn cache clean && \
     npx tsc && npx tsc-alias && \
