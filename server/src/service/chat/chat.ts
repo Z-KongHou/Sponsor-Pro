@@ -1,6 +1,5 @@
 import { sub,redis } from "@/cache/redis";
 import { saveChatMessage,getChatHistory,getChatInfo } from "@/cache/cache";
-import { Session } from "inspector/promises";
 
 const userSockets = new Map();
 const subscribedChannels = new Set();
@@ -65,7 +64,7 @@ async function chat(socket,req ,msg) {
         // 保存消息到 Redis
     try {
         await saveChatMessage(sessionId, message);
-        await redis.publish(`chat:session:${sessionId}:pubsub`, JSON.stringify(message));
+        await redis.publish(`chat:session:${to}:pubsub`, JSON.stringify(message));
     } catch (error) {
         console.error('❌ 保存或发布聊天消息失败:', error);
     }
@@ -98,6 +97,10 @@ async function initialize(socket, req, message) {
   }
 
   userSockets.set(userWithSessions.id, socket);
+  if (!subscribedChannels.has(`chat:session:${userWithSessions.id}:pubsub`)) {
+    sub.subscribe(`chat:session:${userWithSessions.id}:pubsub`);
+    subscribedChannels.add(`chat:session:${userWithSessions.id}:pubsub`);
+  }
   let sessions = userWithSessions?.sessions ?? [];
 
   // 遍历sessions并为每个session添加未读状态和最后一条消息
@@ -113,11 +116,6 @@ async function initialize(socket, req, message) {
               (participant) => participant.id.toString() !== userWithSessions.id.toString()
             );
             const chatInfo = await getChatInfo(session.session_id, userWithSessions.id.toString());
-            // 检查是否已订阅该频道
-            if (!subscribedChannels.has(`chat:session:${session.session_id}:pubsub`)) {
-              sub.subscribe(`chat:session:${session.session_id}:pubsub`);
-              subscribedChannels.add(`chat:session:${session.session_id}:pubsub`);
-            }
             // 合并原始会话数据和聊天信息
             return {
               id: otherParticipant.id,
