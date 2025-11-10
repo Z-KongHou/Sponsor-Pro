@@ -7,7 +7,8 @@ const subscribedChannels = new Set();
 const Handler = {
     "openChat": open_chat,
     "init": initialize,
-    "chat": chat
+    "chat": chat,
+    "ping": ping
 }
 
 sub.on('message', (channel, message) => {
@@ -23,6 +24,10 @@ export function chatWithWs(socket, req) {
     console.log(`用户 ${req.openId} 已连接 WebSocket`);
     socket.on('message', async (msg) => {
         const message = JSON.parse(msg);
+        if (!Handler[message.content.eventType]) {
+            console.error(`未知的事件类型: ${message.content.eventType}`);
+            return;
+        }
         const { eventType } = message.content
         Handler[eventType](socket, req, message);
     })
@@ -144,4 +149,8 @@ async function initialize(socket, req, message) {
       console.error('处理会话列表时发生错误:', error);
     }
   }
+}
+
+function ping(socket, req, msg) {
+  socket.send(JSON.stringify({eventType: "pong"}));
 }
