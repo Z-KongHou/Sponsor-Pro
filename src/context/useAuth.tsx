@@ -58,9 +58,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       wsSingleton.addChatSessions(sid!, 1)
     })
     return () => {
-      wsSingleton.close()
+      wsSingleton.close() // 会内部清理心跳+重连定时器
     }
   }, [isLoggedIn])
+
   const logout = () => {
     Taro.removeStorageSync('token')
     Taro.removeStorageSync('role')

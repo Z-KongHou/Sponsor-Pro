@@ -23,8 +23,13 @@ interface WSChatEvent {
   data: { sessionId: string; message: ChatMessage }
 }
 
+/** 心跳响应事件 */
+interface WSPongEvent {
+  eventType: 'pong'
+}
+
 /** 统一的 WebSocket 事件类型 */
-type WSEvent = WSInitEvent | WSOpenChatEvent | WSChatEvent
+type WSEvent = WSInitEvent | WSOpenChatEvent | WSChatEvent | WSPongEvent
 
 /** 单例类：用于 WebSocket 通信 */
 class WSSingleton {
@@ -34,10 +39,21 @@ class WSSingleton {
   private connecting = false
   private chatSessions: ChatItem[] = []
 
+  /* ===== 重连 & 心跳新增 ===== */
+  private lastUrl: string | null = null
+  private lastHeaders: Record<string, string> = {}
+  private reconnectTimer: NodeJS.Timeout | null = null
+  private reconnectDelay = 1000 // 初始 1 s，最大 30 s
+  private pingTimer: NodeJS.Timeout | null = null
+  private lastPong = Date.now()
+
   /** 连接 WebSocket */
   async connect({ url, headers }: { url: string; headers: Record<string, string> }) {
     if (this.connecting || this.isConnected) return
     this.connecting = true
+    /* 缓存参数，供重连使用 */
+    this.lastUrl = url
+    this.lastHeaders = headers
 
     try {
       const task = await Taro.connectSocket({ url, header: headers })
@@ -47,6 +63,8 @@ class WSSingleton {
         console.log('✅ WebSocket 已连接')
         this.isConnected = true
         this.connecting = false
+        this.reconnectDelay = 1000 // 重置退避
+        this.startHeartbeat() // 开启心跳
         wsSingleton.send({
           eventType: 'init'
         })
@@ -56,12 +74,19 @@ class WSSingleton {
         console.log('⚠️ WebSocket 已关闭')
         this.isConnected = false
         this.connecting = false
+        this.stopHeartbeat()
+        this.scheduleReconnect() // 触发指数退避重连
       })
 
       task.onMessage((msg) => {
         console.log('✅ 收到消息:', msg.data)
         try {
           const data: WSEvent = JSON.parse(msg.data as string)
+          /* 收到 pong 刷新时间戳 */
+          if (data.eventType === 'pong') {
+            this.lastPong = Date.now()
+            return
+          }
 
           switch (data.eventType) {
             /** 初始化会话列表 */
@@ -98,14 +123,54 @@ class WSSingleton {
     } catch (err) {
       console.error('❌ WebSocket 连接失败:', err)
       this.connecting = false
+      this.isConnected = false
     }
   }
 
   close() {
+    this.stopHeartbeat()
+    this.clearReconnect()
     this.socketTask?.close({
       code: 1000,
       reason: '正常关闭'
     })
+  }
+
+  /* ===== 重连 & 心跳 辅助函数 ===== */
+  private scheduleReconnect() {
+    if (this.reconnectTimer) return
+    this.reconnectTimer = setTimeout(() => {
+      console.log(`[WS] 尝试重连… 退避 ${this.reconnectDelay}ms`)
+      this.connect({ url: this.lastUrl!, headers: this.lastHeaders })
+      this.reconnectDelay = Math.min(this.reconnectDelay * 2, 30000)
+    }, this.reconnectDelay)
+  }
+
+  private clearReconnect() {
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer)
+      this.reconnectTimer = null
+    }
+  }
+
+  private startHeartbeat() {
+    this.stopHeartbeat()
+    this.lastPong = Date.now()
+    this.pingTimer = setInterval(() => {
+      this.socketTask?.send({ data: JSON.stringify({ eventType: 'ping' }) })
+      // 60s 内没收到 pong 视为超时，强制重连
+      if (Date.now() - this.lastPong > 60000) {
+        console.warn('[WS] 心跳超时，主动关闭重连')
+        this.socketTask?.close({ code: 4000, reason: '心跳超时' })
+      }
+    }, 30000)
+  }
+
+  private stopHeartbeat() {
+    if (this.pingTimer) {
+      clearInterval(this.pingTimer)
+      this.pingTimer = null
+    }
   }
   /** 发送消息 */
   send(content: ChatMessage, sessionId?: string) {
@@ -113,9 +178,9 @@ class WSSingleton {
       console.warn('⚠️ WebSocket 未连接')
       return
     }
-    const payload = JSON.stringify({ sessionId, content })
-    this.socketTask.send({ data: payload })
-    console.log('✅ 已发送消息:', payload)
+    const payload: { sessionId?: string; content: ChatMessage } = { sessionId, content }
+    this.socketTask.send({ data: JSON.stringify(payload) })
+    console.log('✅ 已发送消息:', JSON.stringify(payload))
   }
 
   /** 获取所有会话 */

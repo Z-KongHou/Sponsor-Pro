@@ -84,7 +84,7 @@ const useUserProfile = () => {
 
       dispatch(
         setUserProfile({
-          id: target?.id ? String(target.id) : '',
+          id: target?.id ? Number(target.id) : 0,
           name: (target?.name as string) || '',
           email: (target?.email as string) || '',
           phone: (target?.phone as string) || '',
@@ -114,7 +114,7 @@ const useUserProfile = () => {
   }, [status, profile, refresh])
 
   const safeProfile: StoreUserProfile = profile ?? {
-    id: '',
+    id: 0,
     name: '',
     email: '',
     phone: '',
@@ -131,7 +131,7 @@ const useUserProfile = () => {
   }
 }
 
-const useUserSponsorships = (userId: string) => {
+const useUserSponsorships = (userId: number) => {
   const [loading, setLoading] = useState(true)
   const [allActivities, setAllActivities] = useState<Activity[]>([])
 

@@ -5,7 +5,7 @@ const sponsorInfoSlice = createSlice({
   name: 'sponsorInfo',
   initialState: {} as detailInfo,
   reducers: {
-    setSponsorInfo: (state, action) => {
+    setSponsorInfo: (_state, action) => {
       return action.payload
     }
   }

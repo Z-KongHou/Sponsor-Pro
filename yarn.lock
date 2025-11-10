@@ -173,12 +173,7 @@
   dependencies:
     "@babel/types" "^7.27.1"
 
-"@babel/helper-plugin-utils@7.21.4-esm.4":
-  version "7.21.4-esm.4"
-  resolved "https://registry.yarnpkg.com/@babel/helper-plugin-utils/-/helper-plugin-utils-7.21.4-esm.4.tgz#f2e88b65f723afa33c1269e1d58b529cffb0e701"
-  integrity sha512-sBuQrazjJ1uGdLN6UhoUnBcC71cP31ATgVUn+LXCFA8PThJJvs44o+rp3t+5kYwRuhOUvX0H45T+HSbcrsSg1g==
-
-"@babel/helper-plugin-utils@^7.0.0", "@babel/helper-plugin-utils@^7.18.6", "@babel/helper-plugin-utils@^7.25.9", "@babel/helper-plugin-utils@^7.27.1", "@babel/helper-plugin-utils@^7.8.0":
+"@babel/helper-plugin-utils@^7.0.0", "@babel/helper-plugin-utils@^7.18.6", "@babel/helper-plugin-utils@^7.20.2", "@babel/helper-plugin-utils@^7.25.9", "@babel/helper-plugin-utils@^7.27.1", "@babel/helper-plugin-utils@^7.8.0":
   version "7.27.1"
   resolved "https://registry.npmmirror.com/@babel/helper-plugin-utils/-/helper-plugin-utils-7.27.1.tgz#ddb2f876534ff8013e6c2b299bf4d39b3c51d44c"
   integrity sha512-1gn1Up5YXka3YYAHGKpbideQ5Yjf1tDa9qYcgysz+cNCXukyLl6DjPXhD3VRwSb8c0J9tA4b2+rHEZtc6R0tlw==
@@ -201,14 +196,7 @@
     "@babel/helper-optimise-call-expression" "^7.27.1"
     "@babel/traverse" "^7.27.1"
 
-"@babel/helper-skip-transparent-expression-wrappers@7.21.4-esm.4":
-  version "7.21.4-esm.4"
-  resolved "https://registry.yarnpkg.com/@babel/helper-skip-transparent-expression-wrappers/-/helper-skip-transparent-expression-wrappers-7.21.4-esm.4.tgz#ffb95452e6619abae7348c1bead95d9b8a3a7a74"
-  integrity sha512-m10bRe3JWSBNCsprhIGpdj6BwqU5aTFdW1pnzUg8u7V9lRs6EIohdPFJIejUd81u5BcJC87cIUldnJ38fMKNjg==
-  dependencies:
-    "@babel/types" "7.21.4-esm.4"
-
-"@babel/helper-skip-transparent-expression-wrappers@^7.27.1":
+"@babel/helper-skip-transparent-expression-wrappers@^7.20.0", "@babel/helper-skip-transparent-expression-wrappers@^7.27.1":
   version "7.27.1"
   resolved "https://registry.npmmirror.com/@babel/helper-skip-transparent-expression-wrappers/-/helper-skip-transparent-expression-wrappers-7.27.1.tgz#62bb91b3abba8c7f1fec0252d9dbea11b3ee7a56"
   integrity sha512-Tub4ZKEXqbPjXgWLl2+3JpQAYBJ8+ikpQ2Ocj/q/r0LwE3UhENh7EUabyHjz2kCEsrRY83ew2DQdHluuiDQFzg==
@@ -216,20 +204,10 @@
     "@babel/traverse" "^7.27.1"
     "@babel/types" "^7.27.1"
 
-"@babel/helper-string-parser@7.21.4-esm.4":
-  version "7.21.4-esm.4"
-  resolved "https://registry.yarnpkg.com/@babel/helper-string-parser/-/helper-string-parser-7.21.4-esm.4.tgz#71c3acbd8d4e58be51f5cce62550a330dfeb2b2f"
-  integrity sha512-yqJZYyP/oxiZAuHqHKIKUVyIfEbGTg2BDBKqafuvQGX8d04qGHJ7Sc7ZchKfJhziXCIq4gQPe+WoOb98zIALmw==
-
 "@babel/helper-string-parser@^7.27.1":
   version "7.27.1"
   resolved "https://registry.yarnpkg.com/@babel/helper-string-parser/-/helper-string-parser-7.27.1.tgz#54da796097ab19ce67ed9f88b47bb2ec49367687"
   integrity sha512-qMlSxKbpRlAridDExk92nSobyDdpPijUq2DW6oDnUqd0iOGxmQjyqhMIihI9+zv4LPyZdRje2cavWPbCbWm3eA==
-
-"@babel/helper-validator-identifier@7.21.4-esm.4":
-  version "7.21.4-esm.4"
-  resolved "https://registry.yarnpkg.com/@babel/helper-validator-identifier/-/helper-validator-identifier-7.21.4-esm.4.tgz#f377f7d5a6dbecf697d0b04304531a35dca9a3db"
-  integrity sha512-DP9RX/xVkBSK/fYzCDrgjtkx6cf2omQABZUDwlraoyFKnm7F8SiWsMH/AwXpzfieeLg1wqt6QWzNBOwlwiHr0Q==
 
 "@babel/helper-validator-identifier@^7.27.1":
   version "7.27.1"
@@ -314,20 +292,20 @@
     "@babel/plugin-syntax-decorators" "^7.27.1"
 
 "@babel/plugin-proposal-nullish-coalescing-operator@^7.24.4":
-  version "7.21.4-esm.4"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-nullish-coalescing-operator/-/plugin-proposal-nullish-coalescing-operator-7.21.4-esm.4.tgz#5c74b775e75f0cdd6d64c035c2cfc20b77c352c2"
-  integrity sha512-4bi9X2h8bmvSBWPGIlM6QxO4O2Gfufb6U045AVQQtcTxQvH5aBg7ivCAsxjN18S6EwZi+d5e2SCUAQNivv6yow==
+  version "7.18.6"
+  resolved "https://registry.npmmirror.com/@babel/plugin-proposal-nullish-coalescing-operator/-/plugin-proposal-nullish-coalescing-operator-7.18.6.tgz#fdd940a99a740e577d6c753ab6fbb43fdb9467e1"
+  integrity sha512-wQxQzxYeJqHcfppzBDnm1yAY0jSRkUXR2z8RePZYrKwMKgMlE8+Z6LUno+bd6LvbGh8Gltvy74+9pIYkr+XkKA==
   dependencies:
-    "@babel/helper-plugin-utils" "7.21.4-esm.4"
+    "@babel/helper-plugin-utils" "^7.18.6"
     "@babel/plugin-syntax-nullish-coalescing-operator" "^7.8.3"
 
 "@babel/plugin-proposal-optional-chaining@^7.24.4":
-  version "7.21.4-esm.4"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-optional-chaining/-/plugin-proposal-optional-chaining-7.21.4-esm.4.tgz#e05a36f3789fa3510c50fc7f52ab051ce5fc663b"
-  integrity sha512-fwKOtLi1/lx3afxidxjXAkA4k6ufeOeNL6ka0EKblRVxpm5fKVXIvohAgMQrlFXKBn+T+qA9joyLlFlVPe91Mg==
+  version "7.21.0"
+  resolved "https://registry.npmmirror.com/@babel/plugin-proposal-optional-chaining/-/plugin-proposal-optional-chaining-7.21.0.tgz#886f5c8978deb7d30f678b2e24346b287234d3ea"
+  integrity sha512-p4zeefM72gpmEe2fkUr/OnOXpWEf8nAgk7ZYVqqfFiyIG7oFfVZcCrU64hWn5xp4tQ9LkV4bTIa5rD0KANpKNA==
   dependencies:
-    "@babel/helper-plugin-utils" "7.21.4-esm.4"
-    "@babel/helper-skip-transparent-expression-wrappers" "7.21.4-esm.4"
+    "@babel/helper-plugin-utils" "^7.20.2"
+    "@babel/helper-skip-transparent-expression-wrappers" "^7.20.0"
     "@babel/plugin-syntax-optional-chaining" "^7.8.3"
 
 "@babel/plugin-proposal-private-property-in-object@7.21.0-placeholder-for-preset-env.2":
@@ -994,15 +972,6 @@
     "@babel/template" "^7.27.2"
     "@babel/types" "^7.28.4"
     debug "^4.3.1"
-
-"@babel/types@7.21.4-esm.4":
-  version "7.21.4-esm.4"
-  resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.21.4-esm.4.tgz#05082c96abf388144c4f09f032e4edcce1c7405f"
-  integrity sha512-nzTg4SP0cxsLC8gPXZ6bNRI3wTSoDczp02qt8vgbMiJuJndrwqB4sklAtMmDyJMTs/6JG6Y0Xsp8upUk5x58Tg==
-  dependencies:
-    "@babel/helper-string-parser" "7.21.4-esm.4"
-    "@babel/helper-validator-identifier" "7.21.4-esm.4"
-    to-fast-properties "^2.0.0"
 
 "@babel/types@^7.18.6", "@babel/types@^7.24.0", "@babel/types@^7.27.1", "@babel/types@^7.27.3", "@babel/types@^7.28.2", "@babel/types@^7.28.4", "@babel/types@^7.4.4", "@babel/types@~7.28.4":
   version "7.28.4"
@@ -11184,11 +11153,6 @@ to-buffer@^1.1.1:
     isarray "^2.0.5"
     safe-buffer "^5.2.1"
     typed-array-buffer "^1.0.3"
-
-to-fast-properties@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/to-fast-properties/-/to-fast-properties-2.0.0.tgz#dc5e698cbd079265bc73e0377681a4e4e83f616e"
-  integrity sha512-/OaKK0xYrs3DmxRYqL/yDc+FxFUVYhDlXMhRmv3z915w2HF1tnN1omB354j8VUGO/hbRzyD6Y3sA7v7GS/ceog==
 
 to-readable-stream@^1.0.0:
   version "1.0.0"

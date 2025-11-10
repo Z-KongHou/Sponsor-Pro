@@ -1,8 +1,8 @@
 import { View, Text, Input, Button } from '@tarojs/components'
 import Taro,{ useLoad } from '@tarojs/taro'
 import { useState } from 'react'
-import { register } from '../../router/api'
-import { useAuth } from '@/context/useAuth'
+import { useAuth } from '@/context/useAuth';
+import { register } from '../../router/api';
 
 export default function TeacherRegister() {
   const { setIsLoggedIn } = useAuth()

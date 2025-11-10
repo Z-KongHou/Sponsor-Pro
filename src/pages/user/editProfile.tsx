@@ -41,7 +41,7 @@ export default function EditProfile() {
       setTimeout(() => {
         Taro.navigateBack()
       }, 400)
-    } catch (e) {
+    } catch {
       // 已统一错误提示
     } finally {
       setSubmitting(false)
