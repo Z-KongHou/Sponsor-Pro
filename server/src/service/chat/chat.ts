@@ -1,6 +1,5 @@
 import { sub,redis } from "@/cache/redis";
 import { saveChatMessage,getChatHistory,getChatInfo } from "@/cache/cache";
-import { Session } from "inspector/promises";
 
 const userSockets = new Map();
 const subscribedChannels = new Set();
@@ -8,7 +7,8 @@ const subscribedChannels = new Set();
 const Handler = {
     "openChat": open_chat,
     "init": initialize,
-    "chat": chat
+    "chat": chat,
+    "ping": ping
 }
 
 sub.on('message', (channel, message) => {
@@ -24,6 +24,10 @@ export function chatWithWs(socket, req) {
     console.log(`用户 ${req.openId} 已连接 WebSocket`);
     socket.on('message', async (msg) => {
         const message = JSON.parse(msg);
+        if (!Handler[message.content.eventType]) {
+            console.error(`未知的事件类型: ${message.content.eventType}`);
+            return;
+        }
         const { eventType } = message.content
         Handler[eventType](socket, req, message);
     })
@@ -65,7 +69,7 @@ async function chat(socket,req ,msg) {
         // 保存消息到 Redis
     try {
         await saveChatMessage(sessionId, message);
-        await redis.publish(`chat:session:${sessionId}:pubsub`, JSON.stringify(message));
+        await redis.publish(`chat:session:${to}:pubsub`, JSON.stringify(message));
     } catch (error) {
         console.error('❌ 保存或发布聊天消息失败:', error);
     }
@@ -98,6 +102,10 @@ async function initialize(socket, req, message) {
   }
 
   userSockets.set(userWithSessions.id, socket);
+  if (!subscribedChannels.has(`chat:session:${userWithSessions.id}:pubsub`)) {
+    sub.subscribe(`chat:session:${userWithSessions.id}:pubsub`);
+    subscribedChannels.add(`chat:session:${userWithSessions.id}:pubsub`);
+  }
   let sessions = userWithSessions?.sessions ?? [];
 
   // 遍历sessions并为每个session添加未读状态和最后一条消息
@@ -113,11 +121,6 @@ async function initialize(socket, req, message) {
               (participant) => participant.id.toString() !== userWithSessions.id.toString()
             );
             const chatInfo = await getChatInfo(session.session_id, userWithSessions.id.toString());
-            // 检查是否已订阅该频道
-            if (!subscribedChannels.has(`chat:session:${session.session_id}:pubsub`)) {
-              sub.subscribe(`chat:session:${session.session_id}:pubsub`);
-              subscribedChannels.add(`chat:session:${session.session_id}:pubsub`);
-            }
             // 合并原始会话数据和聊天信息
             return {
               id: otherParticipant.id,
@@ -146,4 +149,8 @@ async function initialize(socket, req, message) {
       console.error('处理会话列表时发生错误:', error);
     }
   }
+}
+
+function ping(socket, req, msg) {
+  socket.send(JSON.stringify({eventType: "pong"}));
 }
